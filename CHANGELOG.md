@@ -1,5 +1,16 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.1.1
+
+### 🖼️ Redesigned for the Bigger Window
+Gear Judge 3.2.0 makes the main window wider and taller, and the Talent Builds page now uses the room in three columns.
+- **Left**: the category buttons (Max Level, Leveling or Farming; Tank, Healer or DPS; Solo or Dungeon) and the build list.
+- **Middle**: the chosen build's name, summary, weights and progress, with **Use This Build** and **Clear** under them and the three settings at the bottom.
+- **Right**: the talent order, which now scrolls the full height of the window with a colour key (taken, next, later). Before, it only got the space left under the build details, so a long summary left it very short.
+- With all eight builds listed, the settings no longer run off the bottom of the page.
+- **Fixed: Talent Order Out of Line**: A long talent line (for example "Improved Hammer of Justice 1-2/3") could wrap onto a second line, which pushed every talent below it one line away from its level. Each talent now has its own row beside its level, and a name too long for the column is cut short instead of wrapping.
+
+---
 ## 🚀 v1.1.0
 
 ### ✨ Improvements

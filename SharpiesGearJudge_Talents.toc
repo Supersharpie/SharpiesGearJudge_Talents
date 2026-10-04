@@ -2,7 +2,7 @@
 ## Title: |cff00ccffSharpie's Gear Judge|r |cff00ff00[Talents]|r
 ## Notes: Talent build guide for WoW Forever (does nothing on other versions).
 ## Author: Supersharpie
-## Version: 1.1.0
+## Version: 1.1.1
 ## Dependencies: SharpiesGearJudge
 ## SavedVariables: SGJ_TalentsDB
 

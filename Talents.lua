@@ -705,7 +705,7 @@ end
 -- =========================================================================
 local page, selectedId
 local LIST_BUTTONS = 8
-local LIST_TOP = -152      -- the build list starts below the three category rows
+local LIST_TOP = -172      -- the build list starts below the three category rows
 local cat                  -- { stage, role, mode } shown on the page
 
 -- Start on the active build's category; otherwise Max Level at 60 (Leveling if the
@@ -797,11 +797,9 @@ local function UpdatePage()
         if cat[btn.field] == btn.key then btn:LockHighlight() else btn:UnlockHighlight() end
         btn:SetShown(btn.field ~= "mode" or cat.stage == "leveling")
     end
-    local lastShown
     for k, btn in ipairs(page.list) do
         local b = list[k]
         if b then
-            lastShown = btn
             local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
             btn:SetText(mark .. b.name)
             btn.id = b.id
@@ -812,15 +810,11 @@ local function UpdatePage()
         end
     end
 
-    page.use:ClearAllPoints()
-    if lastShown then page.use:SetPoint("TOPLEFT", lastShown, "BOTTOMLEFT", 0, -14)
-    else page.use:SetPoint("TOPLEFT", 30, LIST_TOP) end
-
     local b = selectedId and T.Builds[selectedId]
     if not b then
         page.name:SetText("|cffffd100" .. CategoryName(cat.stage, cat.role, cat.mode) .. "|r")
         page.info:SetText("No builds here for your class yet.")
-        page.order:SetText(""); page.orderLvl:SetText("")
+        page.SetOrder({}, {})
         page.use:Hide(); page.clear:Show(); page.clear:SetEnabled(active ~= nil)
         return
     end
@@ -873,34 +867,57 @@ local function UpdatePage()
         lv[#lv + 1] = " "; tx[#tx + 1] = " "
         for k = 1, #bL do lv[#lv + 1] = bL[k]; tx[#tx + 1] = bT[k] end
     end
-    page.orderLvl:SetText(table.concat(lv, "\n"))
-    page.order:SetText(table.concat(tx, "\n"))
-    page.orderChild:SetHeight((page.order:GetStringHeight() or 300) + 10)
+    page.SetOrder(lv, tx)
 end
 T.RefreshPage = function() if page and page:IsShown() then UpdatePage() end end
+
+-- Layout: categories and build list (left) | build details, buttons, settings (centre) | talent order (right)
+local PAGE_LEFT_W, PAGE_RIGHT_W = 236, 300
 
 local function BuildPage(parent)
     page = CreateFrame("Frame", nil, parent)
     page:SetAllPoints()
     page:Hide()
 
-    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", 30, -20)
+    -- Columns
+    local L = CreateFrame("Frame", nil, page)
+    L:SetPoint("TOPLEFT"); L:SetPoint("BOTTOMLEFT"); L:SetWidth(PAGE_LEFT_W)
+    local R = CreateFrame("Frame", nil, page)
+    R:SetPoint("TOPRIGHT"); R:SetPoint("BOTTOMRIGHT"); R:SetWidth(PAGE_RIGHT_W)
+    local C = CreateFrame("Frame", nil, page)
+    C:SetPoint("TOPLEFT", L, "TOPRIGHT"); C:SetPoint("BOTTOMRIGHT", R, "BOTTOMLEFT")
+    for _, col in ipairs({ L, R }) do
+        local shade = col:CreateTexture(nil, "BACKGROUND"); shade:SetAllPoints(); shade:SetColorTexture(0, 0, 0, 0.25)
+    end
+    local function Divider(col, side)
+        local t = col:CreateTexture(nil, "BORDER"); t:SetColorTexture(1, 1, 1, 0.08); t:SetWidth(1)
+        t:SetPoint("TOP" .. side, 0, 0); t:SetPoint("BOTTOM" .. side, 0, 0)
+    end
+    Divider(L, "RIGHT"); Divider(R, "LEFT")
+
+    -- ==========================================
+    -- LEFT: TITLE, CATEGORIES, BUILD LIST
+    -- ==========================================
+    local innerW = PAGE_LEFT_W - 24
+    local title = L:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", 12, -12)
     title:SetText("Talent Builds")
     title:SetTextColor(1, 0.82, 0)
 
-    local sub = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local sub = L:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     sub:SetText("Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it.")
-    sub:SetWidth(600); sub:SetJustifyH("LEFT")
+    sub:SetWidth(innerW); sub:SetJustifyH("LEFT"); sub:SetTextColor(0.7, 0.7, 0.7)
 
-    -- Category rows (left column): stage, then role, then Solo / Dungeon for leveling builds.
+    -- Category rows: stage, then role, then Solo / Dungeon for leveling builds.
     page.catButtons = {}
-    local function CatRow(items, field, y, width)
+    local CAT_TOP = -86
+    local function CatRow(items, field, y)
+        local width = (innerW - (#items - 1) * 4) / #items
         for i, c in ipairs(items) do
-            local btn = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+            local btn = CreateFrame("Button", nil, L, "UIPanelButtonTemplate")
             btn:SetSize(width, 22)
-            btn:SetPoint("TOPLEFT", 30 + (i - 1) * (width + 4), y)
+            btn:SetPoint("TOPLEFT", 12 + (i - 1) * (width + 4), y)
             btn.field, btn.key, btn.label = field, c.key, c.short or c.label
             local fs = btn:GetFontString()
             if fs then fs:SetFontObject("GameFontHighlightSmall") end
@@ -920,15 +937,15 @@ local function BuildPage(parent)
             table.insert(page.catButtons, btn)
         end
     end
-    CatRow(STAGES, "stage", -70, 64)
-    CatRow(ROLES, "role", -96, 64)
-    CatRow(MODES, "mode", -122, 98)
+    CatRow(STAGES, "stage", CAT_TOP)
+    CatRow(ROLES, "role", CAT_TOP - 26)
+    CatRow(MODES, "mode", CAT_TOP - 52)
 
     page.list = {}
     for k = 1, LIST_BUTTONS do
-        local btn = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
-        btn:SetSize(200, 34)
-        btn:SetPoint("TOPLEFT", 30, LIST_TOP - (k - 1) * 38)
+        local btn = CreateFrame("Button", nil, L, "UIPanelButtonTemplate")
+        btn:SetSize(innerW, 34)
+        btn:SetPoint("TOPLEFT", 12, LIST_TOP - (k - 1) * 38)
         btn:SetScript("OnClick", function(self) selectedId = self.id; UpdatePage() end)
         local fs = btn:GetFontString()
         if fs then
@@ -940,63 +957,92 @@ local function BuildPage(parent)
         page.list[k] = btn
     end
 
-    local x = 255
-    page.name = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    page.name:SetPoint("TOPLEFT", x, -80)
-    page.name:SetPoint("RIGHT", page, "RIGHT", -28, 0) -- width follows the window
+    -- ==========================================
+    -- CENTRE: BUILD DETAILS, USE / CLEAR, SETTINGS
+    -- ==========================================
+    page.name = C:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    page.name:SetPoint("TOPLEFT", 16, -14)
+    page.name:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.name:SetJustifyH("LEFT")
 
-    page.info = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    page.info = C:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     page.info:SetPoint("TOPLEFT", page.name, "BOTTOMLEFT", 0, -8)
-    page.info:SetPoint("RIGHT", page, "RIGHT", -28, 0)
+    page.info:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.info:SetJustifyH("LEFT"); page.info:SetSpacing(3)
 
-    page.use = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
-    page.use:SetSize(130, 22)
-    page.use:SetPoint("TOPLEFT", 30, LIST_TOP)
+    page.use = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
+    page.use:SetSize(140, 24)
+    page.use:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -16)
     page.use:SetText("Use This Build")
     page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId) end; UpdatePage() end)
 
-    page.clear = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
-    page.clear:SetSize(56, 22)
-    page.clear:SetPoint("LEFT", page.use, "RIGHT", 4, 0)
+    page.clear = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
+    page.clear:SetSize(70, 24)
+    page.clear:SetPoint("LEFT", page.use, "RIGHT", 6, 0)
     page.clear:SetText("Clear")
     page.clear:SetScript("OnClick", function() T.SetBuild(nil); UpdatePage() end)
 
-    -- Settings
+    -- Settings, pinned to the bottom of the centre column
+    local setHdr = C:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    setHdr:SetPoint("BOTTOMLEFT", 16, 112)
+    setHdr:SetText("Settings")
     local function Toggle(label, key, anchor, onChange)
-        local box = CreateFrame("CheckButton", nil, page, "ChatConfigCheckButtonTemplate")
-        box:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -8)
+        local box = CreateFrame("CheckButton", nil, C, "ChatConfigCheckButtonTemplate")
+        box:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
         box.Text:SetText(label); box.Text:SetTextColor(0.9, 0.9, 0.9)
         box:SetScript("OnShow", function(self) self:SetChecked(db[key]) end)
         box:SetChecked(db[key])
         box:SetScript("OnClick", function(self) db[key] = self:GetChecked() and true or false; if onChange then onChange() end end)
         return box
     end
-    local link = Toggle("Weights follow the build", "linkGear", page.use, ApplyGearLink)
+    local link = Toggle("Weights follow the build", "linkGear", setHdr, ApplyGearLink)
     local rem = Toggle("Level-up reminders", "remind", link)
     Toggle("Panel beside the talent window", "showPanel", rem, QueueRefresh)
 
-    -- Scrollable talent order
-    -- Scrollable talent order: a level column and a talent column, so they line up.
-    local scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate")
-    scroll:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -16)
-    scroll:SetPoint("BOTTOMRIGHT", -36, 20)
+    -- ==========================================
+    -- RIGHT: TALENT ORDER (scrolls the full height)
+    -- ==========================================
+    local orderHdr = R:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    orderHdr:SetPoint("TOPLEFT", 12, -14)
+    orderHdr:SetText("Talent Order")
+    local orderSub = R:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    orderSub:SetPoint("TOPLEFT", orderHdr, "BOTTOMLEFT", 0, -3)
+    orderSub:SetText("|cff55ff55Taken|r  |cffffd100Next|r  |cffaaaaaaLater|r")
+
+    -- A level column and a talent column, so they line up.
+    local scroll = CreateFrame("ScrollFrame", nil, R, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", orderSub, "BOTTOMLEFT", 0, -10)
+    scroll:SetPoint("BOTTOMRIGHT", -30, 12)
     page.orderChild = CreateFrame("Frame", nil, scroll)
-    page.orderChild:SetSize(280, 400)
+    page.orderChild:SetSize(PAGE_RIGHT_W - 42, 400)
     scroll:SetScrollChild(page.orderChild)
-    page.orderLvl = page.orderChild:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    page.orderLvl:SetPoint("TOPLEFT", 0, 0)
-    page.orderLvl:SetWidth(52); page.orderLvl:SetJustifyH("LEFT"); page.orderLvl:SetSpacing(3)
-    page.order = page.orderChild:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    page.order:SetPoint("TOPLEFT", 56, 0)
-    page.order:SetWidth(220); page.order:SetJustifyH("LEFT"); page.order:SetSpacing(3)
-    -- The scroll area's width comes from the window; size the columns to it.
-    scroll:SetScript("OnSizeChanged", function(_, w)
-        if w and w > 120 then
-            page.orderChild:SetWidth(w)
-            page.order:SetWidth(w - 58)
+    -- One row per talent line (a level cell and a talent cell), so a long talent name can't
+    -- push the lines below it away from their levels; it's cut short on its own row instead.
+    page.orderRows = {}
+    local ROW_H = 15
+    function page.SetOrder(lvls, lines)
+        for i = 1, math.max(#lines, #page.orderRows) do
+            local row = page.orderRows[i]
+            if lines[i] then
+                if not row then
+                    row = CreateFrame("Frame", nil, page.orderChild); row:SetHeight(ROW_H)
+                    row:SetPoint("TOPLEFT", 0, -(i - 1) * ROW_H); row:SetPoint("RIGHT", page.orderChild, "RIGHT", 0, 0)
+                    row.Lvl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                    row.Lvl:SetPoint("LEFT", 0, 0); row.Lvl:SetWidth(52); row.Lvl:SetJustifyH("LEFT"); row.Lvl:SetWordWrap(false)
+                    row.Text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                    row.Text:SetPoint("LEFT", 56, 0); row.Text:SetPoint("RIGHT", 0, 0); row.Text:SetJustifyH("LEFT"); row.Text:SetWordWrap(false)
+                    page.orderRows[i] = row
+                end
+                row.Lvl:SetText(lvls[i] or ""); row.Text:SetText(lines[i]); row:Show()
+            elseif row then
+                row:Hide()
+            end
         end
+        page.orderChild:SetHeight(math.max(1, #lines * ROW_H + 10))
+    end
+    -- The scroll area's width comes from the window; the rows stretch with it.
+    scroll:SetScript("OnSizeChanged", function(_, w)
+        if w and w > 120 then page.orderChild:SetWidth(w) end
     end)
 
     page:SetScript("OnShow", UpdatePage)
