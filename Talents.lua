@@ -29,6 +29,10 @@ local function Expand(order)
 end
 
 function T.RegisterBuild(b)
+    -- Builds page category: stage raid/leveling/farming, role tank/healer/dps, mode solo/dungeon (leveling only)
+    b.stage = b.stage or "leveling"
+    b.role = b.role or "dps"
+    if b.stage == "leveling" then b.mode = b.mode or "solo" else b.mode = nil end
     b.points = Expand(b.order)
     b.levelOf = function(i) return i + FIRST_POINT_LEVEL - 1 end
     local r = b.respec
@@ -90,6 +94,35 @@ local function ClassBuilds()
         if b.class == cls then table.insert(list, b) end
     end
     return list
+end
+
+-- Build categories, in the order the Builds page and /sgjt list show them:
+-- Max Level (Raid) by role, Leveling by role and then Solo / Dungeon, or Farming by role.
+local STAGES = { { key = "raid", label = "Max Level (Raid)", short = "Max Level" }, { key = "leveling", label = "Leveling" }, { key = "farming", label = "Farming" } }
+local ROLES = { { key = "tank", label = "Tank" }, { key = "healer", label = "Healer" }, { key = "dps", label = "DPS" } }
+local MODES = { { key = "solo", label = "Solo" }, { key = "dungeon", label = "Dungeon" } }
+local LABEL = {}
+for _, t in ipairs({ STAGES, ROLES, MODES }) do for _, c in ipairs(t) do LABEL[c.key] = c.label end end
+
+-- mode is ignored for raid builds; a nil role or mode matches any.
+local function InCategory(b, stage, role, mode)
+    return b.stage == stage and (role == nil or b.role == role)
+        and (stage ~= "leveling" or mode == nil or b.mode == mode)
+end
+
+local function CategoryBuilds(stage, role, mode)
+    local list = {}
+    for _, b in ipairs(ClassBuilds()) do
+        if InCategory(b, stage, role, mode) then table.insert(list, b) end
+    end
+    return list
+end
+
+-- "Leveling - DPS - Solo" / "Max Level (Raid) - Tank"
+local function CategoryName(stage, role, mode)
+    local s = LABEL[stage] .. " - " .. LABEL[role]
+    if stage == "leveling" and mode then s = s .. " - " .. LABEL[mode] end
+    return s
 end
 
 -- =========================================================================
@@ -589,9 +622,19 @@ local function ListBuilds()
     if #list == 0 then Print("No builds for your class yet."); return end
     local active = GetActiveBuild()
     Print("Builds for your class:")
-    for _, b in ipairs(list) do
-        local mark = (active and active.id == b.id) and " |cff00ff00(active)|r" or ""
-        print(string.format("   |cffffd100%s|r  %s%s", b.short or b.id, b.name, mark))
+    for _, st in ipairs(STAGES) do
+        for _, ro in ipairs(ROLES) do
+            for _, mo in ipairs(st.key == "leveling" and MODES or { {} }) do
+                local group = CategoryBuilds(st.key, ro.key, mo.key)
+                if #group > 0 then
+                    print("  " .. CategoryName(st.key, ro.key, mo.key) .. ":")
+                    for _, b in ipairs(group) do
+                        local mark = (active and active.id == b.id) and " |cff00ff00(active)|r" or ""
+                        print(string.format("     |cffffd100%s|r  %s%s", b.short or b.id, b.name, mark))
+                    end
+                end
+            end
+        end
     end
     print("   Use |cffffffff/sgjt set <name>|r, e.g. /sgjt set " .. (list[1].short or list[1].id))
 end
@@ -661,7 +704,24 @@ end
 -- 7b. PAGE IN THE GEAR JUDGE WINDOW (MSC.RegisterPluginTab)
 -- =========================================================================
 local page, selectedId
-local LIST_BUTTONS = 10
+local LIST_BUTTONS = 8
+local LIST_TOP = -152      -- the build list starts below the three category rows
+local cat                  -- { stage, role, mode } shown on the page
+
+-- Start on the active build's category; otherwise Max Level at 60 (Leveling if the
+-- class has no raid builds yet), else
+-- Leveling with the role of the class's first leveling build (its Solo Leveling build).
+local function DefaultCategory()
+    local b = GetActiveBuild()
+    if b then return { stage = b.stage, role = b.role, mode = b.mode or "solo" } end
+    local stage = ((UnitLevel("player") or 0) >= 60) and "raid" or "leveling"
+    if #CategoryBuilds(stage) == 0 then stage = (stage == "raid") and "leveling" or "raid" end
+    local role, mode = "dps", "solo"
+    for _, x in ipairs(ClassBuilds()) do
+        if x.stage == stage then role = x.role; mode = x.mode or "solo"; break end
+    end
+    return { stage = stage, role = role, mode = mode }
+end
 
 -- A readable name for a Gear Judge weight profile key.
 local function ProfileLabel(key)
@@ -670,9 +730,15 @@ local function ProfileLabel(key)
     if not key then return "automatic" end
     if pn then
         if pn[key] then return pn[key] end
+        -- A leveling role names its level bands ("Holy: Solo Leveling (21-40)"); use the highest band's
+        -- name without the levels, so the label is the same every time (pairs() order isn't).
+        local best, bestLo
         for k, v in pairs(pn) do
-            if k:match("^" .. key .. "_%d+_%d+$") then return (v:gsub("%s*%(%d+%-%d+%)$", "")) end
+            local lo = k:match("^" .. key .. "_(%d+)_%d+$")
+            lo = tonumber(lo)
+            if lo and (not bestLo or lo > bestLo) then best, bestLo = v, lo end
         end
+        if best then return (best:gsub("%s*%(%d+%-%d+%)$", "")) end
     end
     return key
 end
@@ -712,10 +778,24 @@ end
 
 local function UpdatePage()
     if not page then return end
-    local list = ClassBuilds()
     local active = GetActiveBuild()
-    if not (selectedId and T.Builds[selectedId] and T.Builds[selectedId].class == PlayerClass()) then
-        selectedId = (active and active.id) or (list[1] and list[1].id)
+    cat = cat or DefaultCategory()
+    local list = CategoryBuilds(cat.stage, cat.role, cat.mode)
+    local sel = selectedId and T.Builds[selectedId]
+    if not (sel and sel.class == PlayerClass() and InCategory(sel, cat.stage, cat.role, cat.mode)) then
+        selectedId = (active and InCategory(active, cat.stage, cat.role, cat.mode) and active.id) or (list[1] and list[1].id)
+    end
+    -- Category buttons: the chosen one stays lit; each shows how many builds it holds.
+    for _, btn in ipairs(page.catButtons) do
+        local n
+        if btn.field == "stage" then n = #CategoryBuilds(btn.key)
+        elseif btn.field == "role" then n = #CategoryBuilds(cat.stage, btn.key)
+        else n = #CategoryBuilds("leveling", cat.role, btn.key) end
+        local grey = n > 0 and "" or "|cff888888"
+        if btn.field == "stage" then btn:SetText(grey .. btn.label)  -- three across: no room for a count
+        else btn:SetText(string.format("%s%s (%d)", grey, btn.label, n)) end
+        if cat[btn.field] == btn.key then btn:LockHighlight() else btn:UnlockHighlight() end
+        btn:SetShown(btn.field ~= "mode" or cat.stage == "leveling")
     end
     local lastShown
     for k, btn in ipairs(page.list) do
@@ -734,13 +814,14 @@ local function UpdatePage()
 
     page.use:ClearAllPoints()
     if lastShown then page.use:SetPoint("TOPLEFT", lastShown, "BOTTOMLEFT", 0, -14)
-    else page.use:SetPoint("TOPLEFT", 30, -78) end
+    else page.use:SetPoint("TOPLEFT", 30, LIST_TOP) end
 
     local b = selectedId and T.Builds[selectedId]
     if not b then
-        page.name:SetText("No builds for your class yet.")
-        page.info:SetText(""); page.order:SetText(""); page.orderLvl:SetText("")
-        page.use:Hide(); page.clear:Hide()
+        page.name:SetText("|cffffd100" .. CategoryName(cat.stage, cat.role, cat.mode) .. "|r")
+        page.info:SetText("No builds here for your class yet.")
+        page.order:SetText(""); page.orderLvl:SetText("")
+        page.use:Hide(); page.clear:Show(); page.clear:SetEnabled(active ~= nil)
         return
     end
     page.use:Show(); page.clear:Show()
@@ -751,7 +832,7 @@ local function UpdatePage()
     local isActive = active and active.id == b.id
     page.name:SetText((isActive and "|cff00ff00Active:|r " or "") .. "|cffffd100" .. b.name .. "|r")
 
-    local info = {}
+    local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
     if b.summary then table.insert(info, b.summary) end
     table.insert(info, " ")
     table.insert(info, "|cffffd100Gear Judge weights:|r " .. ProfileLabel(b.leveling) .. " while leveling, " .. ProfileLabel(b.endgame) .. " at 60.")
@@ -813,11 +894,41 @@ local function BuildPage(parent)
     sub:SetText("Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it.")
     sub:SetWidth(600); sub:SetJustifyH("LEFT")
 
+    -- Category rows (left column): stage, then role, then Solo / Dungeon for leveling builds.
+    page.catButtons = {}
+    local function CatRow(items, field, y, width)
+        for i, c in ipairs(items) do
+            local btn = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+            btn:SetSize(width, 22)
+            btn:SetPoint("TOPLEFT", 30 + (i - 1) * (width + 4), y)
+            btn.field, btn.key, btn.label = field, c.key, c.short or c.label
+            local fs = btn:GetFontString()
+            if fs then fs:SetFontObject("GameFontHighlightSmall") end
+            btn:SetScript("OnClick", function(self)
+                cat = cat or DefaultCategory()
+                cat[self.field] = self.key
+                -- Land on a group that has builds: keep the role/mode if it has any, else the first that does.
+                if self.field == "stage" and #CategoryBuilds(cat.stage, cat.role) == 0 then
+                    for _, r in ipairs(ROLES) do if #CategoryBuilds(cat.stage, r.key) > 0 then cat.role = r.key; break end end
+                end
+                if cat.stage == "leveling" and self.field ~= "mode" and #CategoryBuilds("leveling", cat.role, cat.mode) == 0 then
+                    for _, m in ipairs(MODES) do if #CategoryBuilds("leveling", cat.role, m.key) > 0 then cat.mode = m.key; break end end
+                end
+                selectedId = nil
+                UpdatePage()
+            end)
+            table.insert(page.catButtons, btn)
+        end
+    end
+    CatRow(STAGES, "stage", -70, 64)
+    CatRow(ROLES, "role", -96, 64)
+    CatRow(MODES, "mode", -122, 98)
+
     page.list = {}
     for k = 1, LIST_BUTTONS do
         local btn = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
         btn:SetSize(200, 34)
-        btn:SetPoint("TOPLEFT", 30, -78 - (k - 1) * 38)
+        btn:SetPoint("TOPLEFT", 30, LIST_TOP - (k - 1) * 38)
         btn:SetScript("OnClick", function(self) selectedId = self.id; UpdatePage() end)
         local fs = btn:GetFontString()
         if fs then
@@ -842,7 +953,7 @@ local function BuildPage(parent)
 
     page.use = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
     page.use:SetSize(130, 22)
-    page.use:SetPoint("TOPLEFT", 30, -78)
+    page.use:SetPoint("TOPLEFT", 30, LIST_TOP)
     page.use:SetText("Use This Build")
     page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId) end; UpdatePage() end)
 
