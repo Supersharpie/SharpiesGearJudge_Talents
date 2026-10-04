@@ -25,15 +25,15 @@ jobs:
       - name: Package Addon (Zip)
         run: |
           # Create a folder with the addon's exact name
-          mkdir -p SharpiesGearJudge_XP
+          mkdir -p SharpiesGearJudge_Talents
           
           # Copy your addon files into the folder. 
           # Modify these cp commands if you have specific folders to exclude or include!
-          cp *.lua *.toc *.xml SharpiesGearJudge_XP/ 2>/dev/null || true
-          cp -r Media/ Fonts/ SharpiesGearJudge_XP/ 2>/dev/null || true
+          cp *.lua *.toc *.xml SharpiesGearJudge_Talents/ 2>/dev/null || true
+          cp -r Media/ Fonts/ SharpiesGearJudge_Talents/ 2>/dev/null || true
           
           # Zip the folder
-          zip -r SharpiesGearJudge_XP.zip SharpiesGearJudge_XP/
+          zip -r SharpiesGearJudge_Talents.zip SharpiesGearJudge_Talents/
 
       - name: Upload to CurseForge
         env:
@@ -109,7 +109,7 @@ jobs:
             "https://wow.curseforge.com/api/projects/$PROJECT_ID/upload-file" \
             -H "x-api-token: $CF_API_TOKEN" \
             -F "metadata=<metadata.json" \
-            -F "file=@SharpiesGearJudge_XP.zip")
+            -F "file=@SharpiesGearJudge_Talents.zip")
           
           echo "HTTP Status: $HTTP_STATUS"
           cat response.json
