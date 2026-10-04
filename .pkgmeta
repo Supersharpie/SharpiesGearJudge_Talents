@@ -1,0 +1,10 @@
+package-as: SharpiesGearJudge_Talents
+
+manual-changelog:
+  filename: RELEASE_NOTES.md
+  markup-type: markdown
+
+ignore:
+  - RELEASE_NOTES.md
+  - "Sharpie's Gear Judge Talents.png"
+  - "Sharpie's Gear Judge Talents (1024).png"
