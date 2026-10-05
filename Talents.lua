@@ -7,6 +7,7 @@
 
 local addonName, T = ...
 _G.SGJ_Talents = T
+local L = (_G.MSC and _G.MSC.L) or setmetatable({}, { __index = function(t, k) return k end })
 
 local PREFIX = "|cffa335ee[SGJ Talents]|r "
 local FIRST_POINT_LEVEL = 10      -- point k of a build is spent at level 9 + k
@@ -120,21 +121,44 @@ end
 
 -- "Leveling - DPS - Solo" / "Max Level (Raid) - Tank"
 local function CategoryName(stage, role, mode)
-    local s = LABEL[stage] .. " - " .. LABEL[role]
-    if stage == "leveling" and mode then s = s .. " - " .. LABEL[mode] end
+    local s = L[LABEL[stage]] .. " - " .. L[LABEL[role]]
+    if stage == "leveling" and mode then s = s .. " - " .. L[LABEL[mode]] end
     return s
 end
 
 -- =========================================================================
 -- 2. READING THE TALENT TREE
 -- =========================================================================
+-- The game reports talent names in the player's language; builds use English.
+-- Map each translated talent name back to the English one (the Locales files hold
+-- the game's own names), so non-English clients match builds too.
+local englishName
+local function ToEnglish(name)
+    if not englishName then
+        englishName = {}
+        for _, b in pairs(T.Builds) do
+            for _, list in ipairs({ b.points or {}, (b.respec and b.respec.points) or {} }) do
+                for _, n in ipairs(list) do englishName[L[n]] = n end
+            end
+        end
+    end
+    return englishName[name] or name
+end
+
 -- name -> { rank, max, nodeID, tab }, read through Gear Judge's trait walker.
+-- Names are the builds' English names (see ToEnglish).
+-- The result is cached until talents change (MarkTreeDirty); callers must not modify it.
+local cachedTree, treeDirty = nil, true
+
+local function MarkTreeDirty() treeDirty = true end
+
 local function ReadTree()
+    if not treeDirty and cachedTree then return cachedTree end
     local MSC = GetMSC()
     if not (MSC and MSC.ForEachTraitTalent) then return nil end
     local tree = {}
     local ok, found = pcall(MSC.ForEachTraitTalent, function(name, rank, tab, node)
-        tree[name] = {
+        tree[ToEnglish(name)] = {
             rank = rank or 0,
             max = node and tonumber(node.maxRanks) or nil,
             nodeID = node and node.ID or nil,
@@ -142,6 +166,7 @@ local function ReadTree()
         }
     end)
     if not ok or not found then return nil end
+    cachedTree, treeDirty = tree, false
     return tree
 end
 
@@ -252,8 +277,8 @@ end
 
 local function TalentLabel(entry, tree)
     local max = entry.max or (tree and tree[entry.name] and tree[entry.name].max)
-    if max then return string.format("%s (%d/%d)", entry.name, entry.rank, max) end
-    return string.format("%s (rank %d)", entry.name, entry.rank)
+    if max then return string.format("%s (%d/%d)", L[entry.name], entry.rank, max) end
+    return string.format(L["%s (rank %d)"], L[entry.name], entry.rank)
 end
 
 -- =========================================================================
@@ -322,7 +347,7 @@ end
 
 local function FormatOff(off)
     local parts = {}
-    for _, o in ipairs(off) do table.insert(parts, o.name .. " +" .. o.extra) end
+    for _, o in ipairs(off) do table.insert(parts, L[o.name] .. " +" .. o.extra) end
     return table.concat(parts, ", ")
 end
 
@@ -350,7 +375,7 @@ local function CreatePanel()
 
     local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("TOPLEFT", 10, -10)
-    title:SetText("SGJ Talent Build")
+    title:SetText(L["SGJ Talent Build"])
 
     local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 0, 0)
@@ -370,7 +395,7 @@ local function CreatePanel()
     local change = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     change:SetSize(110, 22)
     change:SetPoint("BOTTOMLEFT", 8, 8)
-    change:SetText("Change Build")
+    change:SetText(L["Change Build"])
     change:SetScript("OnClick", function() panel.picking = not panel.picking; RefreshPanel() end)
     panel.change = change
 
@@ -402,7 +427,7 @@ function RefreshPanel()
 
     for _, btn in ipairs(panel.pick) do btn:Hide() end
     if panel.picking then
-        panel.buildName:SetText("Choose a build:")
+        panel.buildName:SetText(L["Choose a build:"])
         panel.body:SetText("")
         local list = ClassBuilds()
         local n = 0
@@ -410,73 +435,73 @@ function RefreshPanel()
             n = n + 1
             local btn = panel.pick[n]
             if not btn then break end
-            btn:SetText(cb.name)
+            btn:SetText(L[cb.name])
             btn:SetScript("OnClick", function() T.SetBuild(cb.id); panel.picking = false; RefreshPanel() end)
             btn:Show()
         end
         if panel.pick[n + 1] then
             local btn = panel.pick[n + 1]
-            btn:SetText("No build")
+            btn:SetText(L["No build"])
             btn:SetScript("OnClick", function() T.SetBuild(nil); panel.picking = false; RefreshPanel() end)
             btn:Show()
         end
-        panel.change:SetText("Back")
+        panel.change:SetText(L["Back"])
         panel:SetHeight(math.max(140, 70 + (n + 1) * 22 + 30))
         return
     end
-    panel.change:SetText("Change Build")
+    panel.change:SetText(L["Change Build"])
 
     if not b then
-        panel.buildName:SetText("|cff999999No build selected|r")
-        local hint = "Click Change Build to pick one."
+        panel.buildName:SetText(L["|cff999999No build selected|r"])
+        local hint = L["Click Change Build to pick one."]
         local suggested = tree and T.SuggestBuild(tree)
-        if suggested then hint = "Your talents follow |cffffd100" .. suggested.name .. "|r.\n" .. hint end
+        if suggested then hint = string.format(L["Your talents follow |cffffd100%s|r."], L[suggested.name]) .. "\n" .. hint end
         panel.body:SetText(hint)
         panel:SetHeight(110)
         return
     end
 
     if not tree then
-        panel.buildName:SetText("|cffffd100" .. b.name .. "|r")
-        panel.body:SetText("Talents could not be read yet.")
+        panel.buildName:SetText("|cffffd100" .. L[b.name] .. "|r")
+        panel.body:SetText(L["Talents could not be read yet."])
         panel:SetHeight(110)
         return
     end
 
     local view, respecDue = T.ActiveView(b, tree)
-    panel.buildName:SetText("|cffffd100" .. view.name .. "|r")
+    panel.buildName:SetText("|cffffd100" .. L[view.name] .. "|r")
     local st = T.Evaluate(view, tree)
     local lines = {}
     if respecDue then
-        table.insert(lines, string.format("|cff00ff00Time to respec:|r reset your talents at a trainer, then follow |cffffd100%s|r.", b.respec.name))
+        table.insert(lines, string.format(L["|cff00ff00Time to respec:|r reset your talents at a trainer, then follow |cffffd100%s|r."], L[b.respec.name]))
         table.insert(lines, " ")
     elseif b.respec and view == b then
-        table.insert(lines, string.format("|cff999999Respec at %d to %s.|r", b.respec.level, b.respec.name))
+        table.insert(lines, string.format(L["|cff999999Respec at %d to %s.|r"], b.respec.level, L[b.respec.name]))
         table.insert(lines, " ")
     end
     if respecDue then
         -- nothing more to plan on the old talents
     elseif st.complete and b.respec and view == b then
-        table.insert(lines, string.format("|cff00ff00Done until %d.|r Then respec to |cffffd100%s|r.", b.respec.level, b.respec.name))
+        table.insert(lines, string.format(L["|cff00ff00Done until %d.|r Then respec to |cffffd100%s|r."], b.respec.level, L[b.respec.name]))
     elseif st.complete then
-        table.insert(lines, "|cff00ff00Build complete.|r")
+        table.insert(lines, L["|cff00ff00Build complete.|r"])
     else
-        local unspentText = (st.unspent > 0) and string.format("|cff00ff00%d point%s to spend|r", st.unspent, st.unspent == 1 and "" or "s") or "No unspent points"
-        table.insert(lines, string.format("On track: %d / %d   %s", st.onTrack, #view.points, unspentText))
+        local unspentText = (st.unspent > 0) and string.format(st.unspent == 1 and L["|cff00ff00%d point to spend|r"] or L["|cff00ff00%d points to spend|r"], st.unspent) or L["No unspent points"]
+        table.insert(lines, string.format(L["On track: %d / %d   %s"], st.onTrack, #view.points, unspentText))
         table.insert(lines, " ")
-        table.insert(lines, "|cffffd100Next talents|r")
+        table.insert(lines, L["|cffffd100Next talents|r"])
         for i, u in ipairs(st.upcoming) do
             local color = (i == 1) and "|cff00ff00" or "|cffffffff"
-            table.insert(lines, string.format("%sL%d  %s|r", color, view.levelOf(u.index), TalentLabel(u, tree)))
+            table.insert(lines, string.format("%s%s  %s|r", color, string.format(L["L%d"], view.levelOf(u.index)), TalentLabel(u, tree)))
         end
     end
     if #st.off > 0 and not respecDue then
         table.insert(lines, " ")
-        table.insert(lines, "|cffff6060Off-build: " .. FormatOff(st.off) .. "|r")
+        table.insert(lines, string.format(L["|cffff6060Off-build: %s|r"], FormatOff(st.off)))
     end
     if view.summary then
         table.insert(lines, " ")
-        table.insert(lines, "|cff999999" .. view.summary .. "|r")
+        table.insert(lines, "|cff999999" .. L[view.summary] .. "|r")
     end
     panel.body:SetText(table.concat(lines, "\n"))
     panel:SetHeight(math.max(120, (panel.body:GetStringHeight() or 100) + 80))
@@ -515,12 +540,22 @@ local function RefreshTalentWindow()
     if button and button:IsVisible() then ShowGlowOn(button) else HideGlow() end
 end
 
+local refreshPending = false
+
 local function QueueRefresh()
     if C_Timer and C_Timer.After then
-        C_Timer.After(0.1, RefreshTalentWindow)
+        if refreshPending then return end
+        refreshPending = true
+        C_Timer.After(0.1, function() refreshPending = false; RefreshTalentWindow() end)
     else
         RefreshTalentWindow()
     end
+end
+
+-- The talent window reloaded its tree: re-read our copy too.
+local function OnTreeLoaded()
+    MarkTreeDirty()
+    QueueRefresh()
 end
 
 local function HookTalentWindow()
@@ -535,7 +570,7 @@ local function HookTalentWindow()
     tf:HookScript("OnShow", QueueRefresh)
     tf:HookScript("OnHide", QueueRefresh)
     if type(tf.LoadTalentTreeInternal) == "function" then
-        pcall(hooksecurefunc, tf, "LoadTalentTreeInternal", QueueRefresh)
+        pcall(hooksecurefunc, tf, "LoadTalentTreeInternal", OnTreeLoaded)
     end
     QueueRefresh()
 end
@@ -553,18 +588,18 @@ local function Remind(reason)
     if not tree then return end
     local view, respecDue = T.ActiveView(b, tree)
     if respecDue then
-        Print(string.format("Level %d: time to respec. Reset your talents at a trainer, then follow |cffffd100%s|r.", b.respec.level, b.respec.name))
+        Print(string.format(L["Level %d: time to respec. Reset your talents at a trainer, then follow |cffffd100%s|r."], b.respec.level, L[b.respec.name]))
         if reason == "level" and UIErrorsFrame then
-            UIErrorsFrame:AddMessage("SGJ: time to respec to " .. b.respec.name, 0.3, 1, 0.3)
+            UIErrorsFrame:AddMessage(string.format(L["SGJ: time to respec to %s"], L[b.respec.name]), 0.3, 1, 0.3)
         end
         return
     end
     local st = T.Evaluate(view, tree)
     if st.complete or st.unspent <= 0 or not st.nextName then return end
     local nextEntry = st.upcoming[1] or { name = st.nextName, rank = st.nextRank }
-    local msg = string.format("Next talent: |cff00ff00%s|r  (%s)", TalentLabel(nextEntry, tree), view.name)
+    local msg = string.format(L["Next talent: |cff00ff00%s|r  (%s)"], TalentLabel(nextEntry, tree), L[view.name])
     if reason == "level" and UIErrorsFrame then
-        UIErrorsFrame:AddMessage("SGJ: next talent " .. TalentLabel(nextEntry, tree), 0.3, 1, 0.3)
+        UIErrorsFrame:AddMessage(string.format(L["SGJ: next talent %s"], TalentLabel(nextEntry, tree)), 0.3, 1, 0.3)
     end
     Print(msg)
 end
@@ -579,7 +614,7 @@ local function CheckOffBuild()
     local st = T.Evaluate(view, tree)
     local key = FormatOff(st.off)
     if key ~= "" and key ~= lastOffKey and lastOffKey ~= nil then
-        Print("|cffff6060Off-build:|r " .. key .. " is not part of " .. view.name .. ".")
+        Print(string.format(L["|cffff6060Off-build:|r %s is not part of %s."], key, L[view.name]))
     end
     lastOffKey = key
 end
@@ -589,21 +624,21 @@ end
 -- =========================================================================
 function T.SetBuild(id)
     if id and not (T.Builds[id] and T.Builds[id].class == PlayerClass()) then
-        Print("Unknown build for your class: " .. tostring(id))
+        Print(string.format(L["Unknown build for your class: %s"], tostring(id)))
         return
     end
     charDB.build = id
     lastOffKey = nil
     ApplyGearLink()
     if id then
-        Print("Build set to |cffffd100" .. T.Builds[id].name .. "|r.")
+        Print(string.format(L["Build set to |cffffd100%s|r."], L[T.Builds[id].name]))
         CheckOffBuild()
         if lastOffKey and lastOffKey ~= "" then
-            Print("|cffff6060Already off-build:|r " .. lastOffKey .. ".")
+            Print(string.format(L["|cffff6060Already off-build:|r %s."], lastOffKey))
         end
         Remind("set")
     else
-        Print("Build cleared.")
+        Print(L["Build cleared."])
     end
     QueueRefresh()
 end
@@ -619,24 +654,24 @@ end
 
 local function ListBuilds()
     local list = ClassBuilds()
-    if #list == 0 then Print("No builds for your class yet."); return end
+    if #list == 0 then Print(L["No builds for your class yet."]); return end
     local active = GetActiveBuild()
-    Print("Builds for your class:")
+    Print(L["Builds for your class:"])
     for _, st in ipairs(STAGES) do
         for _, ro in ipairs(ROLES) do
             for _, mo in ipairs(st.key == "leveling" and MODES or { {} }) do
                 local group = CategoryBuilds(st.key, ro.key, mo.key)
                 if #group > 0 then
-                    print("  " .. CategoryName(st.key, ro.key, mo.key) .. ":")
+                    print("  " .. string.format(L["%s:"], CategoryName(st.key, ro.key, mo.key)))
                     for _, b in ipairs(group) do
-                        local mark = (active and active.id == b.id) and " |cff00ff00(active)|r" or ""
-                        print(string.format("     |cffffd100%s|r  %s%s", b.short or b.id, b.name, mark))
+                        local mark = (active and active.id == b.id) and (" " .. L["|cff00ff00(active)|r"]) or ""
+                        print(string.format("     |cffffd100%s|r  %s%s", b.short or b.id, L[b.name], mark))
                     end
                 end
             end
         end
     end
-    print("   Use |cffffffff/sgjt set <name>|r, e.g. /sgjt set " .. (list[1].short or list[1].id))
+    print("   " .. string.format(L["Use |cffffffff/sgjt set <name>|r, e.g. /sgjt set %s"], list[1].short or list[1].id))
 end
 
 local function ShowStandalone()
@@ -652,7 +687,7 @@ SLASH_SGJTALENTS1 = "/sgjt"
 SLASH_SGJTALENTS2 = "/sgjtalents"
 SlashCmdList["SGJTALENTS"] = function(msg)
     if not IsSupported() then
-        Print("This plugin needs WoW Forever's talent system and Sharpie's Gear Judge.")
+        Print(L["This plugin needs WoW Forever's talent system and Sharpie's Gear Judge."])
         return
     end
     local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
@@ -665,38 +700,39 @@ SlashCmdList["SGJTALENTS"] = function(msg)
         ListBuilds()
     elseif cmd == "set" then
         local b = FindBuild(rest)
-        if b then T.SetBuild(b.id) else Print("No build named '" .. rest .. "'. Try /sgjt list.") end
+        if b then T.SetBuild(b.id) else Print(string.format(L["No build named '%s'. Try /sgjt list."], rest)) end
     elseif cmd == "clear" or cmd == "none" then
         T.SetBuild(nil)
     elseif cmd == "next" then
-        if not GetActiveBuild() then Print("No build selected. Try /sgjt list.") return end
+        if not GetActiveBuild() then Print(L["No build selected. Try /sgjt list."]) return end
+        MarkTreeDirty()
         local tree = ReadTree()
-        if not tree then Print("Talents could not be read yet.") return end
+        if not tree then Print(L["Talents could not be read yet."]) return end
         local view, respecDue = T.ActiveView(GetActiveBuild(), tree)
         if respecDue then Remind("next") return end
         local st = T.Evaluate(view, tree)
         if st.complete and view.respec and view == GetActiveBuild() then
-            Print(string.format("Done until %d. Then respec to |cffffd100%s|r.", view.respec.level, view.respec.name)) return
+            Print(string.format(L["Done until %d. Then respec to |cffffd100%s|r."], view.respec.level, L[view.respec.name])) return
         end
-        if st.complete then Print("Build complete.") return end
-        Print(string.format("Next talent: |cff00ff00%s|r (on track %d/%d, %d unspent)",
+        if st.complete then Print(L["Build complete."]) return end
+        Print(string.format(L["Next talent: |cff00ff00%s|r (on track %d/%d, %d unspent)"],
             TalentLabel(st.upcoming[1], tree), st.onTrack, #view.points, st.unspent))
     elseif cmd == "link" then
         db.linkGear = (rest:lower() ~= "off")
         ApplyGearLink()
-        Print("Gear Judge follows the build: " .. (db.linkGear and "|cff00ff00on|r" or "|cffff6060off|r"))
+        Print(string.format(L["Gear Judge follows the build: %s"], db.linkGear and L["|cff00ff00on|r"] or L["|cffff6060off|r"]))
     elseif cmd == "remind" then
         db.remind = (rest:lower() ~= "off")
-        Print("Level-up reminders: " .. (db.remind and "|cff00ff00on|r" or "|cffff6060off|r"))
+        Print(string.format(L["Level-up reminders: %s"], db.remind and L["|cff00ff00on|r"] or L["|cffff6060off|r"]))
     else
-        Print("Commands:")
-        print("   /sgjt - show the build panel")
-        print("   /sgjt list - builds for your class")
-        print("   /sgjt set <name> - choose a build")
-        print("   /sgjt next - the next talent to take")
-        print("   /sgjt clear - no build")
-        print("   /sgjt link on|off - Gear Judge weights follow the build")
-        print("   /sgjt remind on|off - level-up reminders")
+        Print(L["Commands:"])
+        print("   /sgjt - " .. L["show the build panel"])
+        print("   /sgjt list - " .. L["builds for your class"])
+        print("   /sgjt set " .. L["<name> - choose a build"])
+        print("   /sgjt next - " .. L["the next talent to take"])
+        print("   /sgjt clear - " .. L["no build"])
+        print("   /sgjt link on|off - " .. L["Gear Judge weights follow the build"])
+        print("   /sgjt remind on|off - " .. L["level-up reminders"])
     end
 end
 
@@ -727,7 +763,7 @@ end
 local function ProfileLabel(key)
     local MSC = GetMSC()
     local pn = MSC and MSC.CurrentClass and MSC.CurrentClass.PrettyNames
-    if not key then return "automatic" end
+    if not key then return L["automatic"] end
     if pn then
         if pn[key] then return pn[key] end
         -- A leveling role names its level bands ("Holy: Solo Leveling (21-40)"); use the highest band's
@@ -767,10 +803,10 @@ local function OrderLines(view, tree, header, stopLevel)
         elseif not nextMarked then color = "|cffffd100"; nextMarked = true
         else color = "|cffaaaaaa" end
         local l1, l2 = view.levelOf(i), view.levelOf(j)
-        local lvl = (l1 == l2) and ("L" .. l1) or ("L" .. l1 .. "-" .. l2)
+        local lvl = (l1 == l2) and string.format(L["L%d"], l1) or string.format(L["L%d-%d"], l1, l2)
         local ranks = (first == last) and tostring(last) or (first .. "-" .. last)
         table.insert(lvls, color .. lvl .. "|r")
-        table.insert(lines, string.format("%s%s %s%s|r", color, name, ranks, max and ("/" .. max) or ""))
+        table.insert(lines, string.format("%s%s %s%s|r", color, L[name], ranks, max and ("/" .. max) or ""))
         i = j + 1
     end
     return lvls, lines
@@ -792,8 +828,8 @@ local function UpdatePage()
         elseif btn.field == "role" then n = #CategoryBuilds(cat.stage, btn.key)
         else n = #CategoryBuilds("leveling", cat.role, btn.key) end
         local grey = n > 0 and "" or "|cff888888"
-        if btn.field == "stage" then btn:SetText(grey .. btn.label)  -- three across: no room for a count
-        else btn:SetText(string.format("%s%s (%d)", grey, btn.label, n)) end
+        if btn.field == "stage" then btn:SetText(grey .. L[btn.label])  -- three across: no room for a count
+        else btn:SetText(string.format("%s%s (%d)", grey, L[btn.label], n)) end
         if cat[btn.field] == btn.key then btn:LockHighlight() else btn:UnlockHighlight() end
         btn:SetShown(btn.field ~= "mode" or cat.stage == "leveling")
     end
@@ -801,7 +837,7 @@ local function UpdatePage()
         local b = list[k]
         if b then
             local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
-            btn:SetText(mark .. b.name)
+            btn:SetText(mark .. L[b.name])
             btn.id = b.id
             if b.id == selectedId then btn:LockHighlight() else btn:UnlockHighlight() end
             btn:Show()
@@ -813,7 +849,7 @@ local function UpdatePage()
     local b = selectedId and T.Builds[selectedId]
     if not b then
         page.name:SetText("|cffffd100" .. CategoryName(cat.stage, cat.role, cat.mode) .. "|r")
-        page.info:SetText("No builds here for your class yet.")
+        page.info:SetText(L["No builds here for your class yet."])
         page.SetOrder({}, {})
         page.use:Hide(); page.clear:Show(); page.clear:SetEnabled(active ~= nil)
         return
@@ -824,39 +860,39 @@ local function UpdatePage()
 
     local tree = ReadTree()
     local isActive = active and active.id == b.id
-    page.name:SetText((isActive and "|cff00ff00Active:|r " or "") .. "|cffffd100" .. b.name .. "|r")
+    page.name:SetText((isActive and (L["|cff00ff00Active:|r"] .. " ") or "") .. "|cffffd100" .. L[b.name] .. "|r")
 
     local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
-    if b.summary then table.insert(info, b.summary) end
+    if b.summary then table.insert(info, L[b.summary]) end
     table.insert(info, " ")
-    table.insert(info, "|cffffd100Gear Judge weights:|r " .. ProfileLabel(b.leveling) .. " while leveling, " .. ProfileLabel(b.endgame) .. " at 60.")
+    table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
     if b.respec then
-        table.insert(info, string.format("|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60).",
-            b.respec.level, b.respec.name, ProfileLabel(b.respec.leveling), ProfileLabel(b.respec.endgame)))
+        table.insert(info, string.format(L["|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60)."],
+            b.respec.level, L[b.respec.name], ProfileLabel(b.respec.leveling), ProfileLabel(b.respec.endgame)))
     end
     if isActive and tree then
         local view, respecDue = T.ActiveView(b, tree)
         local st = T.Evaluate(view, tree)
         table.insert(info, " ")
         if respecDue then
-            table.insert(info, "|cff00ff00Time to respec:|r reset your talents at a trainer, then follow " .. b.respec.name .. ".")
+            table.insert(info, string.format(L["|cff00ff00Time to respec:|r reset your talents at a trainer, then follow %s."], L[b.respec.name]))
         elseif st.complete and b.respec and view == b then
-            table.insert(info, string.format("|cff00ff00Done until %d.|r Then respec to %s.", b.respec.level, b.respec.name))
+            table.insert(info, string.format(L["|cff00ff00Done until %d.|r Then respec to %s."], b.respec.level, L[b.respec.name]))
         elseif st.complete then
-            table.insert(info, "|cff00ff00Build complete.|r")
+            table.insert(info, L["|cff00ff00Build complete.|r"])
         else
-            table.insert(info, string.format("On track %d / %d, %d point%s to spend. Next: |cff00ff00%s|r",
-                st.onTrack, #view.points, st.unspent, st.unspent == 1 and "" or "s", TalentLabel(st.upcoming[1], tree)))
+            table.insert(info, string.format(st.unspent == 1 and L["On track %d / %d, %d point to spend. Next: |cff00ff00%s|r"] or L["On track %d / %d, %d points to spend. Next: |cff00ff00%s|r"],
+                st.onTrack, #view.points, st.unspent, TalentLabel(st.upcoming[1], tree)))
         end
         if #st.off > 0 and not respecDue then
-            table.insert(info, "|cffff6060Off-build: " .. FormatOff(st.off) .. "|r")
+            table.insert(info, string.format(L["|cffff6060Off-build: %s|r"], FormatOff(st.off)))
         end
     end
     page.info:SetText(table.concat(info, "\n"))
 
-    local lv, tx = OrderLines(b, tree, b.respec and string.format("|cffffd100Talent order to %d|r", b.respec.level - 1) or "|cffffd100Talent order|r", b.respec and b.respec.level)
+    local lv, tx = OrderLines(b, tree, b.respec and string.format(L["|cffffd100Talent order to %d|r"], b.respec.level - 1) or L["|cffffd100Talent order|r"], b.respec and b.respec.level)
     if b.respec then
-        local lv2, tx2 = OrderLines(b.respec, tree, string.format("|cffffd100After the respec at %d|r", b.respec.level))
+        local lv2, tx2 = OrderLines(b.respec, tree, string.format(L["|cffffd100After the respec at %d|r"], b.respec.level))
         local aL, aT, bL, bT = lv, tx, lv2, tx2
         if (UnitLevel("player") or 0) >= b.respec.level then
             -- Past the respec: the new order matters now, the old one is history.
@@ -880,33 +916,33 @@ local function BuildPage(parent)
     page:Hide()
 
     -- Columns
-    local L = CreateFrame("Frame", nil, page)
-    L:SetPoint("TOPLEFT"); L:SetPoint("BOTTOMLEFT"); L:SetWidth(PAGE_LEFT_W)
+    local LCol = CreateFrame("Frame", nil, page)
+    LCol:SetPoint("TOPLEFT"); LCol:SetPoint("BOTTOMLEFT"); LCol:SetWidth(PAGE_LEFT_W)
     local R = CreateFrame("Frame", nil, page)
     R:SetPoint("TOPRIGHT"); R:SetPoint("BOTTOMRIGHT"); R:SetWidth(PAGE_RIGHT_W)
     local C = CreateFrame("Frame", nil, page)
-    C:SetPoint("TOPLEFT", L, "TOPRIGHT"); C:SetPoint("BOTTOMRIGHT", R, "BOTTOMLEFT")
-    for _, col in ipairs({ L, R }) do
+    C:SetPoint("TOPLEFT", LCol, "TOPRIGHT"); C:SetPoint("BOTTOMRIGHT", R, "BOTTOMLEFT")
+    for _, col in ipairs({ LCol, R }) do
         local shade = col:CreateTexture(nil, "BACKGROUND"); shade:SetAllPoints(); shade:SetColorTexture(0, 0, 0, 0.25)
     end
     local function Divider(col, side)
         local t = col:CreateTexture(nil, "BORDER"); t:SetColorTexture(1, 1, 1, 0.08); t:SetWidth(1)
         t:SetPoint("TOP" .. side, 0, 0); t:SetPoint("BOTTOM" .. side, 0, 0)
     end
-    Divider(L, "RIGHT"); Divider(R, "LEFT")
+    Divider(LCol, "RIGHT"); Divider(R, "LEFT")
 
     -- ==========================================
     -- LEFT: TITLE, CATEGORIES, BUILD LIST
     -- ==========================================
     local innerW = PAGE_LEFT_W - 24
-    local title = L:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = LCol:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 12, -12)
-    title:SetText("Talent Builds")
+    title:SetText(L["Talent Builds"])
     title:SetTextColor(1, 0.82, 0)
 
-    local sub = L:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local sub = LCol:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
-    sub:SetText("Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it.")
+    sub:SetText(L["Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it."])
     sub:SetWidth(innerW); sub:SetJustifyH("LEFT"); sub:SetTextColor(0.7, 0.7, 0.7)
 
     -- Category rows: stage, then role, then Solo / Dungeon for leveling builds.
@@ -915,7 +951,7 @@ local function BuildPage(parent)
     local function CatRow(items, field, y)
         local width = (innerW - (#items - 1) * 4) / #items
         for i, c in ipairs(items) do
-            local btn = CreateFrame("Button", nil, L, "UIPanelButtonTemplate")
+            local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
             btn:SetSize(width, 22)
             btn:SetPoint("TOPLEFT", 12 + (i - 1) * (width + 4), y)
             btn.field, btn.key, btn.label = field, c.key, c.short or c.label
@@ -943,7 +979,7 @@ local function BuildPage(parent)
 
     page.list = {}
     for k = 1, LIST_BUTTONS do
-        local btn = CreateFrame("Button", nil, L, "UIPanelButtonTemplate")
+        local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
         btn:SetSize(innerW, 34)
         btn:SetPoint("TOPLEFT", 12, LIST_TOP - (k - 1) * 38)
         btn:SetScript("OnClick", function(self) selectedId = self.id; UpdatePage() end)
@@ -973,19 +1009,19 @@ local function BuildPage(parent)
     page.use = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
     page.use:SetSize(140, 24)
     page.use:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -16)
-    page.use:SetText("Use This Build")
+    page.use:SetText(L["Use This Build"])
     page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId) end; UpdatePage() end)
 
     page.clear = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
     page.clear:SetSize(70, 24)
     page.clear:SetPoint("LEFT", page.use, "RIGHT", 6, 0)
-    page.clear:SetText("Clear")
+    page.clear:SetText(L["Clear"])
     page.clear:SetScript("OnClick", function() T.SetBuild(nil); UpdatePage() end)
 
     -- Settings, pinned to the bottom of the centre column
     local setHdr = C:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     setHdr:SetPoint("BOTTOMLEFT", 16, 112)
-    setHdr:SetText("Settings")
+    setHdr:SetText(L["Settings"])
     local function Toggle(label, key, anchor, onChange)
         local box = CreateFrame("CheckButton", nil, C, "ChatConfigCheckButtonTemplate")
         box:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
@@ -995,19 +1031,19 @@ local function BuildPage(parent)
         box:SetScript("OnClick", function(self) db[key] = self:GetChecked() and true or false; if onChange then onChange() end end)
         return box
     end
-    local link = Toggle("Weights follow the build", "linkGear", setHdr, ApplyGearLink)
-    local rem = Toggle("Level-up reminders", "remind", link)
-    Toggle("Panel beside the talent window", "showPanel", rem, QueueRefresh)
+    local link = Toggle(L["Weights follow the build"], "linkGear", setHdr, ApplyGearLink)
+    local rem = Toggle(L["Level-up reminders"], "remind", link)
+    Toggle(L["Panel beside the talent window"], "showPanel", rem, QueueRefresh)
 
     -- ==========================================
     -- RIGHT: TALENT ORDER (scrolls the full height)
     -- ==========================================
     local orderHdr = R:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     orderHdr:SetPoint("TOPLEFT", 12, -14)
-    orderHdr:SetText("Talent Order")
+    orderHdr:SetText(L["Talent Order"])
     local orderSub = R:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     orderSub:SetPoint("TOPLEFT", orderHdr, "BOTTOMLEFT", 0, -3)
-    orderSub:SetText("|cff55ff55Taken|r  |cffffd100Next|r  |cffaaaaaaLater|r")
+    orderSub:SetText(L["|cff55ff55Taken|r"] .. "  " .. L["|cffffd100Next|r"] .. "  " .. L["|cffaaaaaaLater|r"])
 
     -- A level column and a talent column, so they line up.
     local scroll = CreateFrame("ScrollFrame", nil, R, "UIPanelScrollFrameTemplate")
@@ -1053,7 +1089,7 @@ end
 local function RegisterPage()
     local MSC = GetMSC()
     if MSC and MSC.RegisterPluginTab then
-        MSC.RegisterPluginTab("Talent Builds", "Interface\\Icons\\Ability_Marksmanship", BuildPage, "ViewTalents", "UpdateTalentsView")
+        MSC.RegisterPluginTab(L["Talent Builds"], "Interface\\Icons\\Ability_Marksmanship", BuildPage, "ViewTalents", "UpdateTalentsView")
     end
 end
 
@@ -1074,6 +1110,8 @@ local function IsAddOnLoadedSafe(name)
     return false
 end
 
+local talentUpdatePending = false
+
 ev:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" then
         if arg1 == addonName then
@@ -1088,23 +1126,30 @@ ev:SetScript("OnEvent", function(_, event, arg1)
         if IsAddOnLoadedSafe("Blizzard_PlayerSpells") then HookTalentWindow() end
         if C_Timer and C_Timer.After then
             C_Timer.After(5, function()
+                MarkTreeDirty()
                 CheckOffBuild()
                 Remind("login")
                 if not GetActiveBuild() and (UnitLevel("player") or 0) >= FIRST_POINT_LEVEL and #ClassBuilds() > 0 and not charDB.hinted then
                     charDB.hinted = true
-                    Print("Pick a talent build with |cffffffff/sgjt|r to get next-talent reminders and highlights.")
+                    Print(L["Pick a talent build with |cffffffff/sgjt|r to get next-talent reminders and highlights."])
                 end
             end)
         end
     elseif event == "PLAYER_LEVEL_UP" then
         if C_Timer and C_Timer.After then
-            C_Timer.After(1.5, function() ApplyGearLink(); Remind("level"); QueueRefresh() end)
+            C_Timer.After(1.5, function() MarkTreeDirty(); ApplyGearLink(); Remind("level"); QueueRefresh() end)
         end
     else
-        -- Talent changes: the tree is re-read on demand; check for off-build points.
+        -- Talent changes: one point spent fires all three events, so refresh once.
         if not IsSupported() then return end
-        if C_Timer and C_Timer.After then
-            C_Timer.After(0.2, function() ApplyGearLink(); CheckOffBuild(); QueueRefresh() end)
+        MarkTreeDirty()
+        if C_Timer and C_Timer.After and not talentUpdatePending then
+            talentUpdatePending = true
+            C_Timer.After(0.2, function()
+                talentUpdatePending = false
+                MarkTreeDirty()
+                ApplyGearLink(); CheckOffBuild(); QueueRefresh()
+            end)
         end
     end
 end)

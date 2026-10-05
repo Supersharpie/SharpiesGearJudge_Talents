@@ -1,5 +1,14 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.1.2
+
+### 🌍 Translations
+- **Translated**: The Talents plugin is now translated into every language WoW Forever launches with: German, Spanish (Spain and Latin America), French, Brazilian Portuguese, Russian, Korean and Traditional Chinese. Build names, build summaries and talent names are translated; talent names use the game's own names.
+- **Fixed: Builds on Non-English Clients**: The plugin compared your talents to its builds by English name, but the game reports talent names in your language, so build tracking (next talent, on-track count, off-build points) couldn't work on non-English clients. It now matches the game's names to the builds' talents.
+
+### ⚡ Performance
+- **Less Work per Talent Point**: Spending a point fired three talent events, and each one read your whole talent tree several times (10–15 reads per point). The plugin now reads the tree once and refreshes once per change.
+
 ## 🚀 v1.1.1
 
 ### 🖼️ Redesigned for the Bigger Window

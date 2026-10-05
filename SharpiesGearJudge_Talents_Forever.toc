@@ -2,9 +2,17 @@
 ## Title: |cff00ccffSharpie's Gear Judge|r |cff00ff00[Talents]|r (Forever Edition)
 ## Notes: Talent build guide: next-talent reminders, talent window highlights, and Gear Judge weights that follow your build.
 ## Author: Supersharpie
-## Version: 1.1.1-Forever
+## Version: 1.1.2-Forever
 ## Dependencies: SharpiesGearJudge
 ## SavedVariables: SGJ_TalentsDB
 
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\frFR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\koKR.lua
+Locales\zhTW.lua
 Talents.lua
 Builds.lua
