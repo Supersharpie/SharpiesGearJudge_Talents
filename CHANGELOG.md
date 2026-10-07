@@ -6,8 +6,18 @@
 - **Translated**: The Talents plugin is now translated into every language WoW Forever launches with: German, Spanish (Spain and Latin America), French, Brazilian Portuguese, Russian, Korean and Traditional Chinese. Build names, build summaries and talent names are translated; talent names use the game's own names.
 - **Fixed: Builds on Non-English Clients**: The plugin compared your talents to its builds by English name, but the game reports talent names in your language, so build tracking (next talent, on-track count, off-build points) couldn't work on non-English clients. It now matches the game's names to the builds' talents.
 
+### 🐛 Bug Fixes
+- **Fixed: Talents That Share a Translated Name**: In some languages two talents of one class have the same name (Portuguese Arcane Concentration and Arcane Focus, Portuguese Bane and Ruin, Korean Bane and Wrack, Traditional Chinese Divine Strength and Holy Power). One of them looked unlearned, so the panel asked for points you had already spent and called others off-build. Talents are now matched by their spell, not their name, so every talent is read correctly in every language.
+- **Fixed: Talents From Other Classes' Builds**: In German, Spanish and other languages, a talent name could be mistaken for another class's talent with the same translation. Only your own class's talents are matched now.
+- **Fixed: Missing Builds in the Talent Window**: The build picker beside the talent window had room for 8 buttons, so Paladins couldn't pick 5 of their 13 builds and classes with 8 builds lost "No build". It now shows every build.
+- **Fixed: Panel Jumping Back**: The build panel snapped back beside the talent window every time it refreshed, even after you dragged it away. It now stays where you put it until you close and reopen the talent window.
+- **Fixed: Gear Judge's "Back" and "Clear" Wording**: In German, French and Spanish the plugin's Back and Clear buttons changed the wording of Gear Judge's own Back (cloak) slot and Clear Baseline button. They now have their own text ("Go Back" and "Clear Build"), and shared words (slot, stat and profile names) use Gear Judge's own translations.
+- **Fixed: Korean Protection Build Names**: In Korean, Warrior and Paladin Protection builds showed the same tree name. Paladin builds now say 보호 and Warrior builds 방어, like the game.
+- **Fixed: Characters With the Same First Name**: WoW Forever names have two parts, and characters sharing a first name shared one build choice. Each character now keeps its own; your current choice carries over.
+
 ### ⚡ Performance
 - **Less Work per Talent Point**: Spending a point fired three talent events, and each one read your whole talent tree several times (10–15 reads per point). The plugin now reads the tree once and refreshes once per change.
+- **Faster Panel Updates**: The panel and the highlight now update as soon as you pick a talent in the window.
 
 ## 🚀 v1.1.1
 

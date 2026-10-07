@@ -10,6 +10,13 @@ _G.SGJ_Talents = T
 local L = (_G.MSC and _G.MSC.L) or setmetatable({}, { __index = function(t, k) return k end })
 
 local PREFIX = "|cffa335ee[SGJ Talents]|r "
+-- A build's display name; class-specific wording first (see MSC.ClassL in the core).
+local function BuildName(b)
+    local MSC = _G.MSC
+    if MSC and MSC.ClassL then return MSC.ClassL(b.class, b.name) end
+    return L[b.name]
+end
+
 local FIRST_POINT_LEVEL = 10      -- point k of a build is spent at level 9 + k
 local UPCOMING_LINES = 5
 
@@ -57,7 +64,15 @@ local function IsSupported()
     return C_Traits and C_Traits.GetNodeInfo and MSC and MSC.ForEachTraitTalent and true or false
 end
 
+-- Full name (WoW Forever names have two parts; UnitName gives only the first).
 local function CharKey()
+    local MSC = _G.MSC
+    if MSC and MSC.GetPlayerKey and MSC.GetCharacterName then return MSC:GetPlayerKey() end
+    return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
+end
+
+-- The pre-fix key (first name only), so an existing build choice carries over once.
+local function LegacyCharKey()
     return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
 end
 
@@ -78,8 +93,15 @@ local function InitDB()
     if db.remind == nil then db.remind = true end
     if db.showPanel == nil then db.showPanel = true end
     db.chars = db.chars or {}
-    db.chars[CharKey()] = db.chars[CharKey()] or {}
-    charDB = db.chars[CharKey()]
+    local key, legacy = CharKey(), LegacyCharKey()
+    if not db.chars[key] and legacy ~= key and db.chars[legacy] then
+        -- copy the choice saved under the old first-name key (several characters may share it)
+        local copy = {}
+        for k, v in pairs(db.chars[legacy]) do copy[k] = v end
+        db.chars[key] = copy
+    end
+    db.chars[key] = db.chars[key] or {}
+    charDB = db.chars[key]
 end
 
 local function GetActiveBuild()
@@ -129,45 +151,26 @@ end
 -- =========================================================================
 -- 2. READING THE TALENT TREE
 -- =========================================================================
--- The game reports talent names in the player's language; builds use English.
--- Map each translated talent name back to the English one (the Locales files hold
--- the game's own names), so non-English clients match builds too.
-local englishName
-local function ToEnglish(name)
-    if not englishName then
-        englishName = {}
-        for _, b in pairs(T.Builds) do
-            for _, list in ipairs({ b.points or {}, (b.respec and b.respec.points) or {} }) do
-                for _, n in ipairs(list) do englishName[L[n]] = n end
+-- Builds name talents in English; the game reports them in the player's language.
+-- Nodes are matched by spellID first (T.TalentIDs in Builds.lua, from the client's
+-- trait tables): two talents that share a translated name (ptBR Arcane Concentration /
+-- Arcane Focus) stay apart. Only a node whose spellID is missing or unknown falls back
+-- to its translated name, mapped back to English from the player's own class builds.
+local englishName, idName  -- translated name -> English (false = ambiguous); spellID -> English
+
+local function BuildNameMaps()
+    englishName, idName = {}, {}
+    local ids = T.TalentIDs and T.TalentIDs[PlayerClass()] or {}
+    for name, sid in pairs(ids) do idName[sid] = name end
+    for _, b in ipairs(ClassBuilds()) do
+        for _, list in ipairs({ b.points or {}, (b.respec and b.respec.points) or {} }) do
+            for _, n in ipairs(list) do
+                local loc = L[n]
+                if englishName[loc] == nil or englishName[loc] == n then englishName[loc] = n
+                else englishName[loc] = false end  -- two of the class's talents share this name
             end
         end
     end
-    return englishName[name] or name
-end
-
--- name -> { rank, max, nodeID, tab }, read through Gear Judge's trait walker.
--- Names are the builds' English names (see ToEnglish).
--- The result is cached until talents change (MarkTreeDirty); callers must not modify it.
-local cachedTree, treeDirty = nil, true
-
-local function MarkTreeDirty() treeDirty = true end
-
-local function ReadTree()
-    if not treeDirty and cachedTree then return cachedTree end
-    local MSC = GetMSC()
-    if not (MSC and MSC.ForEachTraitTalent) then return nil end
-    local tree = {}
-    local ok, found = pcall(MSC.ForEachTraitTalent, function(name, rank, tab, node)
-        tree[ToEnglish(name)] = {
-            rank = rank or 0,
-            max = node and tonumber(node.maxRanks) or nil,
-            nodeID = node and node.ID or nil,
-            tab = tab,
-        }
-    end)
-    if not ok or not found then return nil end
-    cachedTree, treeDirty = tree, false
-    return tree
 end
 
 local function GetTraitConfig()
@@ -187,6 +190,64 @@ local function GetTraitConfig()
     if not configID then return nil end
     local ok, info = pcall(C_Traits.GetConfigInfo, configID)
     return configID, ok and info and info.treeIDs and info.treeIDs[1] or nil
+end
+
+-- The spellID of a node's chosen entry (entry -> definition -> spellID), cached per entry.
+local entrySpell = {}
+local function NodeSpellID(configID, node)
+    if not (configID and node and C_Traits and C_Traits.GetEntryInfo and C_Traits.GetDefinitionInfo) then return nil end
+    local entryID = (node.activeEntry and node.activeEntry.entryID) or (node.entryIDs and node.entryIDs[1])
+    if not entryID then return nil end
+    if entrySpell[entryID] ~= nil then return entrySpell[entryID] or nil end
+    local sid = false
+    local ok, entry = pcall(C_Traits.GetEntryInfo, configID, entryID)
+    if ok and type(entry) == "table" and entry.definitionID then
+        local okDef, def = pcall(C_Traits.GetDefinitionInfo, entry.definitionID)
+        if okDef and type(def) == "table" and tonumber(def.spellID) then sid = tonumber(def.spellID) end
+    end
+    entrySpell[entryID] = sid
+    return sid or nil
+end
+
+-- name -> { rank, max, nodeID, tab }, read through Gear Judge's trait walker.
+-- Names are the builds' English names; a talent no build of the class takes keeps
+-- the game's name. The result is cached until talents change (MarkTreeDirty);
+-- callers must not modify it.
+local cachedTree, treeDirty = nil, true
+
+local function MarkTreeDirty() treeDirty = true end
+
+local function ReadTree()
+    if not treeDirty and cachedTree then return cachedTree end
+    local MSC = GetMSC()
+    if not (MSC and MSC.ForEachTraitTalent) then return nil end
+    if not idName then BuildNameMaps() end
+    local configID = GetTraitConfig()
+    local tree, byName = {}, {}
+    local function Info(rank, tab, node)
+        return { rank = rank or 0, max = node and tonumber(node.maxRanks) or nil, nodeID = node and node.ID or nil, tab = tab }
+    end
+    local ok, found = pcall(MSC.ForEachTraitTalent, function(name, rank, tab, node)
+        local sid = NodeSpellID(configID, node)
+        local eng = sid and idName[sid]
+        if eng then
+            tree[eng] = Info(rank, tab, node)
+        else
+            table.insert(byName, { name = name, rank = rank, tab = tab, node = node })
+        end
+    end)
+    if not ok or not found then return nil end
+    -- Nodes the ids didn't place: by translated name, unless that talent was already
+    -- found by id or the name is ambiguous; otherwise under the game's own name.
+    for _, n in ipairs(byName) do
+        local eng = englishName[n.name]
+        local key = (eng and not tree[eng]) and eng or n.name
+        local old = tree[key]
+        if old then old.rank = old.rank + (n.rank or 0)  -- same name twice: keep the points counted
+        else tree[key] = Info(n.rank, n.tab, n.node) end
+    end
+    cachedTree, treeDirty = tree, false
+    return tree
 end
 
 -- Unspent talent points: the tree's currency when the client reports it,
@@ -362,7 +423,8 @@ local function CreatePanel()
     panel:EnableMouse(true)
     panel:RegisterForDrag("LeftButton")
     panel:SetScript("OnDragStart", panel.StartMoving)
-    panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
+    -- Once dragged, the panel stays where the player put it until the talent window is reopened.
+    panel:SetScript("OnDragStop", function(self) self:StopMovingOrSizing(); self.userMoved = true end)
     if panel.SetBackdrop then
         panel:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -399,18 +461,25 @@ local function CreatePanel()
     change:SetScript("OnClick", function() panel.picking = not panel.picking; RefreshPanel() end)
     panel.change = change
 
-    -- Build picker: one button per class build, plus "No build"
+    -- Build picker: one button per class build, plus "No build" (made as needed, see PickButton)
     panel.pick = {}
-    for i = 1, 8 do
-        local btn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+end
+
+local PICK_STEP = 22
+local function PickButton(i)
+    local btn = panel.pick[i]
+    if not btn then
+        btn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
         btn:SetSize(250, 20)
-        btn:SetPoint("TOPLEFT", panel.buildName, "BOTTOMLEFT", 0, -6 - (i - 1) * 22)
+        btn:SetPoint("TOPLEFT", panel.buildName, "BOTTOMLEFT", 0, -6 - (i - 1) * PICK_STEP)
         btn:Hide()
         panel.pick[i] = btn
     end
+    return btn
 end
 
 local function AnchorPanel()
+    if panel.userMoved then return end
     local psf = _G.PlayerSpellsFrame
     panel:ClearAllPoints()
     if psf and psf:IsShown() then
@@ -430,23 +499,19 @@ function RefreshPanel()
         panel.buildName:SetText(L["Choose a build:"])
         panel.body:SetText("")
         local list = ClassBuilds()
-        local n = 0
-        for _, cb in ipairs(list) do
-            n = n + 1
-            local btn = panel.pick[n]
-            if not btn then break end
+        local n = #list
+        for i, cb in ipairs(list) do
+            local btn = PickButton(i)
             btn:SetText(L[cb.name])
             btn:SetScript("OnClick", function() T.SetBuild(cb.id); panel.picking = false; RefreshPanel() end)
             btn:Show()
         end
-        if panel.pick[n + 1] then
-            local btn = panel.pick[n + 1]
-            btn:SetText(L["No build"])
-            btn:SetScript("OnClick", function() T.SetBuild(nil); panel.picking = false; RefreshPanel() end)
-            btn:Show()
-        end
-        panel.change:SetText(L["Back"])
-        panel:SetHeight(math.max(140, 70 + (n + 1) * 22 + 30))
+        local none = PickButton(n + 1)
+        none:SetText(L["No build"])
+        none:SetScript("OnClick", function() T.SetBuild(nil); panel.picking = false; RefreshPanel() end)
+        none:Show()
+        panel.change:SetText(L["Go Back"])
+        panel:SetHeight(math.max(140, 70 + (n + 1) * PICK_STEP + 30))
         return
     end
     panel.change:SetText(L["Change Build"])
@@ -462,7 +527,7 @@ function RefreshPanel()
     end
 
     if not tree then
-        panel.buildName:SetText("|cffffd100" .. L[b.name] .. "|r")
+        panel.buildName:SetText("|cffffd100" .. BuildName(b) .. "|r")
         panel.body:SetText(L["Talents could not be read yet."])
         panel:SetHeight(110)
         return
@@ -565,7 +630,10 @@ local function HookTalentWindow()
     if not (psf and tf) then return end
     hookedFrame = true
     if not panel then CreatePanel(); panel:Hide() end
-    psf:HookScript("OnShow", QueueRefresh)
+    psf:HookScript("OnShow", function()
+        if panel and not panel.standalone then panel.userMoved = nil end  -- dock beside the window again
+        QueueRefresh()
+    end)
     psf:HookScript("OnHide", QueueRefresh)
     tf:HookScript("OnShow", QueueRefresh)
     tf:HookScript("OnHide", QueueRefresh)
@@ -665,7 +733,7 @@ local function ListBuilds()
                     print("  " .. string.format(L["%s:"], CategoryName(st.key, ro.key, mo.key)))
                     for _, b in ipairs(group) do
                         local mark = (active and active.id == b.id) and (" " .. L["|cff00ff00(active)|r"]) or ""
-                        print(string.format("     |cffffd100%s|r  %s%s", b.short or b.id, L[b.name], mark))
+                        print(string.format("     |cffffd100%s|r  %s%s", b.short or b.id, BuildName(b), mark))
                     end
                 end
             end
@@ -837,7 +905,7 @@ local function UpdatePage()
         local b = list[k]
         if b then
             local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
-            btn:SetText(mark .. L[b.name])
+            btn:SetText(mark .. BuildName(b))
             btn.id = b.id
             if b.id == selectedId then btn:LockHighlight() else btn:UnlockHighlight() end
             btn:Show()
@@ -860,7 +928,7 @@ local function UpdatePage()
 
     local tree = ReadTree()
     local isActive = active and active.id == b.id
-    page.name:SetText((isActive and (L["|cff00ff00Active:|r"] .. " ") or "") .. "|cffffd100" .. L[b.name] .. "|r")
+    page.name:SetText((isActive and (L["|cff00ff00Active:|r"] .. " ") or "") .. "|cffffd100" .. BuildName(b) .. "|r")
 
     local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
     if b.summary then table.insert(info, L[b.summary]) end
@@ -1013,9 +1081,9 @@ local function BuildPage(parent)
     page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId) end; UpdatePage() end)
 
     page.clear = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
-    page.clear:SetSize(70, 24)
+    page.clear:SetSize(100, 24)
     page.clear:SetPoint("LEFT", page.use, "RIGHT", 6, 0)
-    page.clear:SetText(L["Clear"])
+    page.clear:SetText(L["Clear Build"])
     page.clear:SetScript("OnClick", function() T.SetBuild(nil); UpdatePage() end)
 
     -- Settings, pinned to the bottom of the centre column
@@ -1103,6 +1171,10 @@ ev:RegisterEvent("PLAYER_LEVEL_UP")
 for _, e in ipairs({ "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE", "CHARACTER_POINTS_CHANGED" }) do
     pcall(ev.RegisterEvent, ev, e)
 end
+-- A talent picked in the window but not yet applied: refresh the glow and panel only.
+-- (RegisterEvent errors on an event the client lacks, hence the pcall.)
+local STAGED_EVENTS = { TRAIT_NODE_CHANGED = true, TRAIT_TREE_CURRENCY_INFO_UPDATED = true }
+for e in pairs(STAGED_EVENTS) do pcall(ev.RegisterEvent, ev, e) end
 
 local function IsAddOnLoadedSafe(name)
     if C_AddOns and C_AddOns.IsAddOnLoaded then return C_AddOns.IsAddOnLoaded(name) end
@@ -1139,6 +1211,10 @@ ev:SetScript("OnEvent", function(_, event, arg1)
         if C_Timer and C_Timer.After then
             C_Timer.After(1.5, function() MarkTreeDirty(); ApplyGearLink(); Remind("level"); QueueRefresh() end)
         end
+    elseif STAGED_EVENTS[event] then
+        if not IsSupported() then return end
+        MarkTreeDirty()
+        QueueRefresh()
     else
         -- Talent changes: one point spent fires all three events, so refresh once.
         if not IsSupported() then return end
