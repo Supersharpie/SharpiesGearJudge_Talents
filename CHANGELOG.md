@@ -1,5 +1,30 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.1.3
+
+### 📊 Build Notes Re-Simulated
+- **Updated Build Notes**: The level-60 builds were re-run on the current wowsims Forever simulator (the 2026-10-08 build). No talents change, but eight build notes quoted old numbers and now say what the simulator says today: Arcane is within a few percent of Frost (Frost stays the raid build for Winter's Chill and its freezes); Summon Hawk is a smaller share of Beast Mastery's damage and its leads over Marksmanship and Survival are 10% and 20%; the Cat skips Furor because Forever refunds no energy for shifting, and Intellect no longer counts for it; Bear makes about the same threat as a Protection Warrior; Combat's leads over Mutilate and Hemorrhage are 10% and 14%; Enhancement is about 1.7 times Elemental. All eight languages updated.
+
+### ⚔️ PvP Builds
+- **New: PvP Category**: The Builds page has a fourth group, PvP, next to Max Level, Leveling and Farming, with DPS and Healer builds. A PvP build is a full 10-to-60 talent order for open-world PvP while leveling and for battlegrounds at 60.
+- **PvP Weights Follow the Build**: With a PvP build active, Gear Judge scores your gear with its PvP weights at every level (more Stamina, armor and burst; hit stops at the player-vs-player caps), even if Gear for PvP is off.
+
+
+### 🔀 Dual Specialization
+- **A Build for Each Spec**: WoW Forever unlocks a second spec at level 40. Each spec now keeps its own build: reminders, the "next talent", off-build warnings and respec prompts follow the spec you're in, and Gear Judge's weights switch with it. Your current build choice moves to the spec you're in.
+- **Talent Window Tabs**: the highlight and the panel follow the Primary or Secondary tab you're looking at, so you can plan your other spec with its own build.
+- **Builds Page**: once you have two specs, Primary and Secondary buttons at the top choose which spec's build you're picking (* marks the active one).
+- **Gear Judge's Other-Spec Line**: Gear Judge's tooltip line for your other spec uses that spec's build (including a PvP build's PvP weights).
+- Nothing changes for characters with one spec. Dual Specialization can't be reached in the beta yet (level cap 30), so this has only been tested with simulated specs.
+
+### 🛠️ Beta Patch 1.60.1.70291
+- **Warrior Builds Updated**: The patch removed Boundless Rage, Improved Cleave, Precision and Toughness, added Furious Precision, Lingering Rage and Gore Drinker, and moved several talents (Anticipation is now Protection tier 2, Bastion tier 6, and Iron Will moved from Fury to Protection tier 1). The builds that used them would have stopped short of 51 points:
+	- Arms: Raid takes Booming Voice instead of Boundless Rage (it now also lowers your shouts' rage cost). Arms: Dungeon Leveling and Arms: Solo Leveling take Lingering Rage, which keeps your rage longer between pulls.
+	- Protection: Raid, Dungeon Leveling and AoE Farming spend Toughness's 5 points on Improved Sunder Armor, Concussion Blow, Vanguard and Last Stand (Improved Shield Wall and Iron Will for farming), in a new order for the moved tiers. Shield Slam still comes at 43 (48 for farming).
+	- PvP: Arms keeps 3 points of Iron Will in Protection and adds Booming Voice to stay deep enough in Fury.
+- **Druid Builds**: Predatory Instincts is now called Natural Instinct (and also adds healing from Intellect). The 6 builds with it use the new name.
+---
+
 ## 🚀 v1.1.2
 
 ### 🌍 Translations

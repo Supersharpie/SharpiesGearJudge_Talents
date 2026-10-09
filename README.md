@@ -14,11 +14,12 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows in the talent window. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
-- **Talent Builds page.** A new page in the Gear Judge window lists your class's builds, sorted by what you're doing: **Max Level** (raid builds), **Leveling** or **Farming**, then **Tank**, **Healer** or **DPS**, then **Solo** or **Dungeon** for leveling builds. The role and Solo/Dungeon buttons show how many builds they hold. Click a build to see:
+- **Talent Builds page.** A new page in the Gear Judge window lists your class's builds, sorted by what you're doing: **Max Level** (raid builds), **Leveling**, **Farming** or **PvP**, then **Tank**, **Healer** or **DPS**, then **Solo** or **Dungeon** for leveling builds. The role and Solo/Dungeon buttons show how many builds they hold. Click a build to see:
   - what it's for;
   - which stat weights it uses;
   - the full level-by-level talent order, with points you've spent in green and the next one in gold.
 - **Gear advice that follows your build.** Choosing a build tells Gear Judge which weight profile to use, from your first talent point to level 60. A Protection tank build gets tank weights right away, before its tank talents would normally switch you over.
+- **Dual Specialization.** From level 40 each spec keeps its own build. The talent window highlight follows the Primary or Secondary tab you're viewing, and the Builds page lets you pick a build for either spec.
 - **Planned respecs.** Some builds switch spec partway through. At that level you're told to reset your talents. Once you have, the guide and the weights move to the new spec.
 - **Every build is checked** against WoW Forever's current talent trees: one point per level from 10, tier requirements, minimum levels and maximum ranks.
 
@@ -74,6 +75,22 @@ Every class has a **Solo Leveling** build. It's the fastest way to level alone w
 **Shamans** also get **Enhancement: Raid**, **Enhancement: Dungeon Leveling**, **Elemental: Raid**, **Restoration: Raid**, **Restoration: Dungeon Leveling**, a shield tank for dungeons (**Tank: Dungeon Leveling**) and **Tank: AoE Farming**.
 
 **Druids** also get **Cat: Raid**, **Cat: Dungeon Leveling**, **Balance: Raid** (Moonkin), **Restoration: Raid**, **Restoration: Dungeon Leveling**, and two Bear tank builds: **Bear: Dungeon Leveling** and **Bear: Raid**.
+
+### PvP builds
+
+For open-world PvP while leveling and battlegrounds at 60. Each one is a full talent order from 10 to 60, with the control and survival talents placed as early as the talent tree allows (most land by level 30). Picking a PvP build also switches Gear Judge to its PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps. These builds come from the talent data and a PvP model, not a simulator, since there's no sim for fights against players.
+
+| Class | PvP builds |
+|---|---|
+| Warrior | Arms (Mortal Strike) |
+| Paladin | Retribution, Reck-Bomb (Reckoning stores up to 4 extra attacks for one big hit), Shockadin (Holy Shock) |
+| Rogue | Hemorrhage (swords or maces), Cold Blood Daggers |
+| Hunter | Marksmanship Utility (Scatter Shot, traps, Deterrence) |
+| Mage | Frost (Shatter, Ice Lance, Ice Block) |
+| Priest | Shadow, Discipline Healer |
+| Warlock | Soul Link, Nightfall / Conflagrate |
+| Shaman | Elemental, Restoration Healer |
+| Druid | Feral (Cat), Restoration Healer |
 
 ---
 

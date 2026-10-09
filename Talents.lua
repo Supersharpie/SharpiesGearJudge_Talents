@@ -37,7 +37,7 @@ local function Expand(order)
 end
 
 function T.RegisterBuild(b)
-    -- Builds page category: stage raid/leveling/farming, role tank/healer/dps, mode solo/dungeon (leveling only)
+    -- Builds page category: stage raid/leveling/farming/pvp, role tank/healer/dps, mode solo/dungeon (leveling only)
     b.stage = b.stage or "leveling"
     b.role = b.role or "dps"
     if b.stage == "leveling" then b.mode = b.mode or "solo" else b.mode = nil end
@@ -86,6 +86,44 @@ end
 -- =========================================================================
 local db, charDB
 
+-- Dual Specialization: each spec group has its own build (charDB.builds[group]).
+-- ctxGroup is the spec being shown or worked on (the talent window's tab, the
+-- Builds page's spec switch); nil means the active spec.
+local ctxGroup
+local function ActiveGroup()
+    local MSC = GetMSC()
+    return (MSC and MSC.GetActiveSpecGroup and MSC.GetActiveSpecGroup()) or 1
+end
+local function HasDualSpec()
+    local MSC = GetMSC()
+    return (MSC and MSC.HasDualSpec and MSC.HasDualSpec()) and true or false
+end
+local function CtxGroup() return ctxGroup or ActiveGroup() end
+local function SpecName(g)
+    local MSC = GetMSC()
+    return (MSC and MSC.SpecGroupName and MSC.SpecGroupName(g)) or tostring(g)
+end
+-- Runs fn(...) with ctxGroup = g (restored also on error).
+local function InGroup(g, fn, ...)
+    local old = ctxGroup
+    ctxGroup = g
+    local res = { pcall(fn, ...) }
+    ctxGroup = old
+    if not res[1] then error(res[2], 0) end
+    return unpack(res, 2)
+end
+-- The builds chosen per spec group; the old single choice moves to the spec
+-- the character is in.
+local function Builds()
+    if not charDB then return {} end
+    if not charDB.builds then
+        charDB.builds = {}
+        if charDB.build then charDB.builds[ActiveGroup()] = charDB.build end
+        charDB.build = nil
+    end
+    return charDB.builds
+end
+
 local function InitDB()
     SGJ_TalentsDB = SGJ_TalentsDB or {}
     db = SGJ_TalentsDB
@@ -104,8 +142,9 @@ local function InitDB()
     charDB = db.chars[key]
 end
 
-local function GetActiveBuild()
-    local id = charDB and charDB.build
+-- The build chosen for a spec group (default: the one in context).
+local function GetActiveBuild(group)
+    local id = Builds()[group or CtxGroup()]
     local b = id and T.Builds[id]
     if b and b.class == PlayerClass() then return b end
     return nil
@@ -120,8 +159,10 @@ local function ClassBuilds()
 end
 
 -- Build categories, in the order the Builds page and /sgjt list show them:
--- Max Level (Raid) by role, Leveling by role and then Solo / Dungeon, or Farming by role.
-local STAGES = { { key = "raid", label = "Max Level (Raid)", short = "Max Level" }, { key = "leveling", label = "Leveling" }, { key = "farming", label = "Farming" } }
+-- Max Level (Raid) by role, Leveling by role and then Solo / Dungeon, Farming by role, or PvP by
+-- role (a PvP build runs from 10 to 60). w is the stage button's width on the Builds page.
+local STAGES = { { key = "raid", label = "Max Level (Raid)", short = "Max Level", w = 66 }, { key = "leveling", label = "Leveling", w = 56 },
+    { key = "farming", label = "Farming", w = 52 }, { key = "pvp", label = "PvP", w = 26 } }
 local ROLES = { { key = "tank", label = "Tank" }, { key = "healer", label = "Healer" }, { key = "dps", label = "DPS" } }
 local MODES = { { key = "solo", label = "Solo" }, { key = "dungeon", label = "Dungeon" } }
 local LABEL = {}
@@ -173,17 +214,15 @@ local function BuildNameMaps()
     end
 end
 
-local function GetTraitConfig()
+local function GetTraitConfig(group)
+    group = group or CtxGroup()
     local configID
     local spec = C_SpecializationInfo
-    if spec and spec.GetActiveSpecGroup and spec.GetCombatConfigIDForSpecGroup then
-        local ok, group = pcall(spec.GetActiveSpecGroup)
-        if ok and group then
-            local ok2, id = pcall(spec.GetCombatConfigIDForSpecGroup, group)
-            if ok2 then configID = id end
-        end
+    if spec and spec.GetCombatConfigIDForSpecGroup then
+        local ok2, id = pcall(spec.GetCombatConfigIDForSpecGroup, group)
+        if ok2 then configID = id end
     end
-    if not configID and C_ClassTalents and C_ClassTalents.GetActiveConfigID then
+    if not configID and group == ActiveGroup() and C_ClassTalents and C_ClassTalents.GetActiveConfigID then
         local ok, id = pcall(C_ClassTalents.GetActiveConfigID)
         if ok then configID = id end
     end
@@ -213,16 +252,18 @@ end
 -- Names are the builds' English names; a talent no build of the class takes keeps
 -- the game's name. The result is cached until talents change (MarkTreeDirty);
 -- callers must not modify it.
-local cachedTree, treeDirty = nil, true
+-- One cached tree per spec group (default: the one in context).
+local cachedTree = {}
 
-local function MarkTreeDirty() treeDirty = true end
+local function MarkTreeDirty() wipe(cachedTree) end
 
-local function ReadTree()
-    if not treeDirty and cachedTree then return cachedTree end
+local function ReadTree(group)
+    group = group or CtxGroup()
+    if cachedTree[group] then return cachedTree[group] end
     local MSC = GetMSC()
     if not (MSC and MSC.ForEachTraitTalent) then return nil end
     if not idName then BuildNameMaps() end
-    local configID = GetTraitConfig()
+    local configID = GetTraitConfig(group)
     local tree, byName = {}, {}
     local function Info(rank, tab, node)
         return { rank = rank or 0, max = node and tonumber(node.maxRanks) or nil, nodeID = node and node.ID or nil, tab = tab }
@@ -235,7 +276,7 @@ local function ReadTree()
         else
             table.insert(byName, { name = name, rank = rank, tab = tab, node = node })
         end
-    end)
+    end, group)
     if not ok or not found then return nil end
     -- Nodes the ids didn't place: by translated name, unless that talent was already
     -- found by id or the name is ambiguous; otherwise under the game's own name.
@@ -246,7 +287,7 @@ local function ReadTree()
         if old then old.rank = old.rank + (n.rank or 0)  -- same name twice: keep the points counted
         else tree[key] = Info(n.rank, n.tab, n.node) end
     end
-    cachedTree, treeDirty = tree, false
+    cachedTree[group] = tree
     return tree
 end
 
@@ -345,14 +386,31 @@ end
 -- =========================================================================
 -- 4. GEAR JUDGE LINK
 -- =========================================================================
+-- The weights role a spec group's build asks for: leveling, endgame, pvp.
+local function BuildRole(group)
+    local b = GetActiveBuild(group)
+    if not (db and db.linkGear and b) then return nil end
+    local tree = b.respec and ReadTree(group)
+    local view = tree and T.ActiveView(b, tree) or b
+    return view.leveling, view.endgame, b.stage == "pvp"
+end
+
 local function ApplyGearLink()
     local MSC = GetMSC()
     if not (MSC and MSC.SetTalentBuildRole) then return end
-    local b = GetActiveBuild()
+    -- Gear Judge asks for the other spec's build when it scores that spec.
+    MSC.GetTalentBuildRoleForGroup = function(group)
+        local lev, endg, pvp = BuildRole(group)
+        if not (lev or endg) then return nil end
+        return { leveling = lev, endgame = endg, pvp = pvp or nil }
+    end
+    local ag = ActiveGroup()
+    local b = GetActiveBuild(ag)
     if db.linkGear and b then
-        local tree = b.respec and ReadTree()
+        local tree = b.respec and ReadTree(ag)
         local view = tree and T.ActiveView(b, tree) or b
-        MSC.SetTalentBuildRole(view.leveling, view.endgame)
+        -- PvP builds also turn on the PvP weight model (at every level).
+        MSC.SetTalentBuildRole(view.leveling, view.endgame, b.stage == "pvp")
     else
         MSC.SetTalentBuildRole(nil, nil)
     end
@@ -438,6 +496,7 @@ local function CreatePanel()
     local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("TOPLEFT", 10, -10)
     title:SetText(L["SGJ Talent Build"])
+    panel.title = title
 
     local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 0, 0)
@@ -489,8 +548,22 @@ local function AnchorPanel()
     end
 end
 
-function RefreshPanel()
+-- The spec group shown in the talent window (its Primary / Secondary tab).
+local function ViewGroup()
+    local tf = GetTalentsFrame()
+    if tf and tf:IsVisible() and tf.GetTab and tf.secondarySpecTabID then
+        local ok, tab = pcall(tf.GetTab, tf)
+        if ok and tab == tf.secondarySpecTabID then return 2 end
+        if ok and tab == tf.primarySpecTabID then return 1 end
+    end
+    return ActiveGroup()
+end
+
+local function RefreshPanelIn()
     if not panel then return end
+    if panel.title then
+        panel.title:SetText(HasDualSpec() and string.format(L["SGJ Talent Build (%s)"], SpecName(CtxGroup())) or L["SGJ Talent Build"])
+    end
     local b = GetActiveBuild()
     local tree = ReadTree()
 
@@ -503,12 +576,12 @@ function RefreshPanel()
         for i, cb in ipairs(list) do
             local btn = PickButton(i)
             btn:SetText(L[cb.name])
-            btn:SetScript("OnClick", function() T.SetBuild(cb.id); panel.picking = false; RefreshPanel() end)
+            btn:SetScript("OnClick", function() T.SetBuild(cb.id, ViewGroup()); panel.picking = false; RefreshPanel() end)
             btn:Show()
         end
         local none = PickButton(n + 1)
         none:SetText(L["No build"])
-        none:SetScript("OnClick", function() T.SetBuild(nil); panel.picking = false; RefreshPanel() end)
+        none:SetScript("OnClick", function() T.SetBuild(nil, ViewGroup()); panel.picking = false; RefreshPanel() end)
         none:Show()
         panel.change:SetText(L["Go Back"])
         panel:SetHeight(math.max(140, 70 + (n + 1) * PICK_STEP + 30))
@@ -572,6 +645,8 @@ function RefreshPanel()
     panel:SetHeight(math.max(120, (panel.body:GetStringHeight() or 100) + 80))
 end
 
+function RefreshPanel() InGroup(ViewGroup(), RefreshPanelIn) end
+
 -- Show/hide the highlight and panel to match the talent window.
 local function RefreshTalentWindow()
     if T.RefreshPage then T.RefreshPage() end
@@ -591,11 +666,13 @@ local function RefreshTalentWindow()
     end
 
     if not shown then HideGlow(); return end
-    local b = GetActiveBuild()
-    local tree = b and ReadTree()
+    -- The glow follows the tab shown (its talents and its build).
+    local vg = ViewGroup()
+    local b = GetActiveBuild(vg)
+    local tree = b and ReadTree(vg)
     local view, respecDue
     if tree then view, respecDue = T.ActiveView(b, tree) end
-    local st = view and not respecDue and T.Evaluate(view, tree)
+    local st = view and not respecDue and InGroup(vg, T.Evaluate, view, tree)
     local nextInfo = st and st.nextName and tree[st.nextName]
     local button
     if nextInfo and nextInfo.nodeID and tf.GetTalentButtonByNodeID then
@@ -640,6 +717,8 @@ local function HookTalentWindow()
     if type(tf.LoadTalentTreeInternal) == "function" then
         pcall(hooksecurefunc, tf, "LoadTalentTreeInternal", OnTreeLoaded)
     end
+    -- Dual Specialization: switching between the Primary and Secondary tabs.
+    if type(tf.SetTab) == "function" then pcall(hooksecurefunc, tf, "SetTab", QueueRefresh) end
     QueueRefresh()
 end
 
@@ -690,14 +769,25 @@ end
 -- =========================================================================
 -- 7. PUBLIC ACTIONS
 -- =========================================================================
-function T.SetBuild(id)
+-- group: the spec group to set it for (default: the one in context).
+function T.SetBuild(id, group)
     if id and not (T.Builds[id] and T.Builds[id].class == PlayerClass()) then
         Print(string.format(L["Unknown build for your class: %s"], tostring(id)))
         return
     end
-    charDB.build = id
-    lastOffKey = nil
+    group = group or CtxGroup()
+    Builds()[group] = id
     ApplyGearLink()
+    if HasDualSpec() then
+        if id then Print(string.format(L["Build for your %s spec set to |cffffd100%s|r."], SpecName(group), L[T.Builds[id].name]))
+        else Print(string.format(L["Build cleared for your %s spec."], SpecName(group))) end
+        if group ~= ActiveGroup() then QueueRefresh(); return end
+        lastOffKey = nil
+        if id then CheckOffBuild(); Remind("set") end
+        QueueRefresh()
+        return
+    end
+    lastOffKey = nil
     if id then
         Print(string.format(L["Build set to |cffffd100%s|r."], L[T.Builds[id].name]))
         CheckOffBuild()
@@ -880,7 +970,10 @@ local function OrderLines(view, tree, header, stopLevel)
     return lvls, lines
 end
 
-local function UpdatePage()
+local UpdatePage -- set below (it wraps UpdatePageIn with the shown spec)
+local pageGroup -- the spec the Builds page shows (nil = the active one)
+
+local function UpdatePageIn()
     if not page then return end
     local active = GetActiveBuild()
     cat = cat or DefaultCategory()
@@ -896,7 +989,7 @@ local function UpdatePage()
         elseif btn.field == "role" then n = #CategoryBuilds(cat.stage, btn.key)
         else n = #CategoryBuilds("leveling", cat.role, btn.key) end
         local grey = n > 0 and "" or "|cff888888"
-        if btn.field == "stage" then btn:SetText(grey .. L[btn.label])  -- three across: no room for a count
+        if btn.field == "stage" then btn:SetText(grey .. L[btn.label])  -- four across: no room for a count
         else btn:SetText(string.format("%s%s (%d)", grey, L[btn.label], n)) end
         if cat[btn.field] == btn.key then btn:LockHighlight() else btn:UnlockHighlight() end
         btn:SetShown(btn.field ~= "mode" or cat.stage == "leveling")
@@ -934,6 +1027,7 @@ local function UpdatePage()
     if b.summary then table.insert(info, L[b.summary]) end
     table.insert(info, " ")
     table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
+    if b.stage == "pvp" then table.insert(info, L["PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps."]) end
     if b.respec then
         table.insert(info, string.format(L["|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60)."],
             b.respec.level, L[b.respec.name], ProfileLabel(b.respec.leveling), ProfileLabel(b.respec.endgame)))
@@ -973,6 +1067,21 @@ local function UpdatePage()
     end
     page.SetOrder(lv, tx)
 end
+UpdatePage = function()
+    if not page then return end
+    if page.specButtons then
+        local dual = HasDualSpec()
+        if not dual then pageGroup = nil end
+        local g = pageGroup or ActiveGroup()
+        for i, btn in ipairs(page.specButtons) do
+            btn:SetShown(dual)
+            local mark = (i == ActiveGroup()) and " |cff00ff00*|r" or ""
+            btn:SetText(SpecName(i) .. mark)
+            if i == g then btn:LockHighlight() else btn:UnlockHighlight() end
+        end
+    end
+    InGroup(pageGroup or ActiveGroup(), UpdatePageIn)
+end
 T.RefreshPage = function() if page and page:IsShown() then UpdatePage() end end
 
 -- Layout: categories and build list (left) | build details, buttons, settings (centre) | talent order (right)
@@ -1008,6 +1117,18 @@ local function BuildPage(parent)
     title:SetText(L["Talent Builds"])
     title:SetTextColor(1, 0.82, 0)
 
+    -- Dual Specialization: which spec's build the page shows and sets (* = active).
+    page.specButtons = {}
+    for i = 1, 2 do
+        local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
+        btn:SetSize(58, 18)
+        btn:SetPoint("TOPRIGHT", -8 - (2 - i) * 60, -10)
+        local fs = btn:GetFontString(); if fs then fs:SetFontObject("GameFontHighlightSmall") end
+        btn:SetScript("OnClick", function() pageGroup = i; selectedId = nil; cat = nil; UpdatePage() end)
+        btn:Hide()
+        page.specButtons[i] = btn
+    end
+
     local sub = LCol:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     sub:SetText(L["Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it."])
@@ -1018,10 +1139,12 @@ local function BuildPage(parent)
     local CAT_TOP = -86
     local function CatRow(items, field, y)
         local width = (innerW - (#items - 1) * 4) / #items
+        local x = 12
         for i, c in ipairs(items) do
             local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
-            btn:SetSize(width, 22)
-            btn:SetPoint("TOPLEFT", 12 + (i - 1) * (width + 4), y)
+            btn:SetSize(c.w or width, 22)
+            btn:SetPoint("TOPLEFT", x, y)
+            x = x + (c.w or width) + 4
             btn.field, btn.key, btn.label = field, c.key, c.short or c.label
             local fs = btn:GetFontString()
             if fs then fs:SetFontObject("GameFontHighlightSmall") end
@@ -1078,13 +1201,13 @@ local function BuildPage(parent)
     page.use:SetSize(140, 24)
     page.use:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -16)
     page.use:SetText(L["Use This Build"])
-    page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId) end; UpdatePage() end)
+    page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId, pageGroup or ActiveGroup()) end; UpdatePage() end)
 
     page.clear = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
     page.clear:SetSize(100, 24)
     page.clear:SetPoint("LEFT", page.use, "RIGHT", 6, 0)
     page.clear:SetText(L["Clear Build"])
-    page.clear:SetScript("OnClick", function() T.SetBuild(nil); UpdatePage() end)
+    page.clear:SetScript("OnClick", function() T.SetBuild(nil, pageGroup or ActiveGroup()); UpdatePage() end)
 
     -- Settings, pinned to the bottom of the centre column
     local setHdr = C:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -1168,7 +1291,7 @@ local ev = CreateFrame("Frame")
 ev:RegisterEvent("ADDON_LOADED")
 ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("PLAYER_LEVEL_UP")
-for _, e in ipairs({ "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE", "CHARACTER_POINTS_CHANGED" }) do
+for _, e in ipairs({ "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE", "CHARACTER_POINTS_CHANGED", "ACTIVE_TALENT_GROUP_CHANGED" }) do
     pcall(ev.RegisterEvent, ev, e)
 end
 -- A talent picked in the window but not yet applied: refresh the glow and panel only.
@@ -1211,6 +1334,12 @@ ev:SetScript("OnEvent", function(_, event, arg1)
         if C_Timer and C_Timer.After then
             C_Timer.After(1.5, function() MarkTreeDirty(); ApplyGearLink(); Remind("level"); QueueRefresh() end)
         end
+    elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
+        -- The other spec is active now: its build drives the weights and reminders.
+        if not IsSupported() then return end
+        MarkTreeDirty(); lastOffKey = nil
+        ApplyGearLink(); QueueRefresh()
+        if C_Timer and C_Timer.After then C_Timer.After(1, function() MarkTreeDirty(); CheckOffBuild(); Remind("spec") end) end
     elseif STAGED_EVENTS[event] then
         if not IsSupported() then return end
         MarkTreeDirty()
