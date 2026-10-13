@@ -1,5 +1,27 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.1.4
+
+### ⚔️ Enhancement: Raid Rebuilt
+- **New Talents**: Enhancement: Raid is now Enhancement 33 / Restoration 16 / Elemental 2 instead of Elemental 19 / Enhancement 32. A full talent search on the current wowsims Forever simulator found it about 6% stronger against both raid and dungeon bosses. Tidal Focus adds 5% melee hit, and Mana Tide Totem and Mindfulness carry the mana that Fire Nova and the shocks burn through. Spirit Weapons is gone (it added no damage) and Ancestral Knowledge goes to 5.
+- **Leveling Order**: The new order still levels faster than Enhancement: Solo Leveling (about 5% in our model). Mana Tide Totem is the last point, at 60.
+- The build note is updated in all eight languages.
+
+### 🐻 Bear: Raid Rebuilt
+- **New Talents**: Bear: Raid is now Balance 9 / Feral 42. It drops Furor, Naturalist, Primal Bite and Berserk (worth nothing or less against a raid boss in the simulator) for Heart of the Wild, Rend and Tear and Shredding Attacks: about 12% more threat and 16% more health at the same damage taken.
+- **Level With Bear: Dungeon Leveling**: Bear: Raid no longer shares its talents with Bear: Dungeon Leveling, which still levels faster (Furor and Primal Bite help on packs). Level with that one and respec at 60.
+- The build note is updated in all eight languages.
+
+### 🩸 Affliction: Solo Leveling Drains
+- **New Order, Same Talents**: Affliction: Solo Leveling now takes Improved Drains at 17-19 and Fel Concentration at 20 (they used to come in the 50s), and from there plays Drain Life instead of the wand to fill each fight. Forever's Drain Life deals its damage and heals you for it, so you rarely stop to eat. Pandemic and Malevolence follow at 22-28, Soul Siphon and Siphon Life at 30-33, and Malediction moves to 42-46. The 51 talents at 60 are the same.
+- **About 22% Less Leveling Time** than the same build with a wand, in our model. The model can't see damage pushing back your channel; Fel Concentration is there to cut that.
+- The build note is updated in all eight languages.
+
+### ✨ Easier-to-See Next Talent
+- **Gold Highlight**: The glow on the next talent to learn is now gold and brighter instead of green. Before, it blended into the green border that every learnable talent already has.
+- **Order Numbers on the Tree**: Every talent your build still puts points into now shows a number in the top-left corner of its icon: the step of its next point in the build (1 is your first point at level 10, 51 your last at 60). Read the numbers in order to see the whole build on the tree; as you learn a rank, that talent's number moves on to its next step.
+- **Steps in the Tooltip**: Hover a numbered talent to see every step the build puts into it, with the level of each, such as "12 (L21), 13 (L22), 20 (L29)". Ranks you already have are greyed out. Translated into all eight languages.
+
 ## 🚀 v1.1.3
 
 ### 📊 Build Notes Re-Simulated

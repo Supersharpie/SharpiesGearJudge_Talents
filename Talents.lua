@@ -311,11 +311,12 @@ end
 -- =========================================================================
 -- Returns a status table:
 --   nextIndex/nextName/nextRank: the first point of the build not yet spent
+--   nextOf[name]: the build step (1 = first point) of that talent's next unspent rank
 --   onTrack: how many of the build's points (in order) are already in place
 --   spent, unspent: points spent and still to spend
 --   off: talents ranked higher than the whole build ever takes them
 function T.Evaluate(build, tree)
-    local st = { spent = 0, off = {}, upcoming = {} }
+    local st = { spent = 0, off = {}, upcoming = {}, nextOf = {} }
     if not (build and tree) then return st end
 
     local planned = {}
@@ -323,6 +324,7 @@ function T.Evaluate(build, tree)
         planned[name] = (planned[name] or 0) + 1
         local have = tree[name] and tree[name].rank or 0
         if have < planned[name] then
+            if not st.nextOf[name] then st.nextOf[name] = i end
             if not st.nextIndex then
                 st.nextIndex, st.nextName, st.nextRank = i, name, planned[name]
             end
@@ -430,18 +432,23 @@ end
 local function CreateGlow()
     glow = CreateFrame("Frame")
     glow:Hide()
-    local tex = glow:CreateTexture(nil, "OVERLAY")
-    tex:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
-    tex:SetBlendMode("ADD")
-    tex:SetVertexColor(0.3, 1, 0.3)
-    tex:SetPoint("CENTER")
-    glow.tex = tex
+    -- Gold, not green: learnable nodes already have green borders. Two stacked
+    -- ADD layers so it stays bright against the tree art.
+    glow.texs = {}
+    for i = 1, 2 do
+        local tex = glow:CreateTexture(nil, "OVERLAY")
+        tex:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+        tex:SetBlendMode("ADD")
+        tex:SetVertexColor(1, 0.82, 0)
+        tex:SetPoint("CENTER")
+        glow.texs[i] = tex
+    end
     local ag = glow:CreateAnimationGroup()
     ag:SetLooping("BOUNCE")
     local a = ag:CreateAnimation("Alpha")
     a:SetFromAlpha(1)
-    a:SetToAlpha(0.35)
-    a:SetDuration(0.7)
+    a:SetToAlpha(0.6)
+    a:SetDuration(0.6)
     glow.anim = ag
 end
 
@@ -459,9 +466,91 @@ local function ShowGlowOn(button)
     glow:SetAllPoints(button)
     glow:SetFrameLevel((button:GetFrameLevel() or 1) + 10)
     local w = button:GetWidth() or 40
-    glow.tex:SetSize(w * 1.9, w * 1.9)
+    for _, tex in ipairs(glow.texs) do tex:SetSize(w * 2, w * 2) end
     glow:Show()
     glow.anim:Play()
+end
+
+-- Order badges: on every node the build still puts points in, the build step
+-- (1 to 51) of its next point, top-left of the button (the rank count sits
+-- bottom-right). As ranks are learned each badge moves on to the next step.
+local badges = {}
+-- Buttons carrying a badge get btn.sgjSteps: every step of that talent in the
+-- build (learned ones greyed), added to the button's tooltip. The tree pools
+-- its buttons, so the tags are cleared on each refresh.
+local tagged, hookedButtons = {}, {}
+
+local function HideBadges()
+    for _, bd in ipairs(badges) do bd:Hide() end
+    for btn in pairs(tagged) do btn.sgjSteps = nil end
+    wipe(tagged)
+end
+
+local function AddStepsToTooltip(btn)
+    if not (btn.sgjSteps and GameTooltip:IsOwned(btn)) then return end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(L["SGJ build steps:"], 1, 0.82, 0)
+    GameTooltip:AddLine(btn.sgjSteps, 1, 1, 1, true)
+    GameTooltip:Show()
+end
+
+-- "1 (L10), 2 (L11)" for every point the build puts in this talent; ranks
+-- already learned are grey.
+local function StepsText(view, name, have)
+    local parts, rank = {}, 0
+    for i, n in ipairs(view.points) do
+        if n == name then
+            rank = rank + 1
+            local s = string.format("%d (%s)", i, string.format(L["L%d"], view.levelOf(i)))
+            if rank <= have then s = "|cff808080" .. s .. "|r" end
+            table.insert(parts, s)
+        end
+    end
+    return table.concat(parts, ", ")
+end
+
+local function Badge(i)
+    local bd = badges[i]
+    if not bd then
+        bd = CreateFrame("Frame")
+        bd:SetSize(18, 16)
+        local bg = bd:CreateTexture(nil, "BACKGROUND")
+        bg:SetAllPoints()
+        bg:SetColorTexture(0, 0, 0, 0.8)
+        bd.text = bd:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        bd.text:SetPoint("CENTER", 0, 0)
+        bd.text:SetTextColor(1, 0.82, 0)
+        badges[i] = bd
+    end
+    return bd
+end
+
+local function ShowBadges(tf, st, tree, view)
+    HideBadges()
+    if not (st and tf.GetTalentButtonByNodeID) then return end
+    local n = 0
+    for name, step in pairs(st.nextOf) do
+        local info = tree[name]
+        local ok, btn = false, nil
+        if info and info.nodeID then ok, btn = pcall(tf.GetTalentButtonByNodeID, tf, info.nodeID) end
+        if ok and btn and btn:IsVisible() then
+            n = n + 1
+            local bd = Badge(n)
+            bd:SetParent(btn)
+            bd:ClearAllPoints()
+            bd:SetPoint("TOPLEFT", btn, "TOPLEFT", -4, 4)
+            bd:SetFrameLevel((btn:GetFrameLevel() or 1) + 12)
+            bd.text:SetText(step)
+            bd:SetWidth(math.max(18, (bd.text:GetStringWidth() or 8) + 8))
+            bd:Show()
+            btn.sgjSteps = StepsText(view, name, info.rank or 0)
+            tagged[btn] = true
+            if not hookedButtons[btn] then
+                hookedButtons[btn] = true
+                btn:HookScript("OnEnter", AddStepsToTooltip)
+            end
+        end
+    end
 end
 
 local function FormatOff(off)
@@ -665,7 +754,7 @@ local function RefreshTalentWindow()
         end
     end
 
-    if not shown then HideGlow(); return end
+    if not shown then HideGlow(); HideBadges(); return end
     -- The glow follows the tab shown (its talents and its build).
     local vg = ViewGroup()
     local b = GetActiveBuild(vg)
@@ -680,6 +769,7 @@ local function RefreshTalentWindow()
         if ok then button = btn end
     end
     if button and button:IsVisible() then ShowGlowOn(button) else HideGlow() end
+    if st then ShowBadges(tf, st, tree, view) else HideBadges() end
 end
 
 local refreshPending = false
