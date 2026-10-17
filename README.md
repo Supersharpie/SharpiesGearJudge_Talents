@@ -8,6 +8,8 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 > Requires **Sharpie's Gear Judge**. Made for **WoW Forever** (it does nothing on Classic Era or TBC).
 
+**See every build online:** [Forever Class Builds](https://sharpiesgearjudge.web.app) shows all the builds, class by class, with their talent order by level and the leveling stat weights Gear Judge uses. It's updated as builds change, so it can be a little ahead of the latest release.
+
 ---
 
 ## Features
