@@ -1088,7 +1088,8 @@ local function UpdatePageIn()
         local b = list[k]
         if b then
             local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
-            btn:SetText(mark .. BuildName(b) .. (b.fastest and (" |cffffd100" .. L["(Fastest)"] .. "|r") or ""))
+            btn:SetText(mark .. BuildName(b) .. (b.fastest and (" |cffffd100" .. L["(Fastest)"] .. "|r") or "")
+                .. (b.experimental and (" |cffff8000" .. L["(Experimental)"] .. "|r") or ""))
             btn.id = b.id
             if b.id == selectedId then btn:LockHighlight() else btn:UnlockHighlight() end
             btn:Show()
@@ -1115,6 +1116,8 @@ local function UpdatePageIn()
 
     local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
     if b.summary then table.insert(info, L[b.summary]) end
+    -- experimental (2026-10-17): a model result nobody has tried in game yet
+    if b.experimental then table.insert(info, L["|cffff8000Experimental:|r from our model only, not yet tried in game."]) end
     -- solo leveling: the class's fastest build is flagged; the others say how much slower they level (our model)
     if b.fastest then
         table.insert(info, L["|cffffd100Fastest|r solo leveling build for your class in our model."])

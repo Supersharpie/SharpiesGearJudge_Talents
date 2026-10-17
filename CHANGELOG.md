@@ -20,7 +20,7 @@
 - Every Warrior talent tree now has a **Solo Leveling** and a **Dungeon Leveling** build, found by a full talent search on Gear Judge's leveling models, now checked against beta combat logs.
 	- **Solo Leveling**: Arms (two-hander) is still the fastest. **Fury** (dual wield) is new and levels about 1% slower. **Protection** (sword and board) is new: about 22% slower, but you take far less damage and rarely stop to eat. Fury with a two-hander came out about 15% slower than dual wield, so the Fury builds assume two one-handers.
 	- **Dungeon Leveling**: Arms is retuned (Sweeping Strikes for packs at 30). **Fury** is new, about 11% behind Arms in groups. **Protection** tanking is retuned: 31 Protection points, then Arms talents for rage and threat, for about 3% faster runs.
-	- **Arms: Solo Leveling** is retuned too. Mortal Strike now comes at 44, after Bloodthrill, Weaponmaster and Sweeping Strikes (Mortal Strike requires it).
+	- **Arms: Solo Leveling** is retuned too: Bloodthrill and Weaponmaster now come before Mortal Strike.
 - Protection: AoE Farming stays as it is: a new level-60 check in the simulator found it still the best farmer, about 4-6% ahead of the new Protection builds.
 - Some builds end with a few points the model gives no value (Booming Voice, Lingering Rage). Their notes say so.
 
@@ -34,7 +34,7 @@
 ### 🐾 Druid: A Leveling Build for Every Tree
 - Every Druid talent tree now has a **Solo Leveling** and a **Dungeon Leveling** build. Balance and Restoration solo use a new caster model in Gear Judge (Wrath, Starfire, Moonfire, Insect Swarm, Hurricane on dungeon packs, from the Forever client's spell values).
 	- **Solo Leveling**: **Feral** (Bear Form until 20, then Cat) is still the fastest, and about 2% faster than before. **Balance** is new, about 31% slower: Moonkin Form at 40, Starfire with Moonfire. **Restoration** is new, about 41% slower: its damage comes from the Balance talents, and the Restoration points keep it your main tree but add little to solo leveling.
-	- **Dungeon Leveling**: **Cat** is retuned (about 4% more damage; Claw instead of Shred, since with Ferocity it does more per Energy). **Balance** is new, about 18% behind Cat in groups, with Hurricane on packs from 40. **Restoration** healing is retuned: about 3% more healing per pull, Wild Growth at 40. **Bear** tanking is unchanged: the search found nothing better.
+	- **Dungeon Leveling**: **Cat** is retuned (about 4% more damage; Claw instead of Shred, since with Ferocity it does more per Energy). **Balance** is new, about 18% behind Cat in groups, with Hurricane on packs from 40. **Restoration** healing is retuned: about 3% more healing per pull, Wild Growth at 40. **Bear** tanking keeps its talents: the search found nothing better.
 
 ### 🏹 Hunter: A Leveling Build for Every Tree
 - Every Hunter talent tree now has a **Solo Leveling** and a **Dungeon Leveling** build. Survival uses a new melee model in Gear Judge (Raptor Strike, Strider Kick, Mongoose Bite, Counterattack, Immolation Trap, a two-hander or two one-handers), checked against the Survival Hunters in the beta dungeon logs: every one of them melees.
@@ -51,7 +51,9 @@
 
 ### ✨ Priest: A Leveling Build for Every Tree
 - Every Priest talent tree now has a **Solo Leveling** and a **Dungeon Leveling** build, on the 2026-10-15 talent tree. Gear Judge has a new Priest damage model for them (Shadow Word: Pain, Mind Blast, Mind Flay, Devouring Plague, Starshards, Shadow Word: Death, Smite, Holy Fire, Penance and the wand, from the Forever client's spell values), checked against the Shadow Priests in the beta dungeon logs.
-	- **Solo Leveling**: **Shadow** is still the fastest and about 15% faster than the old build: more Shadow points (Shadow Weaving, Darkness, Improved Mind Flay, Dark Inspiration) in place of the Discipline mana talents. **Discipline** (Smite) is new, about 3% slower. **Holy** (Smite) is new, about 5% slower. (Both gained on the 2026-10-16 model update, where damage over time can crit as the beta logs show and the model may skip Devouring Plague and Mind Blast for the wand; Shadow solo got about 6% faster with it.)	- **Dungeon Leveling**: **Shadow** deals about 8% more damage: Shadow Word: Pain on every mob in a pack, Mind Blast only now and then, as logged players do (it makes a lot of threat). **Holy** healing is about 6% better per pull and is now the stronger Priest healer; **Discipline** is about 3% better and about 5% behind Holy. Both healers are now scored with the log-calibrated healing model the other healers use.
+	- **Solo Leveling**: the Priest model now counts damage over time crits (the beta logs show they crit in Forever) and lets you use the wand between spells, which favours the Discipline mana talents. **Discipline** (Smite) is new and now the fastest Priest leveler in our model. **Shadow** is about 2% slower, with more Shadow points (Shadow Weaving, Darkness, Improved Mind Flay, Dark Inspiration) and Shadowform at 40. **Holy** (Smite) is new, about 3% slower.
+	- **Shadow: Solo Leveling (No Shadowform)** is new and marked **(Experimental)**: the build the search finds fastest on that model, Shadow with the Discipline mana talents in place of Shadowform and Vampiric Embrace, about 3% faster than Shadow: Solo Leveling. Nobody has tried it in game yet, so treat it as a model result.
+	- **Dungeon Leveling**: **Shadow** deals about 8% more damage: Shadow Word: Pain on every mob in a pack, Mind Blast only now and then, as logged players do (it makes a lot of threat). **Holy** healing is about 6% better per pull and is now the stronger Priest healer; **Discipline** is about 3% better and about 5% behind Holy. Both healers are now scored with the log-calibrated healing model the other healers use.
 	- **Shadow: Multi-DoT Farming** keeps its talents; Devouring Plague's shorter cooldown and Devouring Contagion now spreading to 2 mobs make it stronger.
 
 ### 🗡️ Rogue: A Leveling Build for Every Tree
@@ -67,10 +69,11 @@
 	- **Tank: AoE Farming** now takes Mental Dexterity in place of Flurry (Flurry needs Mental Dexterity at full rank first), for the same speed: about 150 mobs an hour with 4 mobs.
 
 ### 🩹 Priest, Shaman and Warlock: Kept Legal After the Patch
-- The 2026-10-15 beta patch removed Shadow Affinity (Priest), Call of Thunder (Shaman) and Malediction (Warlock), and moved Improved Power Word: Shield, Mental Strength, Totemic Focus and Tidal Focus to other rows. The builds that used them now take a stand-in in the same tree (Dark Inspiration, Trial by Fire, Grim Reach and the build's own Affliction talents) and learn moved talents once their row opens, so every build can still be followed in game. Each class gets its full redo in its own leveling pass.
+- The 2026-10-15 beta patch removed Shadow Affinity (Priest), Call of Thunder (Shaman) and Malediction (Warlock), and moved Improved Power Word: Shield, Mental Strength, Totemic Focus and Tidal Focus to other rows. The builds that used them now take a stand-in in the same tree (Dark Inspiration, Trial by Fire, Grim Reach and the build's own Affliction talents) and learn moved talents once their row opens. Priest and Shaman have since had their full leveling pass (above).
 
 ### 🏁 Fastest Solo Build Marked
 - With more than one Solo Leveling build per class, the fastest one is now tagged **(Fastest)** in the build list. Each of the others says how much slower it levels in our model.
+- Builds that come only from our model and haven't been tried in game are tagged **(Experimental)**, and their build info says so.
 
 ### ⚔️ Retribution: Dungeon Leveling Tip
 - The build note now says to keep **Judgement of the Crusader** up on bosses (about a fifth more damage) and to skip it on trash, where each mob dies before it pays back. Beta combat logs show most Retribution Paladins never use it. Gear Judge's dungeon weights for this build now assume you do, on bosses. Updated in all eight languages.
