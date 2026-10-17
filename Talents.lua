@@ -1088,7 +1088,7 @@ local function UpdatePageIn()
         local b = list[k]
         if b then
             local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
-            btn:SetText(mark .. BuildName(b))
+            btn:SetText(mark .. BuildName(b) .. (b.fastest and (" |cffffd100" .. L["(Fastest)"] .. "|r") or ""))
             btn.id = b.id
             if b.id == selectedId then btn:LockHighlight() else btn:UnlockHighlight() end
             btn:Show()
@@ -1115,6 +1115,14 @@ local function UpdatePageIn()
 
     local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
     if b.summary then table.insert(info, L[b.summary]) end
+    -- solo leveling: the class's fastest build is flagged; the others say how much slower they level (our model)
+    if b.fastest then
+        table.insert(info, L["|cffffd100Fastest|r solo leveling build for your class in our model."])
+    elseif b.slower then
+        local fastest
+        for _, x in ipairs(T.BuildList) do if x.class == b.class and x.fastest then fastest = x; break end end
+        if fastest then table.insert(info, string.format(L["About %d%% slower to level than %s, the fastest solo build, in our model."], b.slower, BuildName(fastest))) end
+    end
     table.insert(info, " ")
     table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
     if b.stage == "pvp" then table.insert(info, L["PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps."]) end
