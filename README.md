@@ -16,11 +16,10 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows gold in the talent window. Every talent your build still puts points into shows a number on its icon: the step of its next point in the build (1 is your first point, 51 your last). Hover a numbered talent to see every step the build puts into it, with the level of each. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
-- **Talent Builds page.** A new page in the Gear Judge window lists your class's builds, sorted by what you're doing: **Max Level** (raid builds), **Leveling**, **Farming** or **PvP**, then **Tank**, **Healer** or **DPS**, then **Solo** or **Dungeon** for leveling builds. The role and Solo/Dungeon buttons show how many builds they hold. The fastest solo build for your class is tagged **(Fastest)**, and builds that come only from our model are tagged **(Experimental)**. Click a build to see:
-  - what it's for;
-  - which stat weights it uses;
-  - how much slower it levels than your class's fastest solo build, for the other solo builds;
-  - the full level-by-level talent order, with points you've spent in green and the next one in gold.
+- **Talent Builds page.** A page in the Gear Judge window with three columns:
+  - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo** or **Dungeon**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level. Your current build is marked **Active**.
+  - **The build:** its spec icon, a bar showing how its points split between the three trees, what it's for and which stat weights it uses. For your active build, a progress bar shows how far along you are and the next talent with the level it's planned for.
+  - **The talent order:** level by level, each talent with its icon and its tree's colour. Points you've spent are green, the next one gold, and the list scrolls to where you are.
 - **Gear advice that follows your build.** Choosing a build tells Gear Judge which weight profile to use, from your first talent point to level 60. A Protection tank build gets tank weights right away, before its tank talents would normally switch you over.
 - **Dual Specialization.** From level 40 each spec keeps its own build. The talent window highlight follows the Primary or Secondary tab you're viewing, and the Builds page lets you pick a build for either spec.
 - **Every build is checked** against WoW Forever's current talent trees: one point per level from 10, tier requirements, talents that need another talent at full rank first (the arrows in the tree), minimum levels and maximum ranks. Every build can be learned in game in the order shown.

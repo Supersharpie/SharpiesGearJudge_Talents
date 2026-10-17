@@ -1,6 +1,13 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
-## 🚀 v1.1.5
+## 🚀 v1.2.0
+
+### 🎨 Talent Builds Page Redesigned
+- **One row of tabs, every build in view.** Max Level, Leveling, Farming and PvP sit in one row at the top; the Tank / Healer / DPS and Solo / Dungeon button rows are gone. Every build for the chosen tab is listed below, grouped under Tank, Healer and DPS headers with their role icons, so the whole choice is in front of you without clicking through filters.
+- **Tags on each build:** Solo or Dungeon, Fastest, Experimental, and how much slower the other solo builds level. Your current build says Active.
+- **Build header:** the spec icon of the build's main tree, its category, and a bar showing how its points split between the three trees (tree names in your language, from the game).
+- **Progress box** for your active build: a progress bar, the next talent with the level it's planned for, points waiting to be spent and any points outside the build. "Use This Build" becomes an Active mark when the build is already yours.
+- **Talent order:** each line has the talent's icon and a stripe in its tree's colour; single-rank talents (abilities like Holy Shield) are outlined. A talent you're part way through is split, so the points you've taken show green and the rest gold. The list scrolls to your next talent.
 
 ### 🔗 Every Build Can Be Learned In Game
 - Forever's talent trees have arrows: some talents need another talent at full rank before you can put a point in them (Mortal Strike needs Sweeping Strikes, Shield Slam needs Concussion Blow, Shadowform needs Vampiric Embrace, Bestial Wrath needs Intimidation, Soul Link needs Demonic Sacrifice, and so on). Our build checker and talent searches ignored them, so **48 builds** across all nine classes asked for a talent before the game allows it. Every build now follows the arrows, and the checker refuses any build that doesn't.

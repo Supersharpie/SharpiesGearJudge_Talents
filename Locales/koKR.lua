@@ -400,3 +400,15 @@ L["Subtlety with two daggers for dungeons while leveling: an Ambush opener, then
 L["Combat with swords for questing alone: Sinister Strike and Eviscerate, Slice and Dice on longer fights. Improved Sinister Strike and Improved Eviscerate first, Precision, Deflection and Riposte at 20, Malice from Assassination at 22-26, Murder and Ruthlessness, Relentless Strikes and Endurance, Lightning Reflexes, Flawless Execution, Dual Wield Specialization at 37, Hack and Slash from 41 (extra attacks with swords), Blade Flurry at 45, Weapon Expertise, Aggression, Adrenaline Rush at 51, Cold Blood and Lethality. A mace levels about as fast (Hack and Slash then ignores armor)."] = "혼자 퀘스트하는 검 전투 빌드: 사악한 일격과 절개, 긴 전투에서는 난도질. 사악한 일격 연마와 절개 연마 먼저, 20레벨에 정밀함, 재빠른 손놀림, 반격, 22-26레벨에 암살 특성의 원한, 학살과 무정함, 가혹한 일격과 지구력, 번개같은 반사 신경, 완벽한 처형, 37레벨에 쌍수 무기 전문화, 41레벨부터 자르고 베기(검으로 추가 공격), 45레벨에 폭풍의 칼날, 무기 전문가, 공격성, 51레벨에 아드레날린 촉진, 냉혈과 치명상. 둔기로도 거의 같은 속도로 레벨업합니다(이때 자르고 베기는 방어도를 무시합니다)."
 L["Assassination with two daggers for questing alone: Sinister Strike and Eviscerate (no Backstab: the mob faces you) until Mutilate at 42, then Mutilate. Malice and Improved Sinister Strike first, Improved Eviscerate, Murder, Precision and Ruthlessness, Relentless Strikes, Deflection and Riposte, Remorseless Attacks, Improved Slice and Dice, Cold Blood at 37, Improved Poisons, Mutilate at 42 with Puncturing Wounds, then Vigor and Vile Poisons."] = "혼자 퀘스트하는 쌍단검 암살 빌드: 42레벨에 절단을 배울 때까지 사악한 일격과 절개(몹이 당신을 마주 보므로 기습은 불가), 그 후에는 절단. 원한과 사악한 일격 연마 먼저, 절개 연마, 학살, 정밀함과 무정함, 가혹한 일격, 재빠른 손놀림과 반격, 냉혹함, 난도질 연마, 37레벨에 냉혈, 독 연구, 42레벨에 상처 꿰뚫기와 함께 절단, 그다음 강한 체력과 치명적인 독."
 L["Subtlety with two daggers for questing alone, the fastest Rogue leveler in our model by a hair (Combat and Assassination are within about 2%). Open every pull from stealth with Ambush, then Sinister Strike (Hemorrhage from 33) and Eviscerate, with Ghostly Strike on cooldown from 25. Opportunity and Malice first, Improved Ambush at 18-20, Setup at 21 (combo points when you dodge), Initiative and Ghostly Strike at 24-27, Serrated Blades, Premeditation at 30, Hemorrhage at 33, then Combat and Assassination: Improved Eviscerate, Lightning Reflexes, Precision, Deflection and Riposte, Murder and Ruthlessness. Camouflage is a free pick on the way to Setup."] = "혼자 퀘스트하는 쌍단검 잠행 빌드로, 우리 모델에서 근소한 차이로 가장 빠른 도적 레벨업 빌드입니다(전투와 암살은 약 2% 이내). 모든 전투를 은신 상태에서 매복으로 시작한 뒤 사악한 일격(33레벨부터 과다출혈)과 절개, 25레벨부터 그림자 일격은 재사용 대기시간마다. 기회 포착과 원한 먼저, 18-20레벨에 매복 연마, 21레벨에 사전 준비(회피하면 연계 점수), 24-27레벨에 선제 공격과 그림자 일격, 톱니 칼날, 30레벨에 사전계획, 33레벨에 과다출혈, 그다음 전투와 암살: 절개 연마, 번개같은 반사 신경, 정밀함, 재빠른 손놀림과 반격, 학살과 무정함. 위장술은 사전 준비로 가는 길에 자유롭게 찍는 점수입니다."
+
+-- Added in 1.2.0 (Builds page redesign)
+L["%d / %d"] = "%d / %d"
+L["%d point to spend"] = "사용할 포인트 %d"
+L["%d points to spend"] = "사용할 포인트 %d"
+L["%d%% slower"] = "%d%% 느림"
+L["Active"] = "사용 중"
+L["Active build"] = "사용 중인 빌드"
+L["Experimental"] = "실험적"
+L["Fastest"] = "최고 속도"
+L["Next: %s at level %d"] = "다음: %s (레벨 %d)"
+L["Progress"] = "진행도"

@@ -402,3 +402,15 @@ L["Subtlety with two daggers for dungeons while leveling: an Ambush opener, then
 L["Combat with swords for questing alone: Sinister Strike and Eviscerate, Slice and Dice on longer fights. Improved Sinister Strike and Improved Eviscerate first, Precision, Deflection and Riposte at 20, Malice from Assassination at 22-26, Murder and Ruthlessness, Relentless Strikes and Endurance, Lightning Reflexes, Flawless Execution, Dual Wield Specialization at 37, Hack and Slash from 41 (extra attacks with swords), Blade Flurry at 45, Weapon Expertise, Aggression, Adrenaline Rush at 51, Cold Blood and Lethality. A mace levels about as fast (Hack and Slash then ignores armor)."] = "單人解任務用的劍系戰鬥配置：邪惡攻擊和剔骨，較長的戰鬥用切割。先點強化邪惡攻擊和強化剔骨，20級點精確、偏斜和還擊，22-26級點刺殺系的惡意，謀殺和無情，無情打擊和耐久，閃電反射、完美處決，37級點雙武器專精，41級起點劈斬（用劍時有額外攻擊），45級點劍刃亂舞，武器專家、侵略，51級點能量刺激，冷血和致命偷襲。用錘練功速度也差不多（此時劈斬改為無視護甲）。"
 L["Assassination with two daggers for questing alone: Sinister Strike and Eviscerate (no Backstab: the mob faces you) until Mutilate at 42, then Mutilate. Malice and Improved Sinister Strike first, Improved Eviscerate, Murder, Precision and Ruthlessness, Relentless Strikes, Deflection and Riposte, Remorseless Attacks, Improved Slice and Dice, Cold Blood at 37, Improved Poisons, Mutilate at 42 with Puncturing Wounds, then Vigor and Vile Poisons."] = "單人解任務用的雙匕首刺殺配置：在42級學到截肢前用邪惡攻擊和剔骨（不用背刺：怪物面對著你），之後改用截肢。先點惡意和強化邪惡攻擊，強化剔骨、謀殺、精確和無情，無情打擊、偏斜和還擊、冷酷攻擊、強化切割，37級點冷血，強化毒藥，42級點截肢並搭配刺傷，然後點精力和惡性毒藥。"
 L["Subtlety with two daggers for questing alone, the fastest Rogue leveler in our model by a hair (Combat and Assassination are within about 2%). Open every pull from stealth with Ambush, then Sinister Strike (Hemorrhage from 33) and Eviscerate, with Ghostly Strike on cooldown from 25. Opportunity and Malice first, Improved Ambush at 18-20, Setup at 21 (combo points when you dodge), Initiative and Ghostly Strike at 24-27, Serrated Blades, Premeditation at 30, Hemorrhage at 33, then Combat and Assassination: Improved Eviscerate, Lightning Reflexes, Precision, Deflection and Riposte, Murder and Ruthlessness. Camouflage is a free pick on the way to Setup."] = "單人解任務用的雙匕首敏銳配置，在我們的模型中以些微差距成為練功最快的盜賊（戰鬥和刺殺相差約2%以內）。每次開怪都在潛行中用伏擊開場，然後用邪惡攻擊（33級起改用出血）和剔骨，25級起鬼魅攻擊冷卻好就用。先點伺機而動和惡意，18-20級點強化伏擊，21級點調整（閃躲時獲得連擊點數），24-27級點先發制人和鬼魅攻擊，鋸刃，30級點預謀，33級點出血，然後點戰鬥和刺殺系：強化剔骨、閃電反射、精確、偏斜和還擊、謀殺和無情。偽裝是點向調整途中的自由選點。"
+
+-- Added in 1.2.0 (Builds page redesign)
+L["%d / %d"] = "%d / %d"
+L["%d point to spend"] = "%d點可分配"
+L["%d points to spend"] = "%d點可分配"
+L["%d%% slower"] = "慢%d%%"
+L["Active"] = "使用中"
+L["Active build"] = "使用中的天賦配置"
+L["Experimental"] = "實驗性"
+L["Fastest"] = "最快"
+L["Next: %s at level %d"] = "下一個：%s（等級%d）"
+L["Progress"] = "進度"

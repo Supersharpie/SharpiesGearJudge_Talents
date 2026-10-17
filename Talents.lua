@@ -988,23 +988,16 @@ end
 -- 7b. PAGE IN THE GEAR JUDGE WINDOW (MSC.RegisterPluginTab)
 -- =========================================================================
 local page, selectedId
-local LIST_BUTTONS = 8
-local LIST_TOP = -172      -- the build list starts below the three category rows
-local cat                  -- { stage, role, mode } shown on the page
+local cat                  -- { stage } shown on the page
 
--- Start on the active build's category; otherwise Max Level at 60 (Leveling if the
--- class has no raid builds yet), else
--- Leveling with the role of the class's first leveling build (its Solo Leveling build).
+-- Start on the active build's stage; otherwise Max Level at 60 (Leveling if the
+-- class has no raid builds yet), else Leveling.
 local function DefaultCategory()
     local b = GetActiveBuild()
-    if b then return { stage = b.stage, role = b.role, mode = b.mode or "solo" } end
+    if b then return { stage = b.stage } end
     local stage = ((UnitLevel("player") or 0) >= 60) and "raid" or "leveling"
     if #CategoryBuilds(stage) == 0 then stage = (stage == "raid") and "leveling" or "raid" end
-    local role, mode = "dps", "solo"
-    for _, x in ipairs(ClassBuilds()) do
-        if x.stage == stage then role = x.role; mode = x.mode or "solo"; break end
-    end
-    return { stage = stage, role = role, mode = mode }
+    return { stage = stage }
 end
 
 -- A readable name for a Gear Judge weight profile key.
@@ -1027,15 +1020,78 @@ local function ProfileLabel(key)
     return key
 end
 
--- One line per run of points in the same talent: "L10-14  Redoubt 1-5/5".
--- Points already taken are green, the next one gold, later ones grey.
--- Returns two aligned columns: levels and talents (header in the talent column).
-local function OrderLines(view, tree, header, stopLevel)
-    local lvls, lines = { " " }, { header }
+-- ---------------------------------------------------------------------------
+-- Talent trees (Builds.lua T.Trees / T.TalentInfo, from the client's tables)
+-- ---------------------------------------------------------------------------
+-- Tree colours by the tree's English name; a tree not listed takes its slot's colour.
+local TREE_COLOR = {
+    ["Arms"] = { 0.78, 0.55, 0.32 }, ["Fury"] = { 0.90, 0.30, 0.25 }, ["Protection"] = { 0.35, 0.60, 0.95 },
+    ["Holy"] = { 0.95, 0.80, 0.35 }, ["Retribution"] = { 0.90, 0.35, 0.40 },
+    ["Beast Mastery"] = { 0.45, 0.80, 0.35 }, ["Marksmanship"] = { 0.35, 0.60, 0.95 }, ["Survival"] = { 0.80, 0.55, 0.30 },
+    ["Assassination"] = { 0.45, 0.80, 0.35 }, ["Combat"] = { 0.90, 0.75, 0.30 }, ["Subtlety"] = { 0.55, 0.55, 0.85 },
+    ["Discipline"] = { 0.85, 0.85, 0.85 }, ["Shadow"] = { 0.65, 0.45, 0.90 },
+    ["Elemental"] = { 0.95, 0.55, 0.25 }, ["Enhancement"] = { 0.35, 0.60, 0.95 }, ["Restoration"] = { 0.40, 0.80, 0.45 },
+    ["Arcane"] = { 0.70, 0.50, 0.95 }, ["Fire"] = { 0.95, 0.50, 0.20 }, ["Frost"] = { 0.45, 0.75, 1.00 },
+    ["Affliction"] = { 0.45, 0.80, 0.35 }, ["Demonology"] = { 0.70, 0.45, 0.90 }, ["Destruction"] = { 0.90, 0.35, 0.25 },
+    ["Balance"] = { 0.55, 0.55, 0.95 }, ["Feral Combat"] = { 0.95, 0.65, 0.25 },
+}
+local SLOT_COLOR = { { 0.95, 0.80, 0.35 }, { 0.35, 0.60, 0.95 }, { 0.90, 0.35, 0.40 } }
+local LOCALE = GetLocale and GetLocale() or "enUS"
+
+local function Trees() return T.Trees and T.Trees[PlayerClass()] or {} end
+local function TreeColor(i)
+    local t = Trees()[i]
+    return (t and TREE_COLOR[t.name]) or SLOT_COLOR[i] or { 0.7, 0.7, 0.7 }
+end
+local function TreeName(i)
+    local t = Trees()[i]
+    if not t then return "?" end
+    return (t.loc and t.loc[LOCALE]) or t.name
+end
+-- { tree index, tier, max rank } of a build talent, or nil.
+local function TalentInfo(name)
+    local c = T.TalentInfo and T.TalentInfo[PlayerClass()]
+    return c and c[name]
+end
+local function TalentIcon(name)
+    local ids = T.TalentIDs and T.TalentIDs[PlayerClass()]
+    local sid = ids and ids[name]
+    if not sid then return nil end
+    if C_Spell and C_Spell.GetSpellTexture then return C_Spell.GetSpellTexture(sid) end
+    return GetSpellTexture and GetSpellTexture(sid)
+end
+-- Points per tree for a build's talents (the respec's, once past the respec level), and its main tree.
+local function TreeSplit(b)
+    local view = b
+    if b.respec and (UnitLevel("player") or 0) >= b.respec.level then view = b.respec end
+    local counts, main = { 0, 0, 0 }, 1
+    for _, name in ipairs(view.points) do
+        local info = TalentInfo(name)
+        if info then counts[info[1]] = (counts[info[1]] or 0) + 1 end
+    end
+    for i = 1, 3 do if counts[i] > counts[main] then main = i end end
+    return counts, main
+end
+
+-- One row per run of points in the same talent: "L10-14  Redoubt 1-5/5". A run the player
+-- is part way through is split, so the points taken show green and the rest gold.
+-- Rows: { lvl, text, color, tree, icon, key, isNext } or { header = text }.
+local function OrderRows(view, tree, header, stopLevel, rows)
+    rows = rows or {}
+    table.insert(rows, { header = header })
     local counts, nextMarked = {}, false
     local i, n = 1, #view.points
     if stopLevel then
         while n > 0 and view.levelOf(n) >= stopLevel do n = n - 1 end
+    end
+    local function Add(name, i1, i2, first, last, color, isNext)
+        local info = TalentInfo(name)
+        local max = (tree and tree[name] and tree[name].max) or (info and info[3])
+        local l1, l2 = view.levelOf(i1), view.levelOf(i2)
+        local lvl = (l1 == l2) and string.format(L["L%d"], l1) or string.format(L["L%d-%d"], l1, l2)
+        local ranks = (first == last) and tostring(last) or (first .. "-" .. last)
+        table.insert(rows, { lvl = lvl, text = string.format("%s %s%s", L[name], ranks, max and ("/" .. max) or ""),
+            color = color, tree = info and info[1], icon = TalentIcon(name), key = (max == 1), isNext = isNext })
     end
     while i <= n do
         local name = view.points[i]
@@ -1045,85 +1101,127 @@ local function OrderLines(view, tree, header, stopLevel)
         local last = first + (j - i)
         counts[name] = last
         local have = tree and tree[name] and tree[name].rank or 0
-        local max = tree and tree[name] and tree[name].max
-        local color
-        if have >= last then color = "|cff55ff55"
-        elseif not nextMarked then color = "|cffffd100"; nextMarked = true
-        else color = "|cffaaaaaa" end
-        local l1, l2 = view.levelOf(i), view.levelOf(j)
-        local lvl = (l1 == l2) and string.format(L["L%d"], l1) or string.format(L["L%d-%d"], l1, l2)
-        local ranks = (first == last) and tostring(last) or (first .. "-" .. last)
-        table.insert(lvls, color .. lvl .. "|r")
-        table.insert(lines, string.format("%s%s %s%s|r", color, L[name], ranks, max and ("/" .. max) or ""))
+        if have >= last then
+            Add(name, i, j, first, last, "|cff55ff55", false)
+        elseif have >= first and not nextMarked then
+            local split = i + (have - first)  -- last point taken
+            Add(name, i, split, first, have, "|cff55ff55", false)
+            Add(name, split + 1, j, have + 1, last, "|cffffd100", true); nextMarked = true
+        elseif not nextMarked then
+            Add(name, i, j, first, last, "|cffffd100", true); nextMarked = true
+        else
+            Add(name, i, j, first, last, "|cffaaaaaa", false)
+        end
         i = j + 1
     end
-    return lvls, lines
+    return rows
 end
 
 local UpdatePage -- set below (it wraps UpdatePageIn with the shown spec)
 local pageGroup -- the spec the Builds page shows (nil = the active one)
 
+-- Small coloured tags under a build's name: Solo / Dungeon, Fastest, Experimental, % slower.
+local function BuildTags(b)
+    local tags = {}
+    if b.stage == "leveling" and b.mode then
+        table.insert(tags, (b.mode == "solo" and "|cff7fb2ff" or "|cffc29bff") .. L[LABEL[b.mode]] .. "|r")
+    end
+    if b.fastest then table.insert(tags, "|cff55ff55" .. L["Fastest"] .. "|r") end
+    if b.experimental then table.insert(tags, "|cffff8000" .. L["Experimental"] .. "|r") end
+    if b.slower then table.insert(tags, "|cff999999" .. string.format(L["%d%% slower"], b.slower) .. "|r") end
+    return table.concat(tags, "  ")
+end
+
+local ROLE_ICON = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
+local ROLE_COORDS = { tank = { 0, 19/64, 22/64, 41/64 }, healer = { 20/64, 39/64, 1/64, 20/64 }, dps = { 20/64, 39/64, 22/64, 41/64 } }
+
 local function UpdatePageIn()
     if not page then return end
     local active = GetActiveBuild()
     cat = cat or DefaultCategory()
-    local list = CategoryBuilds(cat.stage, cat.role, cat.mode)
-    local sel = selectedId and T.Builds[selectedId]
-    if not (sel and sel.class == PlayerClass() and InCategory(sel, cat.stage, cat.role, cat.mode)) then
-        selectedId = (active and InCategory(active, cat.stage, cat.role, cat.mode) and active.id) or (list[1] and list[1].id)
+
+    -- Stage tabs: the chosen one lit, empty ones greyed.
+    for _, btn in ipairs(page.stageButtons) do
+        local n = #CategoryBuilds(btn.key)
+        btn.Text:SetText((n > 0 and "" or "|cff777777") .. L[btn.label])
+        btn:SetSelected(cat.stage == btn.key)
     end
-    -- Category buttons: the chosen one stays lit; each shows how many builds it holds.
-    for _, btn in ipairs(page.catButtons) do
-        local n
-        if btn.field == "stage" then n = #CategoryBuilds(btn.key)
-        elseif btn.field == "role" then n = #CategoryBuilds(cat.stage, btn.key)
-        else n = #CategoryBuilds("leveling", cat.role, btn.key) end
-        local grey = n > 0 and "" or "|cff888888"
-        if btn.field == "stage" then btn:SetText(grey .. L[btn.label])  -- four across: no room for a count
-        else btn:SetText(string.format("%s%s (%d)", grey, L[btn.label], n)) end
-        if cat[btn.field] == btn.key then btn:LockHighlight() else btn:UnlockHighlight() end
-        btn:SetShown(btn.field ~= "mode" or cat.stage == "leveling")
-    end
-    for k, btn in ipairs(page.list) do
-        local b = list[k]
-        if b then
-            local mark = (active and active.id == b.id) and "|cff00ff00> |r" or ""
-            btn:SetText(mark .. BuildName(b) .. (b.fastest and (" |cffffd100" .. L["(Fastest)"] .. "|r") or "")
-                .. (b.experimental and (" |cffff8000" .. L["(Experimental)"] .. "|r") or ""))
-            btn.id = b.id
-            if b.id == selectedId then btn:LockHighlight() else btn:UnlockHighlight() end
-            btn:Show()
-        else
-            btn:Hide()
+
+    -- Build list: every build of the stage, grouped by role.
+    local entries = {}
+    for _, r in ipairs(ROLES) do
+        local list = CategoryBuilds(cat.stage, r.key)
+        if #list > 0 then
+            table.insert(entries, { role = r.key, label = L[r.label] })
+            -- Solo before Dungeon, the fastest first.
+            table.sort(list, function(a, b)
+                local ma, mb = (a.mode == "dungeon") and 1 or 0, (b.mode == "dungeon") and 1 or 0
+                if ma ~= mb then return ma < mb end
+                if (a.fastest and 1 or 0) ~= (b.fastest and 1 or 0) then return a.fastest and true or false end
+                return (a.slower or 0) < (b.slower or 0)
+            end)
+            for _, b in ipairs(list) do table.insert(entries, { build = b }) end
         end
     end
+    local sel = selectedId and T.Builds[selectedId]
+    if not (sel and sel.class == PlayerClass() and sel.stage == cat.stage) then
+        selectedId = (active and active.stage == cat.stage and active.id) or nil
+        if not selectedId then
+            for _, e in ipairs(entries) do if e.build then selectedId = e.build.id; break end end
+        end
+    end
+    page.SetList(entries, active)
 
     local b = selectedId and T.Builds[selectedId]
     if not b then
-        page.name:SetText("|cffffd100" .. CategoryName(cat.stage, cat.role, cat.mode) .. "|r")
+        page.icon:SetTexture(nil)
+        page.name:SetText("|cffffd100" .. L[LABEL[cat.stage]] .. "|r")
+        page.sub:SetText("")
+        page.split:Hide()
         page.info:SetText(L["No builds here for your class yet."])
-        page.SetOrder({}, {})
-        page.use:Hide(); page.clear:Show(); page.clear:SetEnabled(active ~= nil)
+        page.progress:Hide()
+        page.SetOrder({})
+        page.use:Hide(); page.activeTag:Hide(); page.clear:SetEnabled(active ~= nil)
         return
     end
-    page.use:Show(); page.clear:Show()
-    page.use:SetEnabled(not (active and active.id == b.id))
-    page.clear:SetEnabled(active ~= nil)
 
     local tree = ReadTree()
     local isActive = active and active.id == b.id
-    page.name:SetText((isActive and (L["|cff00ff00Active:|r"] .. " ") or "") .. "|cffffd100" .. BuildName(b) .. "|r")
+    local counts, main = TreeSplit(b)
+    local t = Trees()[main]
+    page.icon:SetTexture(t and t.icon or nil)
+    page.name:SetText("|cffffd100" .. BuildName(b) .. "|r")
+    local sub = CategoryName(b.stage, b.role, b.mode):gsub(" %- ", " · ")
+    if b.fastest then sub = sub .. " · |cff55ff55" .. L["Fastest"] .. "|r" end
+    if b.experimental then sub = sub .. " · |cffff8000" .. L["Experimental"] .. "|r" end
+    page.sub:SetText("|cff999999" .. sub .. "|r")
 
-    local info = { "|cff999999" .. CategoryName(b.stage, b.role, b.mode) .. "|r" }
+    -- Tree split bar: one segment per tree, as wide as its share of the points.
+    local total = counts[1] + counts[2] + counts[3]
+    local barW = page.split:GetWidth()
+    if not barW or barW < 10 then barW = 300 end
+    local x, labels = 0, {}
+    for i = 1, 3 do
+        local seg = page.split.segs[i]
+        local w = total > 0 and math.floor(barW * counts[i] / total + 0.5) or 0
+        if i == 3 then w = math.max(0, barW - x) end
+        local c = TreeColor(i)
+        seg:SetColorTexture(c[1], c[2], c[3], 1)
+        seg:ClearAllPoints(); seg:SetPoint("TOPLEFT", page.split, "TOPLEFT", x, 0)
+        seg:SetSize(math.max(w, 0.01), 8); seg:SetShown(counts[i] > 0)
+        x = x + w
+        labels[i] = string.format("|cff%02x%02x%02x%s %d|r", math.floor(c[1] * 255), math.floor(c[2] * 255), math.floor(c[3] * 255), TreeName(i), counts[i])
+    end
+    page.split.label:SetText(table.concat(labels, "    "))
+    page.split:Show()
+
+    local info = {}
     if b.summary then table.insert(info, L[b.summary]) end
     -- experimental (2026-10-17): a model result nobody has tried in game yet
     if b.experimental then table.insert(info, L["|cffff8000Experimental:|r from our model only, not yet tried in game."]) end
-    -- solo leveling: the class's fastest build is flagged; the others say how much slower they level (our model)
-    if b.fastest then
-        table.insert(info, L["|cffffd100Fastest|r solo leveling build for your class in our model."])
-    elseif b.slower then
+    if b.slower then
         local fastest
-        for _, x in ipairs(T.BuildList) do if x.class == b.class and x.fastest then fastest = x; break end end
+        for _, x2 in ipairs(T.BuildList) do if x2.class == b.class and x2.fastest then fastest = x2; break end end
         if fastest then table.insert(info, string.format(L["About %d%% slower to level than %s, the fastest solo build, in our model."], b.slower, BuildName(fastest))) end
     end
     table.insert(info, " ")
@@ -1133,40 +1231,55 @@ local function UpdatePageIn()
         table.insert(info, string.format(L["|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60)."],
             b.respec.level, L[b.respec.name], ProfileLabel(b.respec.leveling), ProfileLabel(b.respec.endgame)))
     end
+    page.info:SetText(table.concat(info, "\n"))
+
+    -- Progress box (the active build only): a bar, the next talent and its level, off-build points.
+    local P = page.progress
     if isActive and tree then
         local view, respecDue = T.ActiveView(b, tree)
         local st = T.Evaluate(view, tree)
-        table.insert(info, " ")
+        local n = #view.points
+        P.count:SetText(string.format(L["%d / %d"], st.onTrack, n))
+        P.fill:SetWidth(math.max(0.01, (P.bar:GetWidth() or 200) * (n > 0 and st.onTrack / n or 0)))
+        local lines = {}
         if respecDue then
-            table.insert(info, string.format(L["|cff00ff00Time to respec:|r reset your talents at a trainer, then follow %s."], L[b.respec.name]))
+            table.insert(lines, string.format(L["|cff00ff00Time to respec:|r reset your talents at a trainer, then follow %s."], L[b.respec.name]))
         elseif st.complete and b.respec and view == b then
-            table.insert(info, string.format(L["|cff00ff00Done until %d.|r Then respec to %s."], b.respec.level, L[b.respec.name]))
+            table.insert(lines, string.format(L["|cff00ff00Done until %d.|r Then respec to %s."], b.respec.level, L[b.respec.name]))
         elseif st.complete then
-            table.insert(info, L["|cff00ff00Build complete.|r"])
+            table.insert(lines, L["|cff00ff00Build complete.|r"])
         else
-            table.insert(info, string.format(st.unspent == 1 and L["On track %d / %d, %d point to spend. Next: |cff00ff00%s|r"] or L["On track %d / %d, %d points to spend. Next: |cff00ff00%s|r"],
-                st.onTrack, #view.points, st.unspent, TalentLabel(st.upcoming[1], tree)))
+            local nxt = st.upcoming[1]
+            table.insert(lines, string.format(L["Next: %s at level %d"], "|cff00ff00" .. TalentLabel(nxt, tree) .. "|r", view.levelOf(nxt.index)))
+            if st.unspent > 0 then
+                table.insert(lines, string.format(st.unspent == 1 and L["%d point to spend"] or L["%d points to spend"], st.unspent))
+            end
         end
         if #st.off > 0 and not respecDue then
-            table.insert(info, string.format(L["|cffff6060Off-build: %s|r"], FormatOff(st.off)))
+            table.insert(lines, string.format(L["|cffff6060Off-build: %s|r"], FormatOff(st.off)))
         end
+        P.text:SetText(table.concat(lines, "\n"))
+        P:SetHeight(44 + P.text:GetStringHeight())
+        P:Show()
+    else
+        P:Hide()
     end
-    page.info:SetText(table.concat(info, "\n"))
 
-    local lv, tx = OrderLines(b, tree, b.respec and string.format(L["|cffffd100Talent order to %d|r"], b.respec.level - 1) or L["|cffffd100Talent order|r"], b.respec and b.respec.level)
+    -- Use this build, or the Active mark when it already is.
+    page.use:SetShown(not isActive); page.activeTag:SetShown(isActive and true or false)
+    page.clear:SetEnabled(active ~= nil)
+
+    local rows = OrderRows(b, tree, b.respec and string.format(L["|cffffd100Talent order to %d|r"], b.respec.level - 1) or L["|cffffd100Talent order|r"], b.respec and b.respec.level)
     if b.respec then
-        local lv2, tx2 = OrderLines(b.respec, tree, string.format(L["|cffffd100After the respec at %d|r"], b.respec.level))
-        local aL, aT, bL, bT = lv, tx, lv2, tx2
+        local after = OrderRows(b.respec, tree, string.format(L["|cffffd100After the respec at %d|r"], b.respec.level))
         if (UnitLevel("player") or 0) >= b.respec.level then
             -- Past the respec: the new order matters now, the old one is history.
-            aL, aT, bL, bT = lv2, tx2, lv, tx
+            rows, after = after, rows
         end
-        lv, tx = {}, {}
-        for k = 1, #aL do lv[#lv + 1] = aL[k]; tx[#tx + 1] = aT[k] end
-        lv[#lv + 1] = " "; tx[#tx + 1] = " "
-        for k = 1, #bL do lv[#lv + 1] = bL[k]; tx[#tx + 1] = bT[k] end
+        table.insert(rows, { header = " " })
+        for _, r in ipairs(after) do table.insert(rows, r) end
     end
-    page.SetOrder(lv, tx)
+    page.SetOrder(rows)
 end
 UpdatePage = function()
     if not page then return end
@@ -1185,8 +1298,27 @@ UpdatePage = function()
 end
 T.RefreshPage = function() if page and page:IsShown() then UpdatePage() end end
 
--- Layout: categories and build list (left) | build details, buttons, settings (centre) | talent order (right)
+-- Layout: stage tabs and the build list (left) | build details, progress, settings (centre) | talent order (right)
 local PAGE_LEFT_W, PAGE_RIGHT_W = 236, 300
+local WHITE = "Interface\\Buttons\\WHITE8X8"
+
+-- A flat button: dark fill and a thin border; SetSelected lights it gold.
+local function FlatButton(parent, w, h)
+    local btn = CreateFrame("Button", nil, parent, "BackdropTemplate")
+    btn:SetSize(w, h)
+    btn:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
+    local hl = btn:CreateTexture(nil, "HIGHLIGHT"); hl:SetAllPoints(); hl:SetColorTexture(1, 1, 1, 0.06)
+    function btn:SetSelected(on)
+        self.selected = on
+        if on then
+            self:SetBackdropColor(0.30, 0.22, 0.05, 0.85); self:SetBackdropBorderColor(1, 0.82, 0, 0.9)
+        else
+            self:SetBackdropColor(0.08, 0.08, 0.08, 0.85); self:SetBackdropBorderColor(1, 1, 1, 0.12)
+        end
+    end
+    btn:SetSelected(false)
+    return btn
+end
 
 local function BuildPage(parent)
     page = CreateFrame("Frame", nil, parent)
@@ -1210,7 +1342,7 @@ local function BuildPage(parent)
     Divider(LCol, "RIGHT"); Divider(R, "LEFT")
 
     -- ==========================================
-    -- LEFT: TITLE, CATEGORIES, BUILD LIST
+    -- LEFT: TITLE, STAGE TABS, BUILD LIST
     -- ==========================================
     local innerW = PAGE_LEFT_W - 24
     local title = LCol:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -1235,78 +1367,183 @@ local function BuildPage(parent)
     sub:SetText(L["Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it."])
     sub:SetWidth(innerW); sub:SetJustifyH("LEFT"); sub:SetTextColor(0.7, 0.7, 0.7)
 
-    -- Category rows: stage, then role, then Solo / Dungeon for leveling builds.
-    page.catButtons = {}
-    local CAT_TOP = -86
-    local function CatRow(items, field, y)
-        local width = (innerW - (#items - 1) * 4) / #items
-        local x = 12
-        for i, c in ipairs(items) do
-            local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
-            btn:SetSize(c.w or width, 22)
-            btn:SetPoint("TOPLEFT", x, y)
-            x = x + (c.w or width) + 4
-            btn.field, btn.key, btn.label = field, c.key, c.short or c.label
-            local fs = btn:GetFontString()
-            if fs then fs:SetFontObject("GameFontHighlightSmall") end
-            btn:SetScript("OnClick", function(self)
-                cat = cat or DefaultCategory()
-                cat[self.field] = self.key
-                -- Land on a group that has builds: keep the role/mode if it has any, else the first that does.
-                if self.field == "stage" and #CategoryBuilds(cat.stage, cat.role) == 0 then
-                    for _, r in ipairs(ROLES) do if #CategoryBuilds(cat.stage, r.key) > 0 then cat.role = r.key; break end end
-                end
-                if cat.stage == "leveling" and self.field ~= "mode" and #CategoryBuilds("leveling", cat.role, cat.mode) == 0 then
-                    for _, m in ipairs(MODES) do if #CategoryBuilds("leveling", cat.role, m.key) > 0 then cat.mode = m.key; break end end
-                end
-                selectedId = nil
-                UpdatePage()
-            end)
-            table.insert(page.catButtons, btn)
-        end
-    end
-    CatRow(STAGES, "stage", CAT_TOP)
-    CatRow(ROLES, "role", CAT_TOP - 26)
-    CatRow(MODES, "mode", CAT_TOP - 52)
-
-    page.list = {}
-    for k = 1, LIST_BUTTONS do
-        local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
-        btn:SetSize(innerW, 34)
-        btn:SetPoint("TOPLEFT", 12, LIST_TOP - (k - 1) * 38)
-        btn:SetScript("OnClick", function(self) selectedId = self.id; UpdatePage() end)
-        local fs = btn:GetFontString()
-        if fs then
-            fs:SetFontObject("GameFontHighlightSmall")
-            fs:ClearAllPoints(); fs:SetPoint("LEFT", 10, 0); fs:SetPoint("RIGHT", -8, 0)
-            fs:SetJustifyH("LEFT"); fs:SetWordWrap(true); fs:SetMaxLines(2)
-        end
-        btn:Hide()
-        page.list[k] = btn
+    -- Stage tabs, one row; widths follow STAGES[].w.
+    page.stageButtons = {}
+    local totalW = 0
+    for _, s in ipairs(STAGES) do totalW = totalW + (s.w or 50) end
+    local gap, x = 3, 12
+    local scale = (innerW - gap * (#STAGES - 1)) / totalW
+    for _, s in ipairs(STAGES) do
+        local w = math.floor((s.w or 50) * scale)
+        local btn = FlatButton(LCol, w, 22)
+        btn:SetPoint("TOPLEFT", x, -86)
+        x = x + w + gap
+        btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        btn.Text:SetPoint("CENTER"); btn.Text:SetWidth(w - 4); btn.Text:SetWordWrap(false)
+        btn.key, btn.label = s.key, s.short or s.label
+        btn:SetScript("OnClick", function(self)
+            cat = { stage = self.key }
+            selectedId = nil
+            UpdatePage()
+        end)
+        table.insert(page.stageButtons, btn)
     end
 
+    -- The build list (scrolls if a stage has many builds).
+    local listScroll = CreateFrame("ScrollFrame", nil, LCol, "UIPanelScrollFrameTemplate")
+    listScroll:SetPoint("TOPLEFT", 12, -118)
+    listScroll:SetPoint("BOTTOMRIGHT", -26, 12)
+    local listChild = CreateFrame("Frame", nil, listScroll)
+    listChild:SetSize(innerW - 14, 400)
+    listScroll:SetScrollChild(listChild)
+    -- Hide the scroll bar when everything fits.
+    local function FitScrollBar(sf)
+        local bar = sf.ScrollBar
+        if not bar then return end
+        local need = (sf:GetScrollChild():GetHeight() or 0) > (sf:GetHeight() or 0) + 1
+        bar:SetShown(need)
+        if not need then sf:SetVerticalScroll(0) end
+    end
+    page.listHeaders, page.listRows = {}, {}
+    local ROW_H, HDR_H = 38, 20
+    function page.SetList(entries, active)
+        local y, nh, nr = 0, 0, 0
+        local w = listChild:GetWidth()
+        for _, e in ipairs(entries) do
+            if e.role then
+                nh = nh + 1
+                local h = page.listHeaders[nh]
+                if not h then
+                    h = CreateFrame("Frame", nil, listChild); h:SetHeight(HDR_H)
+                    h.Icon = h:CreateTexture(nil, "ARTWORK"); h.Icon:SetSize(14, 14); h.Icon:SetPoint("LEFT", 0, 0)
+                    h.Icon:SetTexture(ROLE_ICON)
+                    h.Text = h:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); h.Text:SetPoint("LEFT", h.Icon, "RIGHT", 4, 0)
+                    page.listHeaders[nh] = h
+                end
+                h:ClearAllPoints(); h:SetPoint("TOPLEFT", 0, -y); h:SetWidth(w)
+                h.Icon:SetTexCoord(unpack(ROLE_COORDS[e.role]))
+                h.Text:SetText(e.label); h:Show()
+                y = y + HDR_H
+            else
+                nr = nr + 1
+                local row = page.listRows[nr]
+                if not row then
+                    row = FlatButton(listChild, w, ROW_H - 4)
+                    row.Name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                    row.Name:SetPoint("TOPLEFT", 8, -5); row.Name:SetPoint("RIGHT", -8, 0)
+                    row.Name:SetJustifyH("LEFT"); row.Name:SetWordWrap(false)
+                    row.Tags = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                    row.Tags:SetPoint("BOTTOMLEFT", 8, 5); row.Tags:SetJustifyH("LEFT"); row.Tags:SetWordWrap(false)
+                    row.Active = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                    row.Active:SetPoint("BOTTOMRIGHT", -6, 5)
+                    row.Tags:SetPoint("RIGHT", row.Active, "LEFT", -4, 0)
+                    row:SetScript("OnClick", function(self) selectedId = self.id; UpdatePage() end)
+                    page.listRows[nr] = row
+                end
+                local b = e.build
+                row.id = b.id
+                row:ClearAllPoints(); row:SetPoint("TOPLEFT", 0, -y); row:SetWidth(w)
+                row.Name:SetText(BuildName(b))
+                row.Tags:SetText(BuildTags(b))
+                row.Active:SetText((active and active.id == b.id) and ("|cff55ff55" .. L["Active"] .. "|r") or "")
+                row:SetSelected(b.id == selectedId)
+                row:Show()
+                y = y + ROW_H
+            end
+        end
+        for k = nh + 1, #page.listHeaders do page.listHeaders[k]:Hide() end
+        for k = nr + 1, #page.listRows do page.listRows[k]:Hide() end
+        listChild:SetHeight(math.max(1, y))
+        FitScrollBar(listScroll)
+    end
+    listScroll:SetScript("OnSizeChanged", function(self, w)
+        if w and w > 60 then listChild:SetWidth(w) end
+        FitScrollBar(self)
+    end)
+
     -- ==========================================
-    -- CENTRE: BUILD DETAILS, USE / CLEAR, SETTINGS
+    -- CENTRE: HEADER, TREE SPLIT, DETAILS, PROGRESS, USE / CLEAR, SETTINGS
     -- ==========================================
+    page.icon = C:CreateTexture(nil, "ARTWORK")
+    page.icon:SetSize(36, 36); page.icon:SetPoint("TOPLEFT", 16, -14)
+    page.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
     page.name = C:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    page.name:SetPoint("TOPLEFT", 16, -14)
+    page.name:SetPoint("TOPLEFT", page.icon, "TOPRIGHT", 10, -1)
     page.name:SetPoint("RIGHT", C, "RIGHT", -16, 0)
-    page.name:SetJustifyH("LEFT")
+    page.name:SetJustifyH("LEFT"); page.name:SetWordWrap(false)
+    page.sub = C:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    page.sub:SetPoint("TOPLEFT", page.name, "BOTTOMLEFT", 0, -4)
+    page.sub:SetPoint("RIGHT", C, "RIGHT", -16, 0)
+    page.sub:SetJustifyH("LEFT"); page.sub:SetWordWrap(false)
+
+    page.split = CreateFrame("Frame", nil, C)
+    page.split:SetPoint("TOPLEFT", page.icon, "BOTTOMLEFT", 0, -12)
+    page.split:SetPoint("RIGHT", C, "RIGHT", -16, 0)
+    page.split:SetHeight(8)
+    local splitBg = page.split:CreateTexture(nil, "BACKGROUND"); splitBg:SetAllPoints(); splitBg:SetColorTexture(1, 1, 1, 0.08)
+    page.split.segs = {}
+    for i = 1, 3 do page.split.segs[i] = page.split:CreateTexture(nil, "ARTWORK") end
+    page.split.label = page.split:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    page.split.label:SetPoint("TOPLEFT", page.split, "BOTTOMLEFT", 0, -4)
+    page.split:SetScript("OnSizeChanged", function() if page:IsShown() then UpdatePage() end end)
 
     page.info = C:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    page.info:SetPoint("TOPLEFT", page.name, "BOTTOMLEFT", 0, -8)
+    page.info:SetPoint("TOPLEFT", page.split, "BOTTOMLEFT", 0, -26)
     page.info:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.info:SetJustifyH("LEFT"); page.info:SetSpacing(3)
 
-    page.use = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
+    -- Progress box
+    local P = CreateFrame("Frame", nil, C, "BackdropTemplate")
+    P:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -12)
+    P:SetPoint("RIGHT", C, "RIGHT", -16, 0)
+    P:SetHeight(60)
+    P:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
+    P:SetBackdropColor(0, 0, 0, 0.35); P:SetBackdropBorderColor(1, 1, 1, 0.1)
+    local pLbl = P:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    pLbl:SetPoint("TOPLEFT", 8, -7); pLbl:SetText(L["Progress"])
+    P.count = P:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    P.count:SetPoint("TOPRIGHT", -8, -7)
+    P.bar = P:CreateTexture(nil, "ARTWORK")
+    P.bar:SetPoint("TOPLEFT", 8, -22); P.bar:SetPoint("RIGHT", P, "RIGHT", -8, 0); P.bar:SetHeight(6)
+    P.bar:SetColorTexture(1, 1, 1, 0.1)
+    P.fill = P:CreateTexture(nil, "OVERLAY")
+    P.fill:SetPoint("TOPLEFT", P.bar, "TOPLEFT"); P.fill:SetHeight(6)
+    P.fill:SetColorTexture(0.33, 0.85, 0.33, 1)
+    P.text = P:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    P.text:SetPoint("TOPLEFT", P.bar, "BOTTOMLEFT", 0, -7); P.text:SetPoint("RIGHT", P, "RIGHT", -8, 0)
+    P.text:SetJustifyH("LEFT"); P.text:SetSpacing(2)
+    P:Hide()
+    page.progress = P
+
+    -- Buttons sit under the progress box when it shows, else under the details.
+    local btnRow = CreateFrame("Frame", nil, C)
+    btnRow:SetSize(260, 24)
+    local function PlaceButtons()
+        btnRow:ClearAllPoints()
+        btnRow:SetPoint("TOPLEFT", P:IsShown() and P or page.info, "BOTTOMLEFT", 0, -14)
+    end
+    P:SetScript("OnShow", PlaceButtons); P:SetScript("OnHide", PlaceButtons); PlaceButtons()
+
+    page.use = CreateFrame("Button", nil, btnRow, "UIPanelButtonTemplate")
     page.use:SetSize(140, 24)
-    page.use:SetPoint("TOPLEFT", page.info, "BOTTOMLEFT", 0, -16)
+    page.use:SetPoint("TOPLEFT")
     page.use:SetText(L["Use This Build"])
     page.use:SetScript("OnClick", function() if selectedId then T.SetBuild(selectedId, pageGroup or ActiveGroup()) end; UpdatePage() end)
 
-    page.clear = CreateFrame("Button", nil, C, "UIPanelButtonTemplate")
+    page.activeTag = CreateFrame("Frame", nil, btnRow)
+    page.activeTag:SetSize(140, 24); page.activeTag:SetPoint("TOPLEFT")
+    local check = page.activeTag:CreateTexture(nil, "ARTWORK")
+    check:SetSize(16, 16); check:SetPoint("LEFT", 4, 0)
+    check:SetTexture("Interface\\RAIDFRAME\\ReadyCheck-Ready")
+    local activeTxt = page.activeTag:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    activeTxt:SetPoint("LEFT", check, "RIGHT", 4, 0)
+    activeTxt:SetText("|cff55ff55" .. L["Active build"] .. "|r")
+    page.activeTag:Hide()
+
+    page.clear = CreateFrame("Button", nil, btnRow, "UIPanelButtonTemplate")
     page.clear:SetSize(100, 24)
-    page.clear:SetPoint("LEFT", page.use, "RIGHT", 6, 0)
+    page.clear:SetPoint("TOPLEFT", 146, 0)
     page.clear:SetText(L["Clear Build"])
     page.clear:SetScript("OnClick", function() T.SetBuild(nil, pageGroup or ActiveGroup()); UpdatePage() end)
 
@@ -1337,36 +1574,64 @@ local function BuildPage(parent)
     orderSub:SetPoint("TOPLEFT", orderHdr, "BOTTOMLEFT", 0, -3)
     orderSub:SetText(L["|cff55ff55Taken|r"] .. "  " .. L["|cffffd100Next|r"] .. "  " .. L["|cffaaaaaaLater|r"])
 
-    -- A level column and a talent column, so they line up.
     local scroll = CreateFrame("ScrollFrame", nil, R, "UIPanelScrollFrameTemplate")
     scroll:SetPoint("TOPLEFT", orderSub, "BOTTOMLEFT", 0, -10)
     scroll:SetPoint("BOTTOMRIGHT", -30, 12)
     page.orderChild = CreateFrame("Frame", nil, scroll)
     page.orderChild:SetSize(PAGE_RIGHT_W - 42, 400)
     scroll:SetScrollChild(page.orderChild)
-    -- One row per talent line (a level cell and a talent cell), so a long talent name can't
-    -- push the lines below it away from their levels; it's cut short on its own row instead.
+    -- One row per talent line: a tree stripe, the talent's icon, its levels and the talent.
+    -- A long name is cut short on its own row, so it can't push later rows off their levels.
     page.orderRows = {}
-    local ROW_H = 15
-    function page.SetOrder(lvls, lines)
-        for i = 1, math.max(#lines, #page.orderRows) do
+    local OROW_H = 17
+    function page.SetOrder(rows)
+        local nextRow
+        for i = 1, math.max(#rows, #page.orderRows) do
             local row = page.orderRows[i]
-            if lines[i] then
+            local r = rows[i]
+            if r then
                 if not row then
-                    row = CreateFrame("Frame", nil, page.orderChild); row:SetHeight(ROW_H)
-                    row:SetPoint("TOPLEFT", 0, -(i - 1) * ROW_H); row:SetPoint("RIGHT", page.orderChild, "RIGHT", 0, 0)
+                    row = CreateFrame("Frame", nil, page.orderChild); row:SetHeight(OROW_H)
+                    row:SetPoint("TOPLEFT", 0, -(i - 1) * OROW_H); row:SetPoint("RIGHT", page.orderChild, "RIGHT", 0, 0)
+                    row.Stripe = row:CreateTexture(nil, "ARTWORK"); row.Stripe:SetSize(3, OROW_H - 3); row.Stripe:SetPoint("LEFT", 0, 0)
+                    row.Icon = row:CreateTexture(nil, "ARTWORK"); row.Icon:SetSize(14, 14); row.Icon:SetPoint("LEFT", 6, 0)
+                    row.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
                     row.Lvl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-                    row.Lvl:SetPoint("LEFT", 0, 0); row.Lvl:SetWidth(52); row.Lvl:SetJustifyH("LEFT"); row.Lvl:SetWordWrap(false)
+                    row.Lvl:SetPoint("LEFT", 24, 0); row.Lvl:SetWidth(46); row.Lvl:SetJustifyH("LEFT"); row.Lvl:SetWordWrap(false)
                     row.Text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-                    row.Text:SetPoint("LEFT", 56, 0); row.Text:SetPoint("RIGHT", 0, 0); row.Text:SetJustifyH("LEFT"); row.Text:SetWordWrap(false)
+                    row.Text:SetPoint("LEFT", 72, 0); row.Text:SetPoint("RIGHT", 0, 0); row.Text:SetJustifyH("LEFT"); row.Text:SetWordWrap(false)
+                    row.Head = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                    row.Head:SetPoint("LEFT", 0, 0); row.Head:SetPoint("RIGHT", 0, 0); row.Head:SetJustifyH("LEFT"); row.Head:SetWordWrap(false)
                     page.orderRows[i] = row
                 end
-                row.Lvl:SetText(lvls[i] or ""); row.Text:SetText(lines[i]); row:Show()
+                if r.header then
+                    row.Head:SetText(r.header); row.Head:Show()
+                    row.Stripe:Hide(); row.Icon:Hide(); row.Lvl:Hide(); row.Text:Hide()
+                else
+                    row.Head:Hide()
+                    local c = r.tree and TreeColor(r.tree)
+                    if c then row.Stripe:SetColorTexture(c[1], c[2], c[3], 1); row.Stripe:Show() else row.Stripe:Hide() end
+                    row.Icon:SetTexture(r.icon); row.Icon:SetShown(r.icon ~= nil)
+                    row.Icon:SetDesaturated(r.color == "|cffaaaaaa")
+                    row.Lvl:SetText(r.color .. r.lvl .. "|r"); row.Lvl:Show()
+                    -- Key talents (single-rank abilities) stand out with an outline.
+                    row.Text:SetFontObject(r.key and "GameFontHighlightSmallOutline" or "GameFontHighlightSmall")
+                    row.Text:SetText(r.color .. r.text .. "|r"); row.Text:Show()
+                    if r.isNext and not nextRow then nextRow = i end
+                end
+                row:Show()
             elseif row then
                 row:Hide()
             end
         end
-        page.orderChild:SetHeight(math.max(1, #lines * ROW_H + 10))
+        page.orderChild:SetHeight(math.max(1, #rows * OROW_H + 10))
+        -- Bring the next talent into view, a few rows from the top.
+        if nextRow then
+            local range = scroll:GetVerticalScrollRange() or 0
+            scroll:SetVerticalScroll(math.min(range, math.max(0, (nextRow - 4) * OROW_H)))
+        else
+            scroll:SetVerticalScroll(0)
+        end
     end
     -- The scroll area's width comes from the window; the rows stretch with it.
     scroll:SetScript("OnSizeChanged", function(_, w)
