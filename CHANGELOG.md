@@ -1,5 +1,7 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.1
+
 ## 🚀 v1.2.0
 
 ### 🎨 Talent Builds Page Redesigned

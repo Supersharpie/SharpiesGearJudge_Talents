@@ -37,7 +37,7 @@ local function Expand(order)
 end
 
 function T.RegisterBuild(b)
-    -- Builds page category: stage raid/leveling/farming/pvp, role tank/healer/dps, mode solo/dungeon (leveling only)
+    -- Builds page category: stage raid/leveling/farming/pvp, role tank/healer/dps, mode solo/dungeon/pvp (leveling only)
     b.stage = b.stage or "leveling"
     b.role = b.role or "dps"
     if b.stage == "leveling" then b.mode = b.mode or "solo" else b.mode = nil end
@@ -164,7 +164,15 @@ end
 local STAGES = { { key = "raid", label = "Max Level (Raid)", short = "Max Level", w = 66 }, { key = "leveling", label = "Leveling", w = 56 },
     { key = "farming", label = "Farming", w = 52 }, { key = "pvp", label = "PvP", w = 26 } }
 local ROLES = { { key = "tank", label = "Tank" }, { key = "healer", label = "Healer" }, { key = "dps", label = "DPS" } }
-local MODES = { { key = "solo", label = "Solo" }, { key = "dungeon", label = "Dungeon" } }
+local MODES = { { key = "solo", label = "Solo" }, { key = "dungeon", label = "Dungeon" }, { key = "pvp", label = "PvP" } }
+local MODE_ORDER = { solo = 0, dungeon = 1, pvp = 2 }
+local MODE_COLOR = { solo = "|cff7fb2ff", dungeon = "|cffc29bff", pvp = "|cffff7f7f" }
+
+-- A PvP build (level-60 PvP stage, or a Leveling - PvP build for open-world PvP while leveling)
+-- also turns on the PvP weight model.
+local function IsPvPBuild(b)
+    return b.stage == "pvp" or b.mode == "pvp"
+end
 local LABEL = {}
 for _, t in ipairs({ STAGES, ROLES, MODES }) do for _, c in ipairs(t) do LABEL[c.key] = c.label end end
 
@@ -394,7 +402,7 @@ local function BuildRole(group)
     if not (db and db.linkGear and b) then return nil end
     local tree = b.respec and ReadTree(group)
     local view = tree and T.ActiveView(b, tree) or b
-    return view.leveling, view.endgame, b.stage == "pvp"
+    return view.leveling, view.endgame, IsPvPBuild(b)
 end
 
 local function ApplyGearLink()
@@ -412,7 +420,7 @@ local function ApplyGearLink()
         local tree = b.respec and ReadTree(ag)
         local view = tree and T.ActiveView(b, tree) or b
         -- PvP builds also turn on the PvP weight model (at every level).
-        MSC.SetTalentBuildRole(view.leveling, view.endgame, b.stage == "pvp")
+        MSC.SetTalentBuildRole(view.leveling, view.endgame, IsPvPBuild(b))
     else
         MSC.SetTalentBuildRole(nil, nil)
     end
@@ -1120,11 +1128,11 @@ end
 local UpdatePage -- set below (it wraps UpdatePageIn with the shown spec)
 local pageGroup -- the spec the Builds page shows (nil = the active one)
 
--- Small coloured tags under a build's name: Solo / Dungeon, Fastest, Experimental, % slower.
+-- Small coloured tags under a build's name: Solo / Dungeon / PvP, Fastest, Experimental, % slower.
 local function BuildTags(b)
     local tags = {}
     if b.stage == "leveling" and b.mode then
-        table.insert(tags, (b.mode == "solo" and "|cff7fb2ff" or "|cffc29bff") .. L[LABEL[b.mode]] .. "|r")
+        table.insert(tags, (MODE_COLOR[b.mode] or "|cffc29bff") .. L[LABEL[b.mode]] .. "|r")
     end
     if b.fastest then table.insert(tags, "|cff55ff55" .. L["Fastest"] .. "|r") end
     if b.experimental then table.insert(tags, "|cffff8000" .. L["Experimental"] .. "|r") end
@@ -1153,9 +1161,9 @@ local function UpdatePageIn()
         local list = CategoryBuilds(cat.stage, r.key)
         if #list > 0 then
             table.insert(entries, { role = r.key, label = L[r.label] })
-            -- Solo before Dungeon, the fastest first.
+            -- Solo, then Dungeon, then PvP; the fastest first.
             table.sort(list, function(a, b)
-                local ma, mb = (a.mode == "dungeon") and 1 or 0, (b.mode == "dungeon") and 1 or 0
+                local ma, mb = MODE_ORDER[a.mode] or 0, MODE_ORDER[b.mode] or 0
                 if ma ~= mb then return ma < mb end
                 if (a.fastest and 1 or 0) ~= (b.fastest and 1 or 0) then return a.fastest and true or false end
                 return (a.slower or 0) < (b.slower or 0)
@@ -1226,7 +1234,7 @@ local function UpdatePageIn()
     end
     table.insert(info, " ")
     table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
-    if b.stage == "pvp" then table.insert(info, L["PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps."]) end
+    if IsPvPBuild(b) then table.insert(info, L["PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps."]) end
     if b.respec then
         table.insert(info, string.format(L["|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60)."],
             b.respec.level, L[b.respec.name], ProfileLabel(b.respec.leveling), ProfileLabel(b.respec.endgame)))
