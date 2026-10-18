@@ -17,7 +17,7 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows gold in the talent window. Every talent your build still puts points into shows a number on its icon: the step of its next point in the build (1 is your first point, 51 your last). Hover a numbered talent to see every step the build puts into it, with the level of each. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
 - **Talent Builds page.** A page in the Gear Judge window with three columns:
-  - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo** or **Dungeon**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level. Your current build is marked **Active**.
+  - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo**, **Dungeon** or **PvP**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level. Your current build is marked **Active**.
   - **The build:** its spec icon, a bar showing how its points split between the three trees, what it's for and which stat weights it uses. For your active build, a progress bar shows how far along you are and the next talent with the level it's planned for.
   - **The talent order:** level by level, each talent with its icon and its tree's colour. Points you've spent are green, the next one gold, and the list scrolls to where you are.
 - **Gear advice that follows your build.** Choosing a build tells Gear Judge which weight profile to use, from your first talent point to level 60. A Protection tank build gets tank weights right away, before its tank talents would normally switch you over.
@@ -28,7 +28,7 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 ## Builds
 
-Every talent tree has a **Solo Leveling** and a **Dungeon Leveling** build (Warlocks have Affliction builds for now). Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
+Every talent tree has a **Solo Leveling**, a **Dungeon Leveling** and a **PvP Leveling** build (Warlocks have Affliction solo and dungeon builds for now). Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
 
 Where a class has more than one solo build, the fastest is tagged **(Fastest)** and the others say how much slower they level. **(Experimental)** builds are what our model rates best, but nobody has tried them in game yet.
 
@@ -45,6 +45,22 @@ Where a class has more than one solo build, the fastest is tagged **(Fastest)** 
 | Warlock | Affliction | Affliction |
 | Shaman | **Enhancement (Fastest)**, Elemental, Restoration | Enhancement, Elemental, Restoration (healer), Tank (shield) |
 | Druid | **Feral Cat (Fastest)**, Balance, Restoration | Cat, Balance, Restoration (healer), Bear (tank) |
+
+### PvP Leveling (Experimental)
+
+For open-world PvP while you level on a PvP realm. A duel simulation fights each build against all nine classes at every level from 10 to 59, with each class's real tools: heals that cost cast time and mana, stuns, fears, roots and silences with their real durations, cooldowns and diminishing returns from the game client, kiting, gap closers, spell pushback and pets. The opponents are tuned to real level-30 duel results (the wowforeverranked.com ladder and The Forever Open qualifier), and the model picks the winner of 63 of 72 real class matchups. Choosing one also switches Gear Judge to its PvP weights at every level. They're model-only, so they're all tagged **(Experimental)**; [see how each one does level by level](https://sharpiesgearjudge.web.app).
+
+| Class | PvP Leveling |
+|---|---|
+| Warrior | Arms, Fury, Protection |
+| Paladin | Retribution, Holy, Protection |
+| Rogue | Combat, Assassination, Subtlety (two swords) |
+| Hunter | Beast Mastery, Marksmanship, Survival (all shooting) |
+| Mage | Arcane, Fire, Frost |
+| Priest | Shadow, Discipline, Holy |
+| Warlock | Affliction, Demonology, Destruction |
+| Shaman | Enhancement, Elemental, Restoration |
+| Druid | Feral (Bear Form), Balance, Restoration |
 
 ### Max Level and Farming
 
@@ -66,9 +82,9 @@ The four **Paladin** raid tanks:
 - **Bastion (Max Prot):** every Protection talent.
 - **Arbiter (Holy Strike):** Judgement and Holy Strike focused.
 
-### PvP builds
+### PvP builds (level 60)
 
-For open-world PvP while leveling and battlegrounds at 60. Each one is a full talent order from 10 to 60, with the control and survival talents placed as early as the talent tree allows (most land by level 30). Picking a PvP build also switches Gear Judge to its PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps. These builds come from the talent data and a PvP model, not a simulator, since there's no sim for fights against players.
+For battlegrounds and world PvP at 60 (the **PvP** tab; the leveling ones above are under **Leveling**). Each one is a full talent order from 10 to 60, with the control and survival talents placed as early as the talent tree allows (most land by level 30). Picking a PvP build also switches Gear Judge to its PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps. These builds come from the talent data and a PvP model, not a simulator, since there's no sim for fights against players.
 
 | Class | PvP builds |
 |---|---|
