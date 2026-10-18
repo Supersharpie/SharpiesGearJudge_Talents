@@ -2,6 +2,17 @@
 
 ## 🚀 v1.2.1
 
+### ⚔️ New: PvP Leveling Builds (Experimental)
+- Every talent tree of every class now has a **PvP Leveling** build for open-world PvP while you level, listed under Leveling with a red PvP tag. Choosing one also switches Gear Judge to its PvP weights at every level.
+- The builds come from a new duel simulation that fights each build against all nine classes at every level from 10 to 59, with each class's real tools: heals that cost cast time and mana, stuns, fears, roots and silences with their real durations, cooldowns and diminishing returns from the game client, kiting, gap closers, spell pushback and pets. The opponents are tuned to real level-30 duel results (the wowforeverranked.com ladder and The Forever Open qualifier); the model picks the winner of 63 of 72 real class matchups.
+- Some picks stand out: Feral duels in Bear Form, Restoration Shaman and Discipline/Holy Priest win by outlasting, Survival shoots rather than melees, and Warriors mostly lose the average duel below 40.
+- They're model-only and marked **Experimental**: nobody has tried these exact builds in game yet, and everything above level 30 is an estimate until the beta goes past 30.
+
+### 📏 Builds Checked Against the Game's Own Ability Data
+- Gear Judge's leveling models now take every ability's cooldown, duration, cast time and cost from the Forever client itself, and a few didn't match. Druid shapeshifting costs 55% of base mana in Cat and Bear Form (we had 30-35%), Rage of the Farseer has a 3-minute cooldown (we had 2), Sniper Shot has a 4-second cast, Aimed Shot a 2-second one, and Aspect of the Cheetah isn't learned until 20. Every affected leveling build was searched again; almost all are unchanged.
+- **Fire: Solo Leveling** is rebuilt and levels faster: Improved Fire Blast by 14, Ignite at 18, Master of Elements to save mana, and no Arcane Blast or Arcane Wrath. It's now about 66% slower than AoE leveling, from 75%.
+- The "% slower" lines are updated for Beast Mastery solo (15%) and Arcane solo (72%).
+
 ## 🚀 v1.2.0
 
 ### 🎨 Talent Builds Page Redesigned
