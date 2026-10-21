@@ -1,5 +1,17 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.2
+
+### ❄️ Mage Builds Updated for the October 20 Hotfix
+- The October 20 hotfix removed **Piercing Ice** from the Frost tree and cut **Elemental Precision** to 3 ranks (2% hit each), which made every Mage build impossible to follow. All 13 Mage builds now place those points elsewhere, picked by our models (Frost talents such as Improved Frostbolt, Ice Shards, Frost Channeling and Improved Frost Nova for most builds; Frost Warding, which now also strengthens Ice Barrier, on the raid and farming builds). Build descriptions no longer mention Piercing Ice.
+- Mage solo leveling: **Frost** stays the fastest; Arcane and Fire are about 3% slower (the old 59-72% labels were out of date).
+
+### 🏷️ "Slower" Labels Refreshed
+- The "how much slower" labels on the solo leveling builds now come from the current models: Warrior Fury 9% and Protection 37% slower than Arms; Rogue Combat 1% and Assassination 5% slower than Subtlety; Hunter Beast Mastery and Marksmanship 2% slower than Survival; Shaman Elemental 43% and Restoration 51% slower than Enhancement.
+
+### ✨ Priest: Shadow Is the Fastest Solo Build
+- **Shadow: Solo Leveling** is now marked fastest for Priests. Our model had given every Priest Starshards, but it's a Night Elf spell in WoW Forever too; without it Discipline and Holy level more slowly. Now: Shadow without Shadowform 15% slower, Discipline 29% slower, Holy 36% slower (Discipline was marked fastest).
+
 ## 🚀 v1.2.1
 
 ### ⚔️ New: PvP Leveling Builds (Experimental)
