@@ -28,7 +28,7 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 ## Builds
 
-Every talent tree has a **Solo Leveling**, a **Dungeon Leveling** and a **PvP Leveling** build (Warlocks have Affliction solo and dungeon builds for now). Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
+Every talent tree has a **Solo Leveling**, a **Dungeon Leveling** and a **PvP Leveling** build (Warlocks have Affliction solo and dungeon builds for now). Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Where switching trees is faster, a build says so and the guide tells you when (Paladin: Retribution to Protection at 40, free on your second talent spec). Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
 
 Where a class has more than one solo build, the fastest is tagged **(Fastest)** and the others say how much slower they level. **(Experimental)** builds are what our model rates best, but nobody has tried them in game yet.
 
