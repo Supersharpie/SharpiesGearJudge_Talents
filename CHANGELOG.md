@@ -6,6 +6,7 @@
 - All six Paladin leveling builds re-searched on our updated models: Retribution, Holy and Protection, solo and dungeon. The Protection dungeon build now also weighs the risk of the tank dying, measured from dungeon and raid logs.
 - New **Retribution to Protection: Solo Leveling**, the fastest Paladin leveling build: Retribution from 10 to 39, then Protection from 40. The guide tells you when to switch; put Protection on your second talent spec at 40 and it costs nothing.
 - Solo leveling is now close between the trees: Retribution is the fastest single tree (about 4% slower than switching at 40), Protection about 8% and Holy about 11% (were Protection fastest, Retribution 21% and Holy 29% slower).
+- The three Paladin PvP Leveling builds (still Experimental) re-searched on a corrected duel model that now matches real level-30 duel results for Paladins. Protection PvP drops Holy Shield (it only blocks melee) for armor, longer stuns and Iron Creed; Retribution and Holy PvP drop Holy Shock.
 - Retribution solo takes Deflection first and Twist of Light at 40. Holy dungeon gets Holy Shock at 32 and Light's Vigil at 42.
 - Build descriptions say how many mobs to pull and when to use Hammer of Justice. The AoE Farming description now has the current Retribution Aura numbers.
 
