@@ -66,15 +66,17 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 
 | Class | Max Level (Raid) | Farming |
 |---|---|---|
-| Warrior | Arms, Protection (tank) | Protection: AoE Farming |
+| Warrior | Arms, Fury (dual wield), Fury (two-hander), Protection (tank) | Protection: AoE Farming |
 | Paladin | Retribution, Holy (healer), four Protection tanks: Vanguard, Bulwark, Bastion, Arbiter | Protection: AoE Farming |
-| Rogue | Combat | |
-| Hunter | Beast Mastery | |
-| Mage | Frost | Frost: AoE Farming |
+| Rogue | Combat, Combat (daggers), Assassination (Mutilate) | |
+| Hunter | Beast Mastery, Marksmanship, Survival, Survival: Melee Weave **(Theorycraft)** | |
+| Mage | Frost, Fire, Arcane | Frost: AoE Farming |
 | Priest | Shadow, Holy (healer), Discipline (healer) | Shadow: Multi-DoT Farming |
-| Warlock | Demonology (Demonic Pact) | Demonology: AoE Farming |
+| Warlock | Demonology (Demonic Pact), Affliction, Destruction | Demonology: AoE Farming |
 | Shaman | Enhancement, Elemental, Restoration (healer) | Tank: AoE Farming |
 | Druid | Cat, Balance (Moonkin), Restoration (healer), Bear (tank) | |
+
+Raid builds were searched in the simulator on pre-raid best-in-slot gear and are **(Experimental)** until tried at 60. **(Theorycraft)** marks a build that is strong only with perfect play in the simulator.
 
 The four **Paladin** raid tanks:
 - **Vanguard (Raid):** the recommended raid tank: the most threat and the least damage taken in the simulator.

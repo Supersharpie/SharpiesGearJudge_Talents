@@ -1128,7 +1128,7 @@ end
 local UpdatePage -- set below (it wraps UpdatePageIn with the shown spec)
 local pageGroup -- the spec the Builds page shows (nil = the active one)
 
--- Small coloured tags under a build's name: Solo / Dungeon / PvP, Fastest, Experimental, % slower.
+-- Small coloured tags under a build's name: Solo / Dungeon / PvP, Fastest, Experimental, Theorycraft, % slower.
 local function BuildTags(b)
     local tags = {}
     if b.stage == "leveling" and b.mode then
@@ -1136,6 +1136,7 @@ local function BuildTags(b)
     end
     if b.fastest then table.insert(tags, "|cff55ff55" .. L["Fastest"] .. "|r") end
     if b.experimental then table.insert(tags, "|cffff8000" .. L["Experimental"] .. "|r") end
+    if b.theorycraft then table.insert(tags, "|cffc29bff" .. L["Theorycraft"] .. "|r") end
     if b.slower then table.insert(tags, "|cff999999" .. string.format(L["%d%% slower"], b.slower) .. "|r") end
     return table.concat(tags, "  ")
 end
@@ -1202,6 +1203,7 @@ local function UpdatePageIn()
     local sub = CategoryName(b.stage, b.role, b.mode):gsub(" %- ", " · ")
     if b.fastest then sub = sub .. " · |cff55ff55" .. L["Fastest"] .. "|r" end
     if b.experimental then sub = sub .. " · |cffff8000" .. L["Experimental"] .. "|r" end
+    if b.theorycraft then sub = sub .. " · |cffc29bff" .. L["Theorycraft"] .. "|r" end
     page.sub:SetText("|cff999999" .. sub .. "|r")
 
     -- Tree split bar: one segment per tree, as wide as its share of the points.
@@ -1227,6 +1229,8 @@ local function UpdatePageIn()
     if b.summary then table.insert(info, L[b.summary]) end
     -- experimental (2026-10-17): a model result nobody has tried in game yet
     if b.experimental then table.insert(info, L["|cffff8000Experimental:|r from our model only, not yet tried in game."]) end
+    -- theorycraft (2026-10-27): only the simulator's perfect play makes it strong; shown, never recommended
+    if b.theorycraft then table.insert(info, L["|cffc29bffTheorycraft:|r strong only with perfect play in the simulator; not a recommendation."]) end
     if b.slower then
         local fastest
         for _, x2 in ipairs(T.BuildList) do if x2.class == b.class and x2.fastest then fastest = x2; break end end

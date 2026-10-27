@@ -2,6 +2,22 @@
 
 ## 🚀 v1.2.3
 
+### ⚔️ Raid Builds
+- Every raid spec has a build now, searched in the simulator on pre-raid best-in-slot gear. New: Fury dual wield and two-hander, Marksmanship, Survival, Combat daggers, Mutilate, Fire, Arcane, Affliction and Destruction.
+- Raid builds are Experimental until tried at 60. Descriptions say what changes for Tier 1.
+- New Theorycraft tag: **Survival: Melee Weave (Raid)** is strong only with perfect play in the simulator.
+
+### 🔄 Every Leveling Build Re-searched
+- All solo, dungeon and PvP leveling builds re-searched on our updated models; most got faster. The Fastest and "% slower" tags are updated.
+- New plays where they're faster: Survival Hunters shoot, Combat Rogues use maces, Assassination Rogues swords, and Affliction Warlocks tank with Drain Life. In PvP, Subtlety uses daggers, and Affliction and Destruction the Succubus.
+- New Warlock builds: Demonology and Destruction for solo and dungeon leveling. Demonology is the fastest Warlock solo build.
+- Mage solo builds are single-target now; Frost: AoE Leveling is back as its own build and is the fastest way to level a Mage.
+
+### 🌾 Farming Builds
+- Farm builds re-searched, plus new Arms two-hander and Balance Hurricane farms.
+- New dungeon farm builds for the Dire Maul East jump run and lashers, the Dire Maul North tribute run and the Maraudon Princess run.
+- Every changed build has a new description, in every language.
+
 ### 🛡️ Paladin Leveling Builds Updated
 - All six Paladin leveling builds re-searched on our updated models: Retribution, Holy and Protection, solo and dungeon. The Protection dungeon build now also weighs the risk of the tank dying, measured from dungeon and raid logs.
 - New **Retribution to Protection: Solo Leveling**, the fastest Paladin leveling build: Retribution from 10 to 39, then Protection from 40. The guide tells you when to switch; put Protection on your second talent spec at 40 and it costs nothing.
