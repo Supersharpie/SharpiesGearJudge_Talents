@@ -2,6 +2,9 @@
 
 ## 🚀 v1.2.3
 
+### 🎨 New Look
+- Matches Gear Judge's new window: colored section titles, slimmer bars and your class color as the accent.
+
 ### ⚔️ Raid Builds
 - Every raid spec has a build now, searched in the simulator on pre-raid best-in-slot gear. New: Fury dual wield and two-hander, Marksmanship, Survival, Combat daggers, Mutilate, Fire, Arcane, Affliction and Destruction.
 - Raid builds are Experimental until tried at 60. Descriptions say what changes for Tier 1.

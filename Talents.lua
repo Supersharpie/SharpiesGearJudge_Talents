@@ -1143,6 +1143,17 @@ end
 
 local ROLE_ICON = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local ROLE_COORDS = { tank = { 0, 19/64, 22/64, 41/64 }, healer = { 20/64, 39/64, 1/64, 20/64 }, dps = { 20/64, 39/64, 22/64, 41/64 } }
+local ROLE_SECTION = { tank = "Blue", healer = "Green", dps = "Red" }
+local WHITE = "Interface\\Buttons\\WHITE8X8"
+
+-- Core theme (nil in an older core, which keeps the old colours).
+local function Theme() local MSC = GetMSC(); return MSC and MSC.StyleHeading and MSC.Theme end
+local function Heading(fs, color, width) local th = Theme(); if th then GetMSC().StyleHeading(fs, color, width) end end
+-- A thin flat bar segment: white texture shaded from dim to full colour.
+local function ShadeBar(tex, r, g, b)
+    tex:SetTexture(WHITE); tex:SetVertexColor(1, 1, 1, 1)
+    tex:SetGradient("HORIZONTAL", CreateColor(r * 0.45, g * 0.45, b * 0.45, 1), CreateColor(r, g, b, 1))
+end
 
 local function UpdatePageIn()
     if not page then return end
@@ -1182,9 +1193,11 @@ local function UpdatePageIn()
     page.SetList(entries, active)
 
     local b = selectedId and T.Builds[selectedId]
+    local th = Theme()
+    local nameCol = th and "" or "|cffffd100"
     if not b then
         page.icon:SetTexture(nil)
-        page.name:SetText("|cffffd100" .. L[LABEL[cat.stage]] .. "|r")
+        page.name:SetText(nameCol .. L[LABEL[cat.stage]] .. "|r")
         page.sub:SetText("")
         page.split:Hide()
         page.info:SetText(L["No builds here for your class yet."])
@@ -1199,12 +1212,12 @@ local function UpdatePageIn()
     local counts, main = TreeSplit(b)
     local t = Trees()[main]
     page.icon:SetTexture(t and t.icon or nil)
-    page.name:SetText("|cffffd100" .. BuildName(b) .. "|r")
+    page.name:SetText(nameCol .. BuildName(b) .. "|r")
     local sub = CategoryName(b.stage, b.role, b.mode):gsub(" %- ", " · ")
     if b.fastest then sub = sub .. " · |cff55ff55" .. L["Fastest"] .. "|r" end
     if b.experimental then sub = sub .. " · |cffff8000" .. L["Experimental"] .. "|r" end
     if b.theorycraft then sub = sub .. " · |cffc29bff" .. L["Theorycraft"] .. "|r" end
-    page.sub:SetText("|cff999999" .. sub .. "|r")
+    page.sub:SetText((th and "" or "|cff999999") .. sub .. "|r")
 
     -- Tree split bar: one segment per tree, as wide as its share of the points.
     local total = counts[1] + counts[2] + counts[3]
@@ -1216,9 +1229,9 @@ local function UpdatePageIn()
         local w = total > 0 and math.floor(barW * counts[i] / total + 0.5) or 0
         if i == 3 then w = math.max(0, barW - x) end
         local c = TreeColor(i)
-        seg:SetColorTexture(c[1], c[2], c[3], 1)
-        seg:ClearAllPoints(); seg:SetPoint("TOPLEFT", page.split, "TOPLEFT", x, 0)
-        seg:SetSize(math.max(w, 0.01), 8); seg:SetShown(counts[i] > 0)
+        if th then ShadeBar(seg, c[1], c[2], c[3]) else seg:SetColorTexture(c[1], c[2], c[3], 1) end
+        seg:ClearAllPoints(); seg:SetPoint("TOPLEFT", page.split, "TOPLEFT", x, th and -2 or 0)
+        seg:SetSize(math.max(w, 0.01), th and 4 or 8); seg:SetShown(counts[i] > 0)
         x = x + w
         labels[i] = string.format("|cff%02x%02x%02x%s %d|r", math.floor(c[1] * 255), math.floor(c[2] * 255), math.floor(c[3] * 255), TreeName(i), counts[i])
     end
@@ -1312,17 +1325,30 @@ T.RefreshPage = function() if page and page:IsShown() then UpdatePage() end end
 
 -- Layout: stage tabs and the build list (left) | build details, progress, settings (centre) | talent order (right)
 local PAGE_LEFT_W, PAGE_RIGHT_W = 236, 300
-local WHITE = "Interface\\Buttons\\WHITE8X8"
 
 -- A flat button: dark fill and a thin border; SetSelected lights it gold.
-local function FlatButton(parent, w, h)
+-- With the theme: a faint fill and a 2px accent bar (left, or along the bottom for a tab).
+local function FlatButton(parent, w, h, tab)
     local btn = CreateFrame("Button", nil, parent, "BackdropTemplate")
     btn:SetSize(w, h)
     btn:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
     local hl = btn:CreateTexture(nil, "HIGHLIGHT"); hl:SetAllPoints(); hl:SetColorTexture(1, 1, 1, 0.06)
+    local th = Theme()
+    if th then
+        btn.Bar = btn:CreateTexture(nil, "ARTWORK"); btn.Bar:SetColorTexture(unpack(th.Accent)); btn.Bar:Hide()
+        if tab then btn.Bar:SetHeight(2); btn.Bar:SetPoint("BOTTOMLEFT", 1, 1); btn.Bar:SetPoint("BOTTOMRIGHT", -1, 1)
+        else btn.Bar:SetWidth(2); btn.Bar:SetPoint("TOPLEFT"); btn.Bar:SetPoint("BOTTOMLEFT") end
+    end
     function btn:SetSelected(on)
         self.selected = on
-        if on then
+        if th then
+            local edge = th.Edge
+            if on then self:SetBackdropColor(1, 1, 1, 0.06) elseif tab then self:SetBackdropColor(unpack(th.Panel)) else self:SetBackdropColor(1, 1, 1, 0.02) end
+            self:SetBackdropBorderColor(edge[1], edge[2], edge[3], (tab or on) and edge[4] or 0)
+            self.Bar:SetShown(on and true or false)
+            local fs = self.Name or self.Text
+            if fs then local c = on and th.Accent or th.Text; local k = on and 1 or 0.8; fs:SetTextColor(c[1] * k, c[2] * k, c[3] * k) end
+        elseif on then
             self:SetBackdropColor(0.30, 0.22, 0.05, 0.85); self:SetBackdropBorderColor(1, 0.82, 0, 0.9)
         else
             self:SetBackdropColor(0.08, 0.08, 0.08, 0.85); self:SetBackdropBorderColor(1, 1, 1, 0.12)
@@ -1357,17 +1383,19 @@ local function BuildPage(parent)
     -- LEFT: TITLE, STAGE TABS, BUILD LIST
     -- ==========================================
     local innerW = PAGE_LEFT_W - 24
-    local title = LCol:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local th = Theme()
+    local title = LCol:CreateFontString(nil, "OVERLAY", th and "GameFontNormal" or "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 12, -12)
     title:SetText(L["Talent Builds"])
     title:SetTextColor(1, 0.82, 0)
+    Heading(title, "Gold", innerW)
 
     -- Dual Specialization: which spec's build the page shows and sets (* = active).
     page.specButtons = {}
     for i = 1, 2 do
         local btn = CreateFrame("Button", nil, LCol, "UIPanelButtonTemplate")
         btn:SetSize(58, 18)
-        btn:SetPoint("TOPRIGHT", -8 - (2 - i) * 60, -10)
+        btn:SetPoint("TOPRIGHT", -8 - (2 - i) * 60, th and -7 or -10)
         local fs = btn:GetFontString(); if fs then fs:SetFontObject("GameFontHighlightSmall") end
         btn:SetScript("OnClick", function() pageGroup = i; selectedId = nil; cat = nil; UpdatePage() end)
         btn:Hide()
@@ -1375,9 +1403,10 @@ local function BuildPage(parent)
     end
 
     local sub = LCol:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
+    sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, th and -10 or -4)
     sub:SetText(L["Pick a build for next-talent reminders, a glow in the talent window, and weights that follow it."])
     sub:SetWidth(innerW); sub:SetJustifyH("LEFT"); sub:SetTextColor(0.7, 0.7, 0.7)
+    if th then sub:SetTextColor(unpack(th.Muted)) end
 
     -- Stage tabs, one row; widths follow STAGES[].w.
     page.stageButtons = {}
@@ -1387,7 +1416,7 @@ local function BuildPage(parent)
     local scale = (innerW - gap * (#STAGES - 1)) / totalW
     for _, s in ipairs(STAGES) do
         local w = math.floor((s.w or 50) * scale)
-        local btn = FlatButton(LCol, w, 22)
+        local btn = FlatButton(LCol, w, 22, true)
         btn:SetPoint("TOPLEFT", x, -86)
         x = x + w + gap
         btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -1434,7 +1463,7 @@ local function BuildPage(parent)
                 end
                 h:ClearAllPoints(); h:SetPoint("TOPLEFT", 0, -y); h:SetWidth(w)
                 h.Icon:SetTexCoord(unpack(ROLE_COORDS[e.role]))
-                h.Text:SetText(e.label); h:Show()
+                h.Text:SetText(e.label); Heading(h.Text, ROLE_SECTION[e.role]); h:Show()
                 y = y + HDR_H
             else
                 nr = nr + 1
@@ -1488,12 +1517,15 @@ local function BuildPage(parent)
     page.sub:SetPoint("TOPLEFT", page.name, "BOTTOMLEFT", 0, -4)
     page.sub:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.sub:SetJustifyH("LEFT"); page.sub:SetWordWrap(false)
+    if th then page.name:SetTextColor(unpack(th.Text)); page.sub:SetTextColor(unpack(th.Muted)) end
 
+    -- Tree split: 8px tall slot; the theme draws a 4px bar in its middle on a faint track.
     page.split = CreateFrame("Frame", nil, C)
     page.split:SetPoint("TOPLEFT", page.icon, "BOTTOMLEFT", 0, -12)
     page.split:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.split:SetHeight(8)
     local splitBg = page.split:CreateTexture(nil, "BACKGROUND"); splitBg:SetAllPoints(); splitBg:SetColorTexture(1, 1, 1, 0.08)
+    if th then splitBg:ClearAllPoints(); splitBg:SetPoint("LEFT"); splitBg:SetPoint("RIGHT"); splitBg:SetHeight(4); splitBg:SetColorTexture(1, 1, 1, 0.06) end
     page.split.segs = {}
     for i = 1, 3 do page.split.segs[i] = page.split:CreateTexture(nil, "ARTWORK") end
     page.split.label = page.split:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -1504,6 +1536,7 @@ local function BuildPage(parent)
     page.info:SetPoint("TOPLEFT", page.split, "BOTTOMLEFT", 0, -26)
     page.info:SetPoint("RIGHT", C, "RIGHT", -16, 0)
     page.info:SetJustifyH("LEFT"); page.info:SetSpacing(3)
+    if th then page.info:SetTextColor(unpack(th.Text)) end
 
     -- Progress box
     local P = CreateFrame("Frame", nil, C, "BackdropTemplate")
@@ -1512,16 +1545,20 @@ local function BuildPage(parent)
     P:SetHeight(60)
     P:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
     P:SetBackdropColor(0, 0, 0, 0.35); P:SetBackdropBorderColor(1, 1, 1, 0.1)
+    if th and GetMSC().ApplyPanelSkin then GetMSC().ApplyPanelSkin(P) end
     local pLbl = P:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    pLbl:SetPoint("TOPLEFT", 8, -7); pLbl:SetText(L["Progress"])
+    pLbl:SetPoint("TOPLEFT", 8, -7); pLbl:SetText(L["Progress"]); Heading(pLbl, "Green")
     P.count = P:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     P.count:SetPoint("TOPRIGHT", -8, -7)
+    if th then P.count:SetTextColor(unpack(th.Value)) end
+    -- Theme: a 3px bar shaded green on a faint track.
+    local barH = th and 3 or 6
     P.bar = P:CreateTexture(nil, "ARTWORK")
-    P.bar:SetPoint("TOPLEFT", 8, -22); P.bar:SetPoint("RIGHT", P, "RIGHT", -8, 0); P.bar:SetHeight(6)
-    P.bar:SetColorTexture(1, 1, 1, 0.1)
+    P.bar:SetPoint("TOPLEFT", 8, th and -24 or -22); P.bar:SetPoint("RIGHT", P, "RIGHT", -8, 0); P.bar:SetHeight(barH)
+    P.bar:SetColorTexture(1, 1, 1, th and 0.06 or 0.1)
     P.fill = P:CreateTexture(nil, "OVERLAY")
-    P.fill:SetPoint("TOPLEFT", P.bar, "TOPLEFT"); P.fill:SetHeight(6)
-    P.fill:SetColorTexture(0.33, 0.85, 0.33, 1)
+    P.fill:SetPoint("TOPLEFT", P.bar, "TOPLEFT"); P.fill:SetHeight(barH)
+    if th then local g = th.Section.Green; ShadeBar(P.fill, g[1], g[2], g[3]) else P.fill:SetColorTexture(0.33, 0.85, 0.33, 1) end
     P.text = P:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     P.text:SetPoint("TOPLEFT", P.bar, "BOTTOMLEFT", 0, -7); P.text:SetPoint("RIGHT", P, "RIGHT", -8, 0)
     P.text:SetJustifyH("LEFT"); P.text:SetSpacing(2)
@@ -1561,12 +1598,13 @@ local function BuildPage(parent)
 
     -- Settings, pinned to the bottom of the centre column
     local setHdr = C:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    setHdr:SetPoint("BOTTOMLEFT", 16, 112)
-    setHdr:SetText(L["Settings"])
+    setHdr:SetPoint("BOTTOMLEFT", 16, th and 117 or 112)
+    setHdr:SetText(L["Settings"]); Heading(setHdr, "Purple", 830 - PAGE_LEFT_W - PAGE_RIGHT_W - 32)
     local function Toggle(label, key, anchor, onChange)
         local box = CreateFrame("CheckButton", nil, C, "ChatConfigCheckButtonTemplate")
-        box:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -6)
+        box:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, (th and anchor == setHdr) and -11 or -6)
         box.Text:SetText(label); box.Text:SetTextColor(0.9, 0.9, 0.9)
+        if th then box.Text:SetTextColor(unpack(th.Text)) end
         box:SetScript("OnShow", function(self) self:SetChecked(db[key]) end)
         box:SetChecked(db[key])
         box:SetScript("OnClick", function(self) db[key] = self:GetChecked() and true or false; if onChange then onChange() end end)
@@ -1580,10 +1618,10 @@ local function BuildPage(parent)
     -- RIGHT: TALENT ORDER (scrolls the full height)
     -- ==========================================
     local orderHdr = R:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    orderHdr:SetPoint("TOPLEFT", 12, -14)
-    orderHdr:SetText(L["Talent Order"])
+    orderHdr:SetPoint("TOPLEFT", 12, th and -12 or -14)
+    orderHdr:SetText(L["Talent Order"]); Heading(orderHdr, "Teal", PAGE_RIGHT_W - 24)
     local orderSub = R:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    orderSub:SetPoint("TOPLEFT", orderHdr, "BOTTOMLEFT", 0, -3)
+    orderSub:SetPoint("TOPLEFT", orderHdr, "BOTTOMLEFT", 0, th and -9 or -3)
     orderSub:SetText(L["|cff55ff55Taken|r"] .. "  " .. L["|cffffd100Next|r"] .. "  " .. L["|cffaaaaaaLater|r"])
 
     local scroll = CreateFrame("ScrollFrame", nil, R, "UIPanelScrollFrameTemplate")
@@ -1614,13 +1652,17 @@ local function BuildPage(parent)
                     row.Text:SetPoint("LEFT", 72, 0); row.Text:SetPoint("RIGHT", 0, 0); row.Text:SetJustifyH("LEFT"); row.Text:SetWordWrap(false)
                     row.Head = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
                     row.Head:SetPoint("LEFT", 0, 0); row.Head:SetPoint("RIGHT", 0, 0); row.Head:SetJustifyH("LEFT"); row.Head:SetWordWrap(false)
+                    -- Theme: a faint 1px line under each talent row.
+                    if th then row.Sep = row:CreateTexture(nil, "BACKGROUND"); row.Sep:SetColorTexture(1, 1, 1, 0.04); row.Sep:SetHeight(1); row.Sep:SetPoint("BOTTOMLEFT", 6, 0); row.Sep:SetPoint("BOTTOMRIGHT") end
                     page.orderRows[i] = row
                 end
                 if r.header then
                     row.Head:SetText(r.header); row.Head:Show()
                     row.Stripe:Hide(); row.Icon:Hide(); row.Lvl:Hide(); row.Text:Hide()
+                    if row.Sep then row.Sep:Hide() end
                 else
                     row.Head:Hide()
+                    if row.Sep then row.Sep:Show() end
                     local c = r.tree and TreeColor(r.tree)
                     if c then row.Stripe:SetColorTexture(c[1], c[2], c[3], 1); row.Stripe:Show() else row.Stripe:Hide() end
                     row.Icon:SetTexture(r.icon); row.Icon:SetShown(r.icon ~= nil)
