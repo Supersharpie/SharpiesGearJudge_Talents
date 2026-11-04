@@ -5117,8 +5117,8 @@ T.RegisterBuild({
     name = "Elemental: Solo Leveling",
     leveling = "Leveling_Caster", endgame = "ELE_RAID",
     stage = "leveling", role = "dps", mode = "solo",
-    summary = "Elemental for questing alone, about 30% slower than the fastest Shaman solo build: Flame Shock, Lightning Bolt and Earth Shock, a Searing Totem, and Fire Nova once the mob reaches you. Convection first, Elemental Alacrity at 15-17, Call of Flame from 18, Elemental Focus at 20, Tidal Focus and Mindfulness in the 20s for mana, Concussion at 29-31. Then Enhancement: Thundering Strikes at 34-38, Guardian Totems and Improved Lightning Shield around 40. The late levels bring Lightning Overload at 49-51, Elemental Fury at 54-58 and Lightning Mastery at 59.",
-    slower = 30,
+    summary = "Elemental for questing alone, about 29% slower than the fastest Shaman solo build: Flame Shock, Lightning Bolt and Earth Shock, a Searing Totem, and Fire Nova once the mob reaches you. Convection first, Elemental Alacrity at 15-17, Call of Flame from 18, Elemental Focus at 20, Tidal Focus and Mindfulness in the 20s for mana, Concussion at 29-31. Then Enhancement: Thundering Strikes at 34-38, Guardian Totems and Improved Lightning Shield around 40. The late levels bring Lightning Overload at 49-51, Elemental Fury at 54-58 and Lightning Mastery at 59.",
+    slower = 29,
     order = {
         { "Convection", 5 },
         { "Elemental Alacrity", 3 },
@@ -5151,8 +5151,8 @@ T.RegisterBuild({
     name = "Restoration: Solo Leveling",
     leveling = "Leveling_Caster", endgame = "RESTO_RAID",
     stage = "leveling", role = "dps", mode = "solo",
-    summary = "Restoration for questing alone, played like Elemental, about 33% slower than the fastest Shaman solo build: Flame Shock, Lightning Bolt and Earth Shock, a Searing Totem and Fire Nova, Healing Wave between pulls. Tidal Focus and Mindfulness first, then Elemental for damage: Convection at 18-22, Elemental Alacrity at 23-24, Totemic Focus from 26, Water Shield at 29, Elemental Focus at 31. Thundering Strikes at 32-36, Guardian Totems and Ancestral Knowledge around 40, then Improved Healing Wave at 46-47, Mana Tide Totem at 48, Concussion, Trial by Fire and Anticipation.",
-    slower = 33,
+    summary = "Restoration for questing alone, played like Elemental, about 32% slower than the fastest Shaman solo build: Flame Shock, Lightning Bolt and Earth Shock, a Searing Totem and Fire Nova, Healing Wave between pulls. Tidal Focus and Mindfulness first, then Elemental for damage: Convection at 18-22, Elemental Alacrity at 23-24, Totemic Focus from 26, Water Shield at 29, Elemental Focus at 31. Thundering Strikes at 32-36, Guardian Totems and Ancestral Knowledge around 40, then Improved Healing Wave at 46-47, Mana Tide Totem at 48, Concussion, Trial by Fire and Anticipation.",
+    slower = 32,
     order = {
         { "Tidal Focus", 5 },
         { "Mindfulness", 3 },

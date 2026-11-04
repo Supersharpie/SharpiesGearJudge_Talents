@@ -1,5 +1,10 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.5
+
+### 🔧 November 4 Hotfix (WoW Forever)
+- Elemental and Restoration Shaman builds re-searched for the 2-second Chain Lightning. The builds didn't change, but they level about 1% faster, so their tags now read 29% and 32% slower.
+
 ## 🚀 v1.2.4
 
 ### 🚀 Launch Builds (WoW Forever)
