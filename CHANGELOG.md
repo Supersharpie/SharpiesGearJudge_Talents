@@ -1,5 +1,20 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.4
+
+### 🚀 Launch Builds (WoW Forever)
+- Every solo leveling build re-searched on Blizzard's launch notes and the November 3 hotfix, with new descriptions in every language. Most got faster: Arcane Mage about 9%, Subtlety Rogue 6%, Combat Rogue 3%. Elemental Shaman (no more Lava Burst) and Fury Warrior (Flurry has 3 ranks, Raging Blows is gone) are rebuilt.
+- The Fastest and "% slower" tags are updated: Feral Druid is now well ahead of Balance, and Shadow without Shadowform is about 31% slower.
+- Every dungeon leveling build re-searched the same way. Subtlety Rogue got about 10% faster, Combat and Assassination Rogue 3-4%, Survival Hunter 2%, Arcane Mage and Protection Paladin 2%.
+- Caster and healer dungeon builds re-searched again with the new dungeon mana pacing (Gear Judge 3.2.8). Fire Mage got about 3% faster, Arcane and Frost Mage and Holy Priest about 1%. All three Mage dungeon builds now split their points differently: Arcane goes into Fire, Fire stays in Fire to 40, and Frost moves into Arcane.
+- Raid and PvP builds that use removed talents are hidden until they're re-searched.
+
+### 🔀 Other Plays
+- Slower weapon and play-style builds are their own builds now, for players who prefer them: Hunter melee, Rogue swords and daggers, Demonology Drain Life, Fury two-hander and Arcane AoE.
+
+### 🌾 Farming Builds
+- The Dire Maul and Maraudon farm builds are removed: those farms may not work the same in this version.
+
 ## 🚀 v1.2.3
 
 ### 🎨 New Look
