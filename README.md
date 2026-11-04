@@ -1,6 +1,6 @@
 # Sharpie's Gear Judge [Talents]
 
-> ⚠️ **Experimental: WoW Forever is in beta.** Blizzard changes talents, spells and level caps often between beta builds, sometimes several times a week. The builds and stat weights in this plugin are updated to keep up, but there can be a short gap after each patch where a build is out of date or a talent has moved. If something looks wrong after a patch, please report it on the [Discord](https://discord.gg/aYmhmtGxYs).
+> ⚠️ **WoW Forever is brand new.** Blizzard may still change talents and spells with hotfixes. The builds and stat weights in this plugin are updated to keep up, but there can be a short gap after each hotfix where a build is out of date or a talent has moved. If something looks wrong, please report it on the [Discord](https://discord.gg/aYmhmtGxYs).
 
 **A talent build guide for WoW Forever, built into Sharpie's Gear Judge.**
 
@@ -28,23 +28,25 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 ## Builds
 
-Every talent tree has a **Solo Leveling**, a **Dungeon Leveling** and a **PvP Leveling** build (Warlocks have Affliction solo and dungeon builds for now). Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Where switching trees is faster, a build says so and the guide tells you when (Paladin: Retribution to Protection at 40, free on your second talent spec). Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
+Every talent tree has a **Solo Leveling** and a **Dungeon Leveling** build, searched on Blizzard's launch notes. Each one starts in its own tree at level 10, so you never pay for a respec while leveling. Where switching trees is faster, a build says so and the guide tells you when (Paladin: Retribution to Protection at 40, free on your second talent spec). Leveling builds are ranked by how fast they get you to 60 in Gear Judge's leveling models, checked against beta combat logs where there are any.
 
-Where a class has more than one solo build, the fastest is tagged **(Fastest)** and the others say how much slower they level. **(Experimental)** builds are what our model rates best, but nobody has tried them in game yet.
+Where a class has more than one solo build, the fastest is tagged **(Fastest)** and the others say how much slower they level. **(Experimental)** builds are what our model rates best, but nobody has tried them in game yet. Some trees also have slower builds for another weapon or play style (in *italics* below), for players who prefer them.
 
 ### Leveling
 
 | Class | Solo Leveling | Dungeon Leveling |
 |---|---|---|
-| Warrior | **Arms (Fastest)**, Fury, Protection | Arms, Fury, Protection (tank) |
-| Paladin | **Protection (Fastest)**, Retribution, Holy | Retribution, Protection (tank), Holy (healer) |
-| Rogue | **Subtlety (Fastest)**, Combat, Assassination | Combat, Assassination, Subtlety |
-| Hunter | **Survival (Fastest, melee)**, Beast Mastery, Marksmanship | Beast Mastery, Marksmanship, Survival (melee) |
-| Mage | **Frost: AoE Leveling (Fastest)**, Frost, Arcane, Fire | Arcane, Frost, Fire |
-| Priest | **Discipline (Fastest)**, Shadow, Shadow (No Shadowform) **(Experimental)**, Holy | Shadow, Holy (healer), Discipline (healer) |
-| Warlock | Affliction | Affliction |
+| Warrior | **Arms (Fastest)**, Fury, Protection, *Fury (two-hander)* | Arms, Fury, Protection (tank) |
+| Paladin | **Retribution (Fastest)**, Retribution to Protection, Holy, Protection | Retribution, Protection (tank), Holy (healer) |
+| Rogue | **Combat (Fastest)**, Subtlety, Assassination, *Combat (swords)*, *Combat (daggers)*, *Subtlety (swords)*, *Assassination (daggers)* | Combat, Assassination, Subtlety, *Combat (swords or maces)*, *Assassination (swords)*, *Subtlety (swords)* |
+| Hunter | **Marksmanship (Fastest)**, Beast Mastery, Survival, *melee versions of all three* | Beast Mastery, Marksmanship, Survival, *melee versions of all three* |
+| Mage | **Frost: AoE Leveling (Fastest)**, Frost, Arcane, Fire, *Arcane: AoE Leveling* | Arcane, Frost, Fire |
+| Priest | **Shadow (Fastest)**, Shadow (No Shadowform) **(Experimental)**, Discipline, Holy | Shadow, Holy (healer), Discipline (healer) |
+| Warlock | **Demonology (Fastest)**, Affliction, Destruction, *Demonology (Drain Life)*, *Affliction (Drain Life)* | Affliction, Demonology, Destruction |
 | Shaman | **Enhancement (Fastest)**, Elemental, Restoration | Enhancement, Elemental, Restoration (healer), Tank (shield) |
 | Druid | **Feral Cat (Fastest)**, Balance, Restoration | Cat, Balance, Restoration (healer), Bear (tank) |
+
+Raid, farming and PvP builds that use talents removed at launch are hidden until they're re-searched, so some classes have fewer of them for now.
 
 ### PvP Leveling (Experimental)
 
@@ -52,29 +54,29 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 
 | Class | PvP Leveling |
 |---|---|
-| Warrior | Arms, Fury, Protection |
+| Warrior | Protection |
 | Paladin | Retribution, Holy, Protection |
-| Rogue | Combat, Assassination, Subtlety (two swords) |
+| Rogue | *(being re-searched)* |
 | Hunter | Beast Mastery, Marksmanship, Survival (all shooting) |
 | Mage | Arcane, Fire, Frost |
 | Priest | Shadow, Discipline, Holy |
 | Warlock | Affliction, Demonology, Destruction |
-| Shaman | Enhancement, Elemental, Restoration |
+| Shaman | Enhancement, Restoration |
 | Druid | Feral (Bear Form), Balance, Restoration |
 
 ### Max Level and Farming
 
 | Class | Max Level (Raid) | Farming |
 |---|---|---|
-| Warrior | Arms, Fury (dual wield), Fury (two-hander), Protection (tank) | Protection: AoE Farming |
+| Warrior | Protection (tank) | |
 | Paladin | Retribution, Holy (healer), four Protection tanks: Vanguard, Bulwark, Bastion, Arbiter | Protection: AoE Farming |
-| Rogue | Combat, Combat (daggers), Assassination (Mutilate) | |
+| Rogue | *(being re-searched)* | |
 | Hunter | Beast Mastery, Marksmanship, Survival, Survival: Melee Weave **(Theorycraft)** | |
 | Mage | Frost, Fire, Arcane | Frost: AoE Farming |
 | Priest | Shadow, Holy (healer), Discipline (healer) | Shadow: Multi-DoT Farming |
 | Warlock | Demonology (Demonic Pact), Affliction, Destruction | Demonology: AoE Farming |
-| Shaman | Enhancement, Elemental, Restoration (healer) | Tank: AoE Farming |
-| Druid | Cat, Balance (Moonkin), Restoration (healer), Bear (tank) | |
+| Shaman | Enhancement, Restoration (healer) | Tank: AoE Farming |
+| Druid | Cat, Balance (Moonkin), Restoration (healer), Bear (tank) | Balance: Hurricane Farming |
 
 Raid builds were searched in the simulator on pre-raid best-in-slot gear and are **(Experimental)** until tried at 60. **(Theorycraft)** marks a build that is strong only with perfect play in the simulator.
 
@@ -90,14 +92,14 @@ For battlegrounds and world PvP at 60 (the **PvP** tab; the leveling ones above 
 
 | Class | PvP builds |
 |---|---|
-| Warrior | Arms (Mortal Strike) |
+| Warrior | *(being re-searched)* |
 | Paladin | Retribution, Reck-Bomb (Reckoning stores up to 4 extra attacks for one big hit), Shockadin (Holy Shock) |
-| Rogue | Hemorrhage (swords or maces), Cold Blood Daggers |
+| Rogue | *(being re-searched)* |
 | Hunter | Marksmanship Utility (Scatter Shot, traps, Deterrence) |
 | Mage | Frost (Shatter, Ice Lance, Ice Block) |
 | Priest | Shadow, Discipline Healer |
 | Warlock | Soul Link, Nightfall / Conflagrate |
-| Shaman | Elemental, Restoration Healer |
+| Shaman | Restoration Healer |
 | Druid | Feral (Cat), Restoration Healer |
 
 ---
