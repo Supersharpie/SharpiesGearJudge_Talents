@@ -265,6 +265,39 @@ local cachedTree = {}
 
 local function MarkTreeDirty() wipe(cachedTree) end
 
+-- DaylightUI's own spellbook and talents window (core addon, module "Book"). The game's
+-- window keeps running behind it, shown but invisible under DaylightUI's veil, so the
+-- talents page below stands in for it while it's up. In a fight DaylightUI hands the
+-- game's window back. If DaylightUI renames these, all of this silently does nothing.
+local function DaylightBook()
+    local D = _G.DaylightUI
+    local mod = D and type(D.GetModule) == "function" and D:GetModule("Book")
+    local book = mod and mod.ns
+    if book and book.Talents and book.Spend and book.Window and book.Window.frame then return book end
+end
+
+local function DaylightPage()
+    local book = DaylightBook()
+    local page = book and book.Talents.page
+    if page and page:IsVisible() then return page, book end
+end
+
+-- The game's talent window on screen for real, not parked under the veil.
+local function GameWindowLive(tf)
+    if not (tf and tf:IsVisible()) then return false end
+    return not tf.GetEffectiveAlpha or tf:GetEffectiveAlpha() > 0
+end
+
+-- DaylightUI's window shows points picked but not yet applied as spent, so the glow,
+-- the badges and the panel count them too while it's open.
+local function WithStaged(rank, node)
+    if DaylightPage() then
+        local bought = node and tonumber(node.ranksPurchased)
+        if bought and bought > (rank or 0) then return bought end
+    end
+    return rank
+end
+
 local function ReadTree(group)
     group = group or CtxGroup()
     if cachedTree[group] then return cachedTree[group] end
@@ -277,6 +310,7 @@ local function ReadTree(group)
         return { rank = rank or 0, max = node and tonumber(node.maxRanks) or nil, nodeID = node and node.ID or nil, tab = tab }
     end
     local ok, found = pcall(MSC.ForEachTraitTalent, function(name, rank, tab, node)
+        rank = WithStaged(rank, node)
         local sid = NodeSpellID(configID, node)
         local eng = sid and idName[sid]
         if eng then
@@ -553,7 +587,7 @@ local function ShowBadges(tf, st, tree, view)
             bd:Show()
             btn.sgjSteps = StepsText(view, name, info.rank or 0)
             tagged[btn] = true
-            if not hookedButtons[btn] then
+            if not hookedButtons[btn] and not tf.tipHooked then
                 hookedButtons[btn] = true
                 btn:HookScript("OnEnter", AddStepsToTooltip)
             end
@@ -637,8 +671,11 @@ end
 local function AnchorPanel()
     if panel.userMoved then return end
     local psf = _G.PlayerSpellsFrame
+    local dayPage, book = DaylightPage()
     panel:ClearAllPoints()
-    if psf and psf:IsShown() then
+    if dayPage then
+        panel:SetPoint("TOPLEFT", book.Window.frame, "TOPRIGHT", 4, -30)
+    elseif psf and psf:IsShown() and GameWindowLive(psf) then
         panel:SetPoint("TOPLEFT", psf, "TOPRIGHT", 4, -30)
     else
         panel:SetPoint("CENTER", UIParent, "CENTER", 300, 80)
@@ -647,8 +684,10 @@ end
 
 -- The spec group shown in the talent window (its Primary / Secondary tab).
 local function ViewGroup()
+    local dayPage, book = DaylightPage()
+    if dayPage then return book.Spend.Group() end
     local tf = GetTalentsFrame()
-    if tf and tf:IsVisible() and tf.GetTab and tf.secondarySpecTabID then
+    if GameWindowLive(tf) and tf.GetTab and tf.secondarySpecTabID then
         local ok, tab = pcall(tf.GetTab, tf)
         if ok and tab == tf.secondarySpecTabID then return 2 end
         if ok and tab == tf.primarySpecTabID then return 1 end
@@ -745,10 +784,23 @@ end
 function RefreshPanel() InGroup(ViewGroup(), RefreshPanelIn) end
 
 -- Show/hide the highlight and panel to match the talent window.
+-- What ShowBadges and the glow need from DaylightUI's tiles. Its tooltip is redrawn on
+-- its own, so the steps line hooks that (HookDaylight), not each tile.
+local daylightTree = { tipHooked = true }
+function daylightTree:GetTalentButtonByNodeID(nodeID)
+    local dayPage = DaylightPage()
+    for _, box in ipairs(dayPage and dayPage.trees or {}) do
+        local b = box.byNode and box.byNode[nodeID]
+        if b then return b end
+    end
+end
+
 local function RefreshTalentWindow()
     if T.RefreshPage then T.RefreshPage() end
-    local tf = GetTalentsFrame()
-    local shown = tf and tf:IsVisible()
+    local dayPage = DaylightPage()
+    local tf = dayPage and daylightTree or GetTalentsFrame()
+    local shown = dayPage or GameWindowLive(tf)
+    if dayPage and not panel then CreatePanel(); panel:Hide() end
 
     if panel then
         if shown and db.showPanel then
@@ -798,6 +850,28 @@ local function OnTreeLoaded()
     QueueRefresh()
 end
 
+local daylightHooked = false
+
+local function HookDaylight()
+    if daylightHooked then return end
+    local book = DaylightBook()
+    local page = book and book.Talents.page
+    if not page then return end
+    daylightHooked = true
+    -- Points picked there and not applied count only while it's open: re-read as it opens and closes.
+    local function Changed() MarkTreeDirty(); QueueRefresh() end
+    book.Window.frame:HookScript("OnShow", function()
+        if panel and not panel.standalone then panel.userMoved = nil end  -- dock beside the window again
+        Changed()
+    end)
+    book.Window.frame:HookScript("OnHide", Changed)
+    page:HookScript("OnShow", Changed)
+    page:HookScript("OnHide", Changed)
+    -- Every repaint of the tiles (a set switch, a resize, a point) goes through FillTree.
+    hooksecurefunc(book.Talents, "FillTree", QueueRefresh)
+    hooksecurefunc(book.Talents, "Tip", AddStepsToTooltip)
+end
+
 local function HookTalentWindow()
     if hookedFrame then return end
     local psf = _G.PlayerSpellsFrame
@@ -805,7 +879,9 @@ local function HookTalentWindow()
     if not (psf and tf) then return end
     hookedFrame = true
     if not panel then CreatePanel(); panel:Hide() end
+    HookDaylight()
     psf:HookScript("OnShow", function()
+        HookDaylight()
         if panel and not panel.standalone then panel.userMoved = nil end  -- dock beside the window again
         QueueRefresh()
     end)

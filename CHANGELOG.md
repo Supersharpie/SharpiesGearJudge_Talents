@@ -1,5 +1,26 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.6
+
+### 🧭 DaylightUI's Talent Window (WoW Forever)
+- The gold glow, the step numbers, the steps in the tooltip and the build panel now work in **DaylightUI**'s talent window. Points you've picked but not applied count there too.
+
+### 🔧 Enhancement Shaman (WoW Forever)
+- Enhancement solo re-searched after two model fixes, and it levels about 3% faster. From level 41 it takes all of Convection instead of Concussion, plus a third point of Flurry at 57.
+- Tags updated to match: Elemental is now about 33% slower and Restoration about 37% slower.
+
+### 🔧 Paladin Solo Builds (WoW Forever)
+- Paladin solo builds re-searched with Hammer of Wrath added to the models.
+- Retribution is a hair faster with a new order: Deflection first, Sanctified Judgement before Seal of Command at 20, Champion of the Light at 44-48 and Unsealed Wrath at 53.
+- The Protection half of Retribution to Protection levels about 5% faster: Divine Intellect, more Toughness and Deflection, no Sacred Duty or Anticipation.
+- Tags updated to match: Retribution to Protection is now about 4% slower, Shockadin about 5% and Protection about 11%.
+
+### 🔧 Paladin Dungeon Builds (WoW Forever)
+- Paladin dungeon builds re-searched. Retribution and Protection didn't change. Holy takes its second point of Reverence before Healing Light, at level 16.
+
+### 🏷️ Shockadin (WoW Forever)
+- The Paladin build called Holy: Solo Leveling is now **Shockadin: Solo Leveling**, listed under DPS instead of Healer. It's a melee and Holy Shock build, not a healing one. The talents haven't changed.
+
 ## 🚀 v1.2.5
 
 ### 🔧 November 4 Hotfix (WoW Forever)

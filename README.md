@@ -16,6 +16,7 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows gold in the talent window. Every talent your build still puts points into shows a number on its icon: the step of its next point in the build (1 is your first point, 51 your last). Hover a numbered talent to see every step the build puts into it, with the level of each. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
+- **DaylightUI.** The highlight and panel also work in DaylightUI's own talent window.
 - **Talent Builds page.** A page in the Gear Judge window with three columns:
   - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo**, **Dungeon** or **PvP**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level. Your current build is marked **Active**.
   - **The build:** its spec icon, a bar showing how its points split between the three trees, what it's for and which stat weights it uses. For your active build, a progress bar shows how far along you are and the next talent with the level it's planned for.
@@ -37,7 +38,7 @@ Where a class has more than one solo build, the fastest is tagged **(Fastest)** 
 | Class | Solo Leveling | Dungeon Leveling |
 |---|---|---|
 | Warrior | **Arms (Fastest)**, Fury, Protection, *Fury (two-hander)* | Arms, Fury, Protection (tank) |
-| Paladin | **Retribution (Fastest)**, Retribution to Protection, Holy, Protection | Retribution, Protection (tank), Holy (healer) |
+| Paladin | **Retribution (Fastest)**, Retribution to Protection, Shockadin, Protection | Retribution, Protection (tank), Holy (healer) |
 | Rogue | **Combat (Fastest)**, Subtlety, Assassination, *Combat (swords)*, *Combat (daggers)*, *Subtlety (swords)*, *Assassination (daggers)* | Combat, Assassination, Subtlety, *Combat (swords or maces)*, *Assassination (swords)*, *Subtlety (swords)* |
 | Hunter | **Marksmanship (Fastest)**, Beast Mastery, Survival, *melee versions of all three* | Beast Mastery, Marksmanship, Survival, *melee versions of all three* |
 | Mage | **Frost: AoE Leveling (Fastest)**, Frost, Arcane, Fire, *Arcane: AoE Leveling* | Arcane, Frost, Fire |
