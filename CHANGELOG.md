@@ -1,5 +1,25 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.7
+
+### 🔧 Druid Solo Builds (WoW Forever)
+- Druid solo builds re-searched after changes to how the models value Rip and mana.
+- Feral takes Thick Hide at 53 and a second point of Natural Reaction, instead of Predatory Discipline and Shredding Attacks.
+- Balance takes Vengeance at 53-56 and Moonkin Form last, without Nature's Focus.
+- Tags updated to match: Balance is now about 38% slower and Restoration about 46%.
+
+### 🔧 Mage Builds (WoW Forever)
+- Mage solo and dungeon builds re-searched after changes to how the models pick spells, value mana and charge the global cooldown.
+- Frost takes Cold Snap at 39, Ice Barrier at 40 and Arcane from 41. Arcane Impact and Arcane Meditation replace Improved Blizzard and most of Incineration.
+- Fire and Arcane solo move only a few points, and Arcane is now about 63% slower.
+- In dungeons, Fire takes Critical Mass at 33-35 and Blast Wave at 36, and Arcane moves Presence of Mind to 59.
+
+### 🔧 Priest Solo Builds (WoW Forever)
+- Priest solo builds re-searched after the mana change.
+- Shadow takes Inner Focus at 59 instead of Improved Mind Blast at 60.
+- Discipline takes Shadow Focus and Improved Mind Blast a level earlier, and drops Penance and Blackout for more Renewed Hope.
+- Shadow without Shadowform is now tagged about 39% slower. The old 31% was out of date.
+
 ## 🚀 v1.2.6
 
 ### 🧭 DaylightUI's Talent Window (WoW Forever)
