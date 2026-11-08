@@ -16,6 +16,7 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows gold in the talent window. Every talent your build still puts points into shows a number on its icon: the step of its next point in the build (1 is your first point, 51 your last). Hover a numbered talent to see every step the build puts into it, with the level of each. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
+- **Panel beside the talent window.** Shows your build's progress and next talents. **Change Build** opens the same tabs and build list as the Builds page: Solo, Dungeon and PvP tags, how much slower each build levels, and your active build marked.
 - **DaylightUI.** The highlight and panel also work in DaylightUI's own talent window.
 - **Talent Builds page.** A page in the Gear Judge window with three columns:
   - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo**, **Dungeon** or **PvP**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level. Your current build is marked **Active**.
@@ -62,7 +63,7 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 | Mage | Arcane, Fire, Frost |
 | Priest | Shadow, Discipline, Holy |
 | Warlock | Affliction, Demonology, Destruction |
-| Shaman | Enhancement, Restoration |
+| Shaman | Enhancement, Elemental, Restoration |
 | Druid | Feral (Bear Form), Balance, Restoration |
 
 ### Max Level and Farming

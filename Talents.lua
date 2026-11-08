@@ -130,6 +130,9 @@ local function InitDB()
     if db.linkGear == nil then db.linkGear = true end
     if db.remind == nil then db.remind = true end
     if db.showPanel == nil then db.showPanel = true end
+    -- 1.2.9: the panel is on by default again for everyone, also where it was closed with its X before
+    -- (once; closing it after this keeps it closed)
+    if not db.panelOn129 then db.showPanel = true; db.panelOn129 = true end
     db.chars = db.chars or {}
     local key, legacy = CharKey(), LegacyCharKey()
     if not db.chars[key] and legacy ~= key and db.chars[legacy] then
@@ -602,6 +605,7 @@ local function FormatOff(off)
 end
 
 local RefreshPanel -- forward
+local PanelPicker  -- forward: the panel's build picker (stage tabs and build rows, as the Builds page), set in 7b
 
 local function CreatePanel()
     panel = CreateFrame("Frame", "SGJTalentsPanel", UIParent, "BackdropTemplate")
@@ -648,24 +652,9 @@ local function CreatePanel()
     change:SetSize(110, 22)
     change:SetPoint("BOTTOMLEFT", 8, 8)
     change:SetText(L["Change Build"])
-    change:SetScript("OnClick", function() panel.picking = not panel.picking; RefreshPanel() end)
+    -- Opening the picker starts on the active build's stage (pickStage nil).
+    change:SetScript("OnClick", function() panel.picking = not panel.picking; panel.pickStage = nil; RefreshPanel() end)
     panel.change = change
-
-    -- Build picker: one button per class build, plus "No build" (made as needed, see PickButton)
-    panel.pick = {}
-end
-
-local PICK_STEP = 22
-local function PickButton(i)
-    local btn = panel.pick[i]
-    if not btn then
-        btn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-        btn:SetSize(250, 20)
-        btn:SetPoint("TOPLEFT", panel.buildName, "BOTTOMLEFT", 0, -6 - (i - 1) * PICK_STEP)
-        btn:Hide()
-        panel.pick[i] = btn
-    end
-    return btn
 end
 
 local function AnchorPanel()
@@ -703,26 +692,15 @@ local function RefreshPanelIn()
     local b = GetActiveBuild()
     local tree = ReadTree()
 
-    for _, btn in ipairs(panel.pick) do btn:Hide() end
     if panel.picking then
         panel.buildName:SetText(L["Choose a build:"])
         panel.body:SetText("")
-        local list = ClassBuilds()
-        local n = #list
-        for i, cb in ipairs(list) do
-            local btn = PickButton(i)
-            btn:SetText(L[cb.name])
-            btn:SetScript("OnClick", function() T.SetBuild(cb.id, ViewGroup()); panel.picking = false; RefreshPanel() end)
-            btn:Show()
-        end
-        local none = PickButton(n + 1)
-        none:SetText(L["No build"])
-        none:SetScript("OnClick", function() T.SetBuild(nil, ViewGroup()); panel.picking = false; RefreshPanel() end)
-        none:Show()
+        local h = PanelPicker(true)
         panel.change:SetText(L["Go Back"])
-        panel:SetHeight(math.max(140, 70 + (n + 1) * PICK_STEP + 30))
+        panel:SetHeight(h + 90)
         return
     end
+    PanelPicker(false)
     panel.change:SetText(L["Change Build"])
 
     if not b then
@@ -1217,6 +1195,26 @@ local function BuildTags(b)
     return table.concat(tags, "  ")
 end
 
+-- A stage's builds for a list: role headers (Tank, Healer, DPS), then per role Solo, Dungeon, PvP, the fastest
+-- first. Shared by the Builds page and the talent window panel's picker.
+local function StageEntries(stage)
+    local entries = {}
+    for _, r in ipairs(ROLES) do
+        local list = CategoryBuilds(stage, r.key)
+        if #list > 0 then
+            table.insert(entries, { role = r.key, label = L[r.label] })
+            table.sort(list, function(a, b)
+                local ma, mb = MODE_ORDER[a.mode] or 0, MODE_ORDER[b.mode] or 0
+                if ma ~= mb then return ma < mb end
+                if (a.fastest and 1 or 0) ~= (b.fastest and 1 or 0) then return a.fastest and true or false end
+                return (a.slower or 0) < (b.slower or 0)
+            end)
+            for _, b in ipairs(list) do table.insert(entries, { build = b }) end
+        end
+    end
+    return entries
+end
+
 local ROLE_ICON = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local ROLE_COORDS = { tank = { 0, 19/64, 22/64, 41/64 }, healer = { 20/64, 39/64, 1/64, 20/64 }, dps = { 20/64, 39/64, 22/64, 41/64 } }
 local ROLE_SECTION = { tank = "Blue", healer = "Green", dps = "Red" }
@@ -1244,21 +1242,7 @@ local function UpdatePageIn()
     end
 
     -- Build list: every build of the stage, grouped by role.
-    local entries = {}
-    for _, r in ipairs(ROLES) do
-        local list = CategoryBuilds(cat.stage, r.key)
-        if #list > 0 then
-            table.insert(entries, { role = r.key, label = L[r.label] })
-            -- Solo, then Dungeon, then PvP; the fastest first.
-            table.sort(list, function(a, b)
-                local ma, mb = MODE_ORDER[a.mode] or 0, MODE_ORDER[b.mode] or 0
-                if ma ~= mb then return ma < mb end
-                if (a.fastest and 1 or 0) ~= (b.fastest and 1 or 0) then return a.fastest and true or false end
-                return (a.slower or 0) < (b.slower or 0)
-            end)
-            for _, b in ipairs(list) do table.insert(entries, { build = b }) end
-        end
-    end
+    local entries = StageEntries(cat.stage)
     local sel = selectedId and T.Builds[selectedId]
     if not (sel and sel.class == PlayerClass() and sel.stage == cat.stage) then
         selectedId = (active and active.stage == cat.stage and active.id) or nil
@@ -1432,6 +1416,128 @@ local function FlatButton(parent, w, h, tab)
     end
     btn:SetSelected(false)
     return btn
+end
+
+-- The talent window panel's build picker: the Builds page's stage tabs, role headers and rows (name, Solo /
+-- Dungeon / PvP, Fastest or % slower, Experimental, Active). A click on a row sets that build. Returns the
+-- picker's height; PanelPicker(false) hides it.
+local PICK_W, PICK_ROW, PICK_HDR, PICK_LIST_MAX = 290, 38, 20, 460
+PanelPicker = function(show)
+    local P = panel.picker
+    if not show then
+        if P then P:Hide(); panel.noneBtn:Hide(); panel:SetWidth(270) end
+        return 0
+    end
+    local innerW = PICK_W - 20
+    if not P then
+        P = CreateFrame("Frame", nil, panel)
+        P:SetPoint("TOPLEFT", panel.buildName, "BOTTOMLEFT", 0, -8)
+        P:SetWidth(innerW)
+        panel.picker = P
+        P.tabs = {}
+        local totalW = 0
+        for _, s in ipairs(STAGES) do totalW = totalW + (s.w or 50) end
+        local gap, x = 3, 0
+        local scale = (innerW - gap * (#STAGES - 1)) / totalW
+        for _, s in ipairs(STAGES) do
+            local w = math.floor((s.w or 50) * scale)
+            local btn = FlatButton(P, w, 22, true)
+            btn:SetPoint("TOPLEFT", x, 0)
+            x = x + w + gap
+            btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            btn.Text:SetPoint("CENTER"); btn.Text:SetWidth(w - 4); btn.Text:SetWordWrap(false)
+            btn.key, btn.label = s.key, s.short or s.label
+            btn:SetScript("OnClick", function(self) panel.pickStage = self.key; RefreshPanel() end)
+            table.insert(P.tabs, btn)
+        end
+        local sf = CreateFrame("ScrollFrame", nil, P, "UIPanelScrollFrameTemplate")
+        sf:SetPoint("TOPLEFT", 0, -30)
+        sf:SetPoint("BOTTOMRIGHT", -22, 0)
+        local child = CreateFrame("Frame", nil, sf)
+        child:SetSize(innerW - 22, 10)
+        sf:SetScrollChild(child)
+        P.sf, P.child, P.hdrs, P.rows = sf, child, {}, {}
+        P.empty = child:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        P.empty:SetPoint("TOPLEFT", 0, -4); P.empty:SetWidth(innerW - 22); P.empty:SetJustifyH("LEFT")
+        P.empty:SetText(L["No builds here for your class yet."])
+        local none = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        none:SetSize(100, 22)
+        none:SetPoint("BOTTOMRIGHT", -8, 8)
+        none:SetText(L["No build"])
+        none:SetScript("OnClick", function() T.SetBuild(nil, ViewGroup()); panel.picking = false; RefreshPanel() end)
+        panel.noneBtn = none
+    end
+    panel:SetWidth(PICK_W)
+    P:Show(); panel.noneBtn:Show()
+
+    local active = GetActiveBuild()
+    if not panel.pickStage then panel.pickStage = DefaultCategory().stage end
+    local stage = panel.pickStage
+    for _, btn in ipairs(P.tabs) do
+        local n = #CategoryBuilds(btn.key)
+        btn.Text:SetText((n > 0 and "" or "|cff777777") .. L[btn.label])
+        btn:SetSelected(stage == btn.key)
+    end
+
+    local child, w = P.child, innerW - 22
+    local y, nh, nr = 0, 0, 0
+    for _, e in ipairs(StageEntries(stage)) do
+        if e.role then
+            nh = nh + 1
+            local h = P.hdrs[nh]
+            if not h then
+                h = CreateFrame("Frame", nil, child); h:SetHeight(PICK_HDR)
+                h.Icon = h:CreateTexture(nil, "ARTWORK"); h.Icon:SetSize(14, 14); h.Icon:SetPoint("LEFT", 0, 0)
+                h.Icon:SetTexture(ROLE_ICON)
+                h.Text = h:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); h.Text:SetPoint("LEFT", h.Icon, "RIGHT", 4, 0)
+                P.hdrs[nh] = h
+            end
+            h:ClearAllPoints(); h:SetPoint("TOPLEFT", 0, -y); h:SetWidth(w)
+            h.Icon:SetTexCoord(unpack(ROLE_COORDS[e.role]))
+            h.Text:SetText(e.label); Heading(h.Text, ROLE_SECTION[e.role]); h:Show()
+            y = y + PICK_HDR
+        else
+            nr = nr + 1
+            local row = P.rows[nr]
+            if not row then
+                row = FlatButton(child, w, PICK_ROW - 4)
+                row.Name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                row.Name:SetPoint("TOPLEFT", 8, -5); row.Name:SetPoint("RIGHT", -8, 0)
+                row.Name:SetJustifyH("LEFT"); row.Name:SetWordWrap(false)
+                row.Tags = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                row.Tags:SetPoint("BOTTOMLEFT", 8, 5); row.Tags:SetJustifyH("LEFT"); row.Tags:SetWordWrap(false)
+                row.Active = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                row.Active:SetPoint("BOTTOMRIGHT", -6, 5)
+                row.Tags:SetPoint("RIGHT", row.Active, "LEFT", -4, 0)
+                row:SetScript("OnClick", function(self) T.SetBuild(self.id, ViewGroup()); panel.picking = false; RefreshPanel() end)
+                P.rows[nr] = row
+            end
+            local b = e.build
+            row.id = b.id
+            row:ClearAllPoints(); row:SetPoint("TOPLEFT", 0, -y); row:SetWidth(w)
+            row.Name:SetText(BuildName(b))
+            row.Tags:SetText(BuildTags(b))
+            local isActive = active and active.id == b.id
+            row.Active:SetText(isActive and ("|cff55ff55" .. L["Active"] .. "|r") or "")
+            row:SetSelected(isActive and true or false)
+            row:Show()
+            y = y + PICK_ROW
+        end
+    end
+    for k = nh + 1, #P.hdrs do P.hdrs[k]:Hide() end
+    for k = nr + 1, #P.rows do P.rows[k]:Hide() end
+    P.empty:SetShown(nr == 0)
+    if nr == 0 then y = 24 end
+    child:SetHeight(math.max(1, y))
+    local listH = math.min(y, PICK_LIST_MAX)
+    P:SetHeight(30 + listH)
+    local bar = P.sf.ScrollBar
+    if bar then
+        local need = y > listH + 1
+        bar:SetShown(need)
+        if not need then P.sf:SetVerticalScroll(0) end
+    end
+    return 30 + listH
 end
 
 local function BuildPage(parent)

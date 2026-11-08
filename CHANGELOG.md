@@ -1,5 +1,43 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.9
+
+### 🎨 Build Picker (talent window)
+- Change Build now opens the Builds page's layout: Max Level, Leveling, Farming and PvP tabs, builds grouped by role, Solo, Dungeon and PvP tags, Fastest or how much slower, Experimental, and your active build marked.
+- Click a build to use it; No build clears it.
+- The panel beside the talent window is on again for everyone after this update, also if you closed it before. Close it with its X to turn it off, or switch it in the settings.
+
+### 🔧 Hunter Builds (WoW Forever)
+- Re-searched with your Hit now also counting for your pet, and mana that varies from pull to pull.
+- Marksmanship solo drops Barrage, Improved Tracking and Improved Aspect of the Monkey for more Beast Mastery: Endurance Training, Unleashed Fury by 48, Ferocity and Spirit Bond. It is still the fastest Hunter solo build.
+- Small level changes for Marksmanship melee solo.
+- Beast Mastery re-searched again with the pet's Bite and Claw and the hawks' damage from combat logs: small changes to solo, melee solo, dungeon and melee dungeon.
+- Survival solo keeps its pet: it drops Lone Wolf and Barrage for Improved Stings at 49-51, Rapid Recuperation at 52-53 and Deadly Aspects.
+- PvP leveling: faster orders for all three. Beast Mastery takes its talents a few levels earlier, with Endurance Training, Bestial Swiftness and Summon Hawk at 33. Marksmanship takes Trueshot Aura at 25 and Scatter Shot at 51. Survival takes Surefooted from 28 and Counterattack at 46, without Entrapment or Careful Aim.
+- The Marksmanship and Survival dungeon builds are unchanged: their new orders were not faster.
+- Speed notes updated. Against the fastest Hunter solo build: Beast Mastery solo about 5% slower (was 4%), Beast Mastery melee solo 18% (was 21%), Marksmanship melee solo 25% (was 26%), Survival solo 8% (was 7%). Melee dungeon builds against shooting: Beast Mastery 20% (was 29%), Marksmanship 40% (was 51%), Survival 13% (was 19%).
+
+### 🔧 Rogue Builds (WoW Forever)
+- Re-searched with Deadly Poison growing with your Attack Power on every tick.
+- Assassination solo takes Vile Poisons and Venom earlier. Swords: Venom at 43, and Blade Flurry at 60 instead of Seal Fate. Daggers: Lethality from 30, Venom at 38 and Deflection at 39-40; now about 14% slower than the fastest Rogue solo build, down from 16%.
+- Assassination sword dungeon: Lethality at 30, a point of Relentless Strikes at 39 and Blood Splatter at 58.
+- Combat dagger dungeon: Efficient Strikes at 13 and Deflection at 28, with Serrated Blades and Premeditation instead of Deflection and Riposte in the late 50s.
+- Small late-level changes for Combat swords and daggers solo, Subtlety swords solo and Subtlety PvP leveling. Combat swords solo is now 32 Combat / 19 Assassination.
+- Combat maces solo, the other dungeon builds and the Assassination and Combat PvP leveling builds are unchanged: their new orders were not faster.
+
+### 🔧 Shaman Builds (WoW Forever)
+- Re-searched with mana that varies from pull to pull.
+- Enhancement dungeon: Shamanistic Focus at 20 and Elemental Devastation from 49.
+- Elemental dungeon: Concussion from 22, Trial by Fire at 25, Elemental Fury at 43-47 and Lightning Mastery at 48, with Water Shield and Ancestral Knowledge later.
+- PvP leveling: Enhancement goes into Restoration from 33 (Nature's Swiftness, Healing Way) instead of Rage of the Farseer. Elemental no longer takes Lava Burst (removed at launch) and is back in the addon. Restoration takes Purification from 35.
+- The solo builds and the tank and healer dungeon builds are unchanged: their new orders were not faster.
+
+### 🔧 Warlock Builds (WoW Forever)
+- Re-searched with mana that varies from pull to pull and the Voidwalker's extra health.
+- Demonology Drain Life solo: most Demonology talents a level earlier, Demonic Pact at 47. Now about 12% slower than the fastest Warlock solo build, down from 13%.
+- PvP leveling: Affliction takes Improved Bane of Agony at 20 and Fel Concentration in the 50s, plus Agonizing Flames. Destruction takes the rest of Bane instead of Ruin and Soul Siphon, with Shadow and Flame from 41. Both still play the Succubus, which tested best.
+- The other solo builds, the dungeon builds and Demonology PvP leveling are unchanged: their new orders were not faster.
+
 ## 🚀 v1.2.8
 
 ### 🔧 Paladin PvP Leveling Builds (WoW Forever)
