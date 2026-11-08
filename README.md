@@ -55,9 +55,9 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 
 | Class | PvP Leveling |
 |---|---|
-| Warrior | Protection |
+| Warrior | Arms, Fury, Protection |
 | Paladin | Retribution, Holy, Protection |
-| Rogue | *(being re-searched)* |
+| Rogue | Assassination, Combat, Subtlety (all with swords) |
 | Hunter | Beast Mastery, Marksmanship, Survival (all shooting) |
 | Mage | Arcane, Fire, Frost |
 | Priest | Shadow, Discipline, Holy |

@@ -1,5 +1,34 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.2.8
+
+### 🔧 Paladin PvP Leveling Builds (WoW Forever)
+- Re-searched against opponents updated for this week's class changes.
+- Holy takes Conviction before Improved Judgement, Holy Shock at 47, Two-Handed Weapon Specialization at 50 and Holy Power at 58, without Divine Precision or Purifying Power.
+- Protection takes Improved Righteous Fury before Holy Shield, a full Toughness and Vindication in the 50s, without Deflection or Spiritual Focus.
+- Retribution is unchanged: its new order was slower.
+
+### 🔧 Mage, Druid, Priest and Rogue PvP Leveling Builds (WoW Forever)
+- Re-searched against the same updated opponents.
+- Faster orders for Arcane and Fire Mage and for every Druid, Priest and Rogue build.
+- Rogue builds no longer use talents removed at launch, and Subtlety now uses two swords instead of daggers.
+- Frost Mage is unchanged: its new order was slower.
+
+### 🔧 Protection Paladin Builds (WoW Forever)
+- Re-searched with Hammer of the Righteous, which replaces Holy Strike from 40 on packs.
+- Protection solo takes Benediction at 35-39 and Sanctified Judgement at 40, with Iron Creed and Shieldsworn moved to the 50s. It is now about 9% slower than the fastest Paladin solo build (was 11%).
+- Retribution to Protection: the Protection half takes Benediction and Sanctified Judgement at the respec, then Divine Strength and Holy, without Iron Creed or Shieldsworn. It is now about 1% slower (was 4%).
+- The dungeon tank build takes Divine Strength at 31-35, Sacred Duty at 43 and Holy Shield at 50, without Toughness.
+- Retribution and Holy are unchanged: a one-hander for Hammer of the Righteous was slower than their two-hander.
+
+### 🔧 Warrior Builds (WoW Forever)
+- Re-searched after the Unbridled Wrath fix (it now procs on Heroic Strike, each Cleave target and weapon specials).
+- Fury PvP leveling is back: its old order used Raging Blows, which was removed at launch. It now takes Enrage at 21-24, Improved Whirlwind at 36-37 and Bloodthirst at 41.
+- Arms PvP leveling is back: its old order had 5 points in Bloodthrill, which has 2 ranks since launch. It now takes Improved Charge, Spearing Strike at 25 and Defiance, without Improved Heroic Strike.
+- Protection PvP leveling takes Vanguard, Iron Will and Enrage, without Improved Disarm, Improved Rend or Cruelty.
+- Protection solo takes most of its talents two levels earlier, with Shield Slam at 43. Arms dungeon takes Furious Precision and Reckless Swings, with Mortal Strike last.
+- Arms and Fury solo, Fury dungeon and the dungeon tank are unchanged.
+
 ## 🚀 v1.2.7
 
 ### 🔧 Druid Solo Builds (WoW Forever)
