@@ -1182,7 +1182,24 @@ end
 local UpdatePage -- set below (it wraps UpdatePageIn with the shown spec)
 local pageGroup -- the spec the Builds page shows (nil = the active one)
 
--- Small coloured tags under a build's name: Solo / Dungeon / PvP, Fastest, Experimental, Theorycraft, % slower.
+-- The build's own model number at the player's level (Builds.lua metric, 2026-11-08): kills per hour (solo), DPS
+-- (dungeon), multiple of a pull's healing need (healers), pulls per hour (tanks), duel score (PvP leveling). Below the
+-- first level the model has (group builds start at 15) nothing is shown; past the last one, its last value.
+local METRIC_FMT = { kph = "%d kills/h", dps = "%d DPS", heal = "%.1fx heal need", tank = "%d pulls/h", duel = "duel %.2f" }
+local function MetricText(b)
+    local m = b.metric
+    if not (m and m.v and METRIC_FMT[m.kind]) then return nil end
+    local lvl = math.max(10, math.min(60, UnitLevel("player") or 60))
+    local i = lvl - m.from + 1
+    if i < 1 then return nil end
+    if i > #m.v then i = #m.v end
+    local v = m.v[i]
+    if not v then return nil end
+    if m.kind ~= "heal" and m.kind ~= "duel" then v = math.floor(v + 0.5) end
+    return string.format(L[METRIC_FMT[m.kind]], v)
+end
+
+-- Small coloured tags under a build's name: Solo / Dungeon / PvP, Fastest, Experimental, Theorycraft, % slower, model number.
 local function BuildTags(b)
     local tags = {}
     if b.stage == "leveling" and b.mode then
@@ -1192,6 +1209,8 @@ local function BuildTags(b)
     if b.experimental then table.insert(tags, "|cffff8000" .. L["Experimental"] .. "|r") end
     if b.theorycraft then table.insert(tags, "|cffc29bff" .. L["Theorycraft"] .. "|r") end
     if b.slower then table.insert(tags, "|cff999999" .. string.format(L["%d%% slower"], b.slower) .. "|r") end
+    local m = MetricText(b)
+    if m then table.insert(tags, "|cffd8d8d8" .. m .. "|r") end
     return table.concat(tags, "  ")
 end
 

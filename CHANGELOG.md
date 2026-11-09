@@ -1,5 +1,50 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.0
+
+### ✨ Build Numbers
+- Every leveling build in the build list shows its model number at your level: kills per hour for solo builds, DPS for dungeon builds, how many times over a healer covers a pull's healing need, pulls per hour for tanks, and a duel score for PvP builds.
+
+### 🔧 Druid Builds (WoW Forever)
+- Bear builds no longer take caster-only talents: Bear dungeon takes Heart of the Wild in place of Nature's Focus and Furor in place of Improved Wrath, and Feral PvP leveling takes Genesis in place of Improved Wrath.
+- Restoration dungeon: Improved Rejuvenation at 27-29 and Improved Regrowth from 36, before Genesis.
+- Cat dungeon, Balance solo and dungeon, Restoration solo and PvP leveling: small order changes.
+
+### 🔧 Priest Builds (WoW Forever)
+- Discipline PvP leveling: Improved Mind Blast from 49, Twilight Focus, Improved Inner Fire and Improved Psychic Scream in place of Divine Aegis, Renewed Hope and Improved Mana Burn. About 0.8% stronger in duels.
+- Discipline dungeon: Holy Specialization at 31-34 and the Holy healing talents before Renewed Hope and Divine Aegis. About 0.6% more healing.
+- Holy dungeon and Discipline solo: small order changes.
+
+### 🔧 Warlock Builds (WoW Forever)
+- Builds no longer take talents for a pet they don't use: Demonology PvP leveling (Succubus) drops Improved Imp and Improved Felhunter, and Demonology dungeon (Imp, then Succubus) drops Improved Voidwalker.
+- Demonology PvP leveling: Suppression first, Improved Drains at 46-50 for Drain Life, Soul Link at 33 and Demonic Pact at 43. About 1.3% stronger in duels.
+- Affliction PvP leveling: small order changes.
+
+### 🔧 Mage Builds (WoW Forever)
+- Arcane AoE: Permafrost at 35 instead of 60 for a longer slow on the packs. About 3% faster to level (now about 40% slower than Frost AoE).
+- Arcane solo: Incineration and Ignite from 44 in place of the late Frost talents (Ice Lance, Shatter, Frost Channeling). About 0.5% faster.
+- Frost and Arcane PvP leveling, Fire solo and the other leveling builds: small order changes (Cold Snap at 38 for Frost PvP, Arcane Concentration from 20 for Arcane PvP, Incineration at 41 for Frost solo).
+
+### 🔧 Shaman Builds (WoW Forever)
+- Enhancement dungeon and solo: Tidal Focus earlier (from 26 in dungeons, 42-44 solo), with the Elemental talents a few levels later. Up to 0.6% faster.
+- Enhancement and Restoration PvP leveling, Elemental dungeon and the shield tank: small order changes (Improved Stormstrike at 39 for Enhancement PvP, Thundering Strikes at 49 for Elemental dungeon).
+
+### 🔧 Hunter Builds (WoW Forever)
+- Melee Beast Mastery builds no longer take ranged-only talents (Hawk Eye, Improved Concussive Shot). Beast Mastery melee dungeon takes Lethal Attacks at 41-45 instead, about 1.4% faster.
+- Marksmanship and Survival PvP leveling, Marksmanship dungeon and solo, and Beast Mastery melee solo: re-ordered with other builds' openings, up to 0.9% stronger or faster. Marksmanship dungeon takes Deadly Aspects from 32 in place of Clever Traps, Scatter Shot and Savage Strikes.
+- Small order changes on the other Hunter leveling builds.
+
+### 🔧 Warrior Builds (WoW Forever)
+- Fury PvP leveling: Blood Craze, Gore Drinker and Improved Intercept at 43-49, then Booming Voice at 52-56 in place of Improved Bloodrage, Reckless Swings and Shield Specialization. About 4% stronger in duels from the mid 40s.
+- Fury solo: Improved Whirlwind one level earlier, at 50-51.
+- Builds that don't dual-wield no longer take off-hand talents (Furious Precision, Dual Wield Specialization). Fury two-hander solo takes Deflection, Reckless Swings, Improved Intercept and Improved Bloodrage instead, Arms dungeon takes Cruelty at 52-54, and Protection solo takes Deflection at 59.
+
+### 🔧 Paladin Builds (WoW Forever)
+- Retribution solo: Champion of the Light at 35-39, Repentance at 34 and Unsealed Wrath at 40, with Divine Strength later at 41-45, and one Vindication point moves to Divine Intellect. A little faster to level.
+- Protection solo: Benediction and Sanctified Judgement a level earlier, then Divine Strength at 45-49, Reverence, Improved Seals and Holy Conduit in place of Iron Creed, Shieldsworn and Sacred Arbiter. About 1% faster to level.
+- Holy and Protection PvP leveling: small order changes (Divine Favor at 20 and Sacred Arbiter at 42 for Holy; Guardian's Favor by 16 for Protection).
+- Retribution dungeon: Divine Strength at 41.
+
 ## 🚀 v1.2.9
 
 ### 🎨 Build Picker (talent window)
