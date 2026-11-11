@@ -1,5 +1,54 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.1
+
+### 🔧 Paladin Builds (WoW Forever)
+- Protection solo: its notes now say how many mobs to pull with tank gear (three from about 30, four from about 40).
+
+### 🔧 Hunter Builds (WoW Forever)
+- Re-searched for the November 10 hotfixes: Arcane Shot and Summon Hawk cost 11% of base mana at every rank (lower ranks no longer save mana), the Hawk's melee damage is about 80% higher, and pets have 115% of their health.
+- Beast Mastery solo: Careful Aim from 50, Rapid Recuperation at 54 and Frenzy at 57-58, in place of Improved Arcane Shot and Improved Mend Pet. About 0.5% faster.
+- Beast Mastery dungeon: built around the pet now, with Summon Hawk at 25, Frenzy at 35-39 and Bestial Wrath at 40. About 1% more damage.
+- Beast Mastery PvP leveling: Summon Hawk at 26 and Survival from 43. About 7.5% stronger in duels.
+- Marksmanship PvP leveling: Beast Mastery from 31 (Unleashed Fury, Summon Hawk at 46, Intimidation) in place of Survival. About 1% stronger.
+- Survival dungeon: no Lone Wolf, so the pet stays out. Rapid Recuperation from 51.
+- The melee builds: Summon Hawk earlier and other small order changes. Beast Mastery melee solo is about 0.7% faster.
+- The other Hunter builds are unchanged: their new orders were not faster.
+
+### 🔧 Mage Builds (WoW Forever)
+- Re-searched for the November 9 hotfix: Arcane Concentration now gives about one Clearcasting chance per Arcane Missiles cast, so Arcane is about 1-4% slower to level.
+- Arcane solo and Arcane AoE notes: now about 71% and 44% slower than Frost AoE.
+- Arcane dungeon: Arcane Blast at 24. Fire dungeon: Accelerant in place of Combustion at 60. Arcane PvP leveling: Arcane Concentration from 25.
+- The other Mage builds are unchanged: their new orders were not faster.
+
+### 🔧 Druid Builds (WoW Forever)
+- Re-searched with bleed crits: Feral levels about 4-6% faster in the model.
+- Cat dungeon: Sharpened Claws and Savage Fury at 20-23 before Shredding Attacks, Natural Instinct at 31-32, Heart of the Wild and Naturalist at 42-51.
+- Restoration dungeon: Living Spirit at 30-32 and more Balance (Restoration 33 / Balance 18), Swiftmend at 52.
+- Feral solo and Feral PvP leveling: small order changes. Balance and Restoration solo notes: now about 47% and 57% slower than Feral solo.
+- Nature's Swiftness on Wild Growth (November 10 hotfix) doesn't change any leveling build.
+
+### 🔧 Warlock Builds (WoW Forever)
+- Re-searched for the November 10 hotfixes: Wrack, Soul Siphon, the Imp's Firebolt and demon health.
+- Destruction solo: Demonic Aegis and Fel Vitality in place of Pandemic and Malevolence (Destruction 19 / Demonology 18 / Affliction 14). About 1.9% faster.
+- Affliction Drain Life solo: Siphon Life at 33, Demonic Aegis in place of the late Improved Corruption points. About 1.3% faster.
+- Demonology Drain Life solo: a small order change at 13-19.
+- The other Warlock builds are unchanged: their new orders were not faster.
+
+### 🔧 Shaman Builds (WoW Forever)
+- Re-searched for the November 10 hotfixes (Stormstrike, Mental Dexterity, Maelstrom Weapon), with Windfury Totem beside Windfury Weapon when questing and in dungeons.
+- Enhancement solo: Anticipation at 21-24, Rage of the Farseer at 40 and Elemental from 41, with Toughness in place of two Tidal Focus points. About 0.3% faster. Its notes now mention Windfury Weapon and Windfury Totem.
+- Enhancement dungeon: Convection, Call of Flame and Reverberation at 26-36, before Flurry, and Convection in place of Concussion. About 0.7% more damage.
+- Enhancement PvP leveling: Restoration from 22 and Stormstrike at 40, without Flurry. About 4.5% stronger in duels.
+- Enhancement solo levels about 12% slower than before the hotfixes, so Elemental solo is now about 19% and Restoration solo about 22% slower than it (were 33% and 37%).
+- The other Shaman builds are unchanged: their new orders were not faster.
+
+### 📊 Hunter Build Numbers (WoW Forever)
+- The kills per hour shown for Hunter leveling builds now count the five-second rule after each fight: about 3-5% lower. The talent orders are unchanged.
+
+### 🌐 Translations
+- Build steps now show every talent name in your game's language. 54 names (Pathfinding, Bane of Havoc and others) were still in English.
+
 ## 🚀 v1.3.0
 
 ### ✨ Build Numbers
