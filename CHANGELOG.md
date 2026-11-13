@@ -1,5 +1,31 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.2
+
+### 🔧 Solo Leveling Builds, All Classes (WoW Forever)
+- Every solo build re-searched after the Spirit regen fix and the November 13 model fixes. 13 got faster (up to 1%); the rest stay as they were.
+- Beast Mastery solo: Summon Hawk at 26, Bestial Wrath at 41 and Hawk Eye, in place of Careful Aim. About 1% faster.
+- Fury two-hander solo: Protection after 40 (Iron Will, Anticipation, Last Stand) in place of Lingering Rage and Piercing Howl. About 1% faster.
+- Frost AoE: Improved Blizzard at 21-23 and Shatter at 33-36. Destruction solo: Aftermath from 28, Improved Drains at 31-33.
+- Small order changes for Hunter Survival and melee builds, Drain Life Affliction, Balance, Holy Priest, Subtlety swords and Arms.
+- The "% slower" tags and notes on every solo build now match the current models.
+
+### 🔧 Paladin Builds (WoW Forever)
+- Re-searched for the November 11 hotfix: Judgement is a ranged attack, so it can't be dodged or parried.
+- Retribution PvP leveling: Divine Favor at 34, and Two-Handed Weapon Specialization in place of Divine Intellect at 60. About 0.5% stronger.
+- Holy PvP leveling: Divine Intellect at 39-43, then Protection (Guardian's Favor, Templar's Bulwark, Improved Hammer of Justice) in place of the late Retribution and Holy talents. About 1% stronger.
+- The other Paladin builds are unchanged: their new orders were not faster.
+
+### 🔧 Mage Builds (WoW Forever)
+- Re-searched with Frost Nova at rank 1 (the root is what counts, and rank 1 costs far less mana).
+- Frost AoE: Shatter's last point at 35 and Cold Snap at 39. About 0.3% faster.
+- Arcane PvP leveling: Arcane Concentration from 20, and Arcane Resilience in place of Arcane Shielding at 40.
+- Fire solo notes: now about 88% slower than Frost AoE. Arcane AoE notes: about 15% faster than Arcane solo.
+- The "% slower" tags on Arcane solo, Arcane AoE and Fire solo now match their notes.
+
+### 🔧 Shaman Builds (WoW Forever)
+- The "% slower" tags on Elemental and Restoration solo now match their notes (19% and 22%). No talent order changed.
+
 ## 🚀 v1.3.1
 
 ### 🔧 Paladin Builds (WoW Forever)
