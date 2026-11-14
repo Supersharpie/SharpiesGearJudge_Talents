@@ -21,12 +21,12 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 | Warrior | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Rogue | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Hunter | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Paladin | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Mage | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Paladin | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Mage | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Warlock | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Priest | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Shaman | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Druid | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Druid | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
 
@@ -56,9 +56,9 @@ Where a class has more than one solo build, the fastest is tagged **(Fastest)** 
 
 | Class | Solo Leveling | Dungeon Leveling |
 |---|---|---|
-| Warrior | **Arms (Fastest)**, Fury, Protection, *Fury (two-hander)* | Arms, Fury, Protection (tank) |
-| Paladin | **Retribution (Fastest)**, Retribution to Protection, Shockadin, Protection | Retribution, Protection (tank), Holy (healer) |
-| Rogue | **Combat (Fastest)**, Subtlety, Assassination, *Combat (swords)*, *Combat (daggers)*, *Subtlety (swords)*, *Assassination (daggers)* | Combat, Assassination, Subtlety, *Combat (swords or maces)*, *Assassination (swords)*, *Subtlety (swords)* |
+| Warrior | **Protection (Fastest)**, Arms, Fury, *Fury (two-hander)* | Arms, Fury, Protection (tank) |
+| Paladin | **Retribution to Protection (Fastest)**, Retribution, Shockadin, Protection | Retribution, Protection (tank), Holy (healer) |
+| Rogue | ***Subtlety (swords)* (Fastest)**, Combat, Subtlety, Assassination, *Combat (swords)*, *Combat (daggers)*, *Assassination (daggers)* | Combat, Assassination, Subtlety, *Combat (swords or maces)*, *Assassination (swords)*, *Subtlety (swords)* |
 | Hunter | **Marksmanship (Fastest)**, Beast Mastery, Survival, *melee versions of all three* | Beast Mastery, Marksmanship, Survival, *melee versions of all three* |
 | Mage | **Frost: AoE Leveling (Fastest)**, Frost, Arcane, Fire, *Arcane: AoE Leveling* | Arcane, Frost, Fire |
 | Priest | **Shadow (Fastest)**, Shadow (No Shadowform) **(Experimental)**, Discipline, Holy | Shadow, Holy (healer), Discipline (healer) |

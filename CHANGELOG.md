@@ -1,5 +1,23 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.4
+
+### 🔧 Paladin Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear. All four got faster (Protection about 3%, Retribution 3%).
+- Retribution to Protection at 40 is now the fastest Paladin solo build. Retribution is about 2% slower, Protection 6%, Shockadin 8%.
+- Each build says which blessing to use and when (Might, Kings or Wisdom). Seal of Wisdom and Seal of Light were checked and lose to Seal of Command and Righteousness.
+- Protection takes Iron Creed, Shieldsworn and Deflection by 45, and plays Holy Strike over Hammer of the Righteous with quest-reward weapons.
+
+### 🔧 Druid Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear, with Cat and Bear hitting with the weapon you hold. Talent orders barely change.
+- Feral stays the fastest Druid solo build. Balance is about 45% slower, Restoration 55%.
+- Feral takes Rend and Tear at 44-48 and Heart of the Wild later, at 49-53. The notes now say to keep Mark of the Wild up and use Tiger's Fury before the opener.
+
+### 🔧 Mage Builds (WoW Forever)
+- Solo builds re-checked in quest-reward gear with Arcane Intellect up. No faster talent order turned up, so the orders stay.
+- Frost AoE stays the fastest Mage solo build. The others are closer to it: Arcane AoE about 44% slower, Frost 50%, Arcane 59%, Fire 73%.
+
+
 ## 🚀 v1.3.3
 
 ### 🔧 Warrior Builds (WoW Forever)
