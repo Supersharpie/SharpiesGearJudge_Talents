@@ -12,6 +12,24 @@ Pick a build once and the plugin walks you from level 10 to 60. It tells you whi
 
 ---
 
+## 🗺️ WoW Forever Build Progress
+
+We're re-measuring every leveling build and its stat weights on **real leveling gear** (quest rewards and dungeon gear, picked from the current items) in place of an older gear estimate. One class at a time; each part ships as soon as it's done.
+
+| Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
+|---|---|---|---|---|
+| Warrior | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Rogue | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Hunter | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Paladin | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Mage | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Warlock | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Priest | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Shaman | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Druid | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+
+✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
+
 ## Features
 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.

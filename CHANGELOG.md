@@ -1,5 +1,22 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.3
+
+### 🔧 Warrior Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear. All four got faster (up to 3%).
+- Protection is now the fastest Warrior solo build in quest gear. Arms is about 2% slower, Fury dual-wield 4%, Fury two-hander 22%.
+- Arms takes Mortal Strike at 41. Fury two-hander now mixes in Arms talents (Deep Wounds, Two-Handed Weapon Specialization, Impale) and skips Bloodthirst.
+
+### 🔧 Rogue Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear. Four got slightly faster (Assassination and Combat, swords and daggers).
+- Subtlety with swords is now the fastest Rogue solo build, level with Combat maces. Dagger builds fall further behind in quest gear: Assassination daggers about 22% slower.
+- Assassination swords takes Improved Slice and Dice and Seal Fate in place of Lethality and Blade Flurry. Assassination daggers takes Malice first and Deflection earlier.
+
+### 🔧 Hunter Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear. Five got slightly faster (all three shooting builds, Beast Mastery and Survival melee).
+- Marksmanship stays the fastest Hunter solo build. Beast Mastery is about 6% slower, Survival 9%, Survival melee 14%.
+- Beast Mastery takes Careful Aim early and Summon Hawk at 33, with Bestial Wrath at 56. Marksmanship adds Mortal Shots and Scatter Shot in place of Improved Arcane Shot.
+
 ## 🚀 v1.3.2
 
 ### 🔧 Solo Leveling Builds, All Classes (WoW Forever)
