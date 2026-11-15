@@ -1,5 +1,25 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.5
+
+### 🔧 Shaman Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear. All three got a little faster.
+- Enhancement stays the fastest Shaman solo build. On real leveling gear the gap is much smaller: Elemental is about 4% slower (was 19%), Restoration 8% (was 22%).
+- Enhancement goes into Elemental earlier (Convection from 36) and finishes Maelstrom Weapon at 44-47. Elemental takes Concussion at 23-25 and Lightning Overload at 42-44.
+- Windfury Totem stays the Air totem to use from 32; Grace of Air does less.
+
+### 🔧 Priest Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear, with Power Word: Fortitude and Divine Spirit. Discipline and Holy got a little faster; the Shadow order stays.
+- Shadow without Shadowform now takes the Shadow talents first and Discipline from 42. It is about 25% slower than Shadow (was 41%).
+- Shadow stays the fastest Priest solo build. Discipline is about 41% slower, Holy 53%.
+- Every build reminds you to keep Fortitude up, and Divine Spirit from 30.
+
+### 🔧 Warlock Builds (WoW Forever)
+- Solo builds re-searched in quest-reward gear, with Firestone and Spellstone. Affliction, Affliction Drain Life and Destruction got a little faster; the Demonology orders stay.
+- Demonology stays the fastest Warlock solo build. Affliction is about 8% slower, both Drain Life builds 16%, Destruction 21%.
+- Every build says which stone to keep on the weapon: Firestone from 28, Spellstone from 36, and for most builds Firestone again from the mid 50s.
+- Affliction drops its Destruction talents (now Affliction 37 / Demonology 14) and takes Nightfall, Fel Concentration and Improved Sayaad late. Destruction takes Ruin at 54-58.
+
 ## 🚀 v1.3.4
 
 ### 🔧 Paladin Builds (WoW Forever)

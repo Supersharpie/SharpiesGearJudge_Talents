@@ -23,9 +23,9 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 | Hunter | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Paladin | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Mage | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Warlock | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Priest | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Shaman | ⏳ Planned | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Warlock | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Priest | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Shaman | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 | Druid | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
