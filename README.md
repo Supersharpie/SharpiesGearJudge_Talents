@@ -18,15 +18,15 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 
 | Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
 |---|---|---|---|---|
-| Warrior | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Rogue | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Hunter | ✅ Done (3.4.1) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Paladin | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Mage | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Warlock | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Priest | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Shaman | ✅ Done (3.4.3) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
-| Druid | ✅ Done (3.4.2) | ⏳ Planned | ⏳ Planned | ⏸️ Waiting |
+| Warrior | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Hunter | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Paladin | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Mage | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
 
@@ -63,7 +63,7 @@ Where a class has more than one solo build, the fastest is tagged **(Fastest)** 
 | Mage | **Frost: AoE Leveling (Fastest)**, Frost, Arcane, Fire, *Arcane: AoE Leveling* | Arcane, Frost, Fire |
 | Priest | **Shadow (Fastest)**, Shadow (No Shadowform) **(Experimental)**, Discipline, Holy | Shadow, Holy (healer), Discipline (healer) |
 | Warlock | **Demonology (Fastest)**, Affliction, Destruction, *Demonology (Drain Life)*, *Affliction (Drain Life)* | Affliction, Demonology, Destruction |
-| Shaman | **Enhancement (Fastest)**, Elemental, Restoration | Enhancement, Elemental, Restoration (healer), Tank (shield) |
+| Shaman | **Enhancement (Fastest)**, Elemental, Restoration | Enhancement, Elemental, Restoration (healer), Tank (shield, to 30) |
 | Druid | **Feral Cat (Fastest)**, Balance, Restoration | Cat, Balance, Restoration (healer), Bear (tank) |
 
 Raid, farming and PvP builds that use talents removed at launch are hidden until they're re-searched, so some classes have fewer of them for now.

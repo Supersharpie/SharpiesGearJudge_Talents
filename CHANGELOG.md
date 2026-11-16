@@ -1,5 +1,57 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.6
+
+### 🔧 Dungeon Tank Builds (WoW Forever)
+- All four dungeon tank builds were searched again in their own tank gear, with how often tanks die and how much group damage hits other mobs in a pack taken from real Forever logs. Warrior, Paladin, Bear and Shaman all got faster orders (see each class below).
+
+### 🔧 Warlock Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched with a mana budget in groups: Life Tap while walking to the next pull, then eat or drink it back yourself. Mana is now the limit, so Affliction and Destruction take Improved Life Tap and Cataclysm early, for about 5% more damage. Demonology keeps its order.
+
+### 🔧 Mage Dungeon Builds (WoW Forever)
+- Dungeon builds re-checked in quest-reward gear and dungeon gear, with Arcane Intellect and Mage Armor. All three keep their orders; the search found nothing better.
+
+### 🔧 Hunter Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear.
+- Beast Mastery shooting takes Careful Aim and Trueshot Aura in the 50s (0.3% faster). Survival shooting and Survival melee got small reshuffles.
+- Marksmanship shooting keeps its order: the new one was faster in quest gear but slower in dungeon gear. The other two melee builds keep theirs too.
+
+### 🔧 Rogue Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear.
+- Assassination with swords, Combat with swords and Subtlety with daggers got slightly faster orders (0.1-0.3%). The other three keep theirs.
+- The Combat sword note now says that its points at 18-24 do nothing for a sword or mace Rogue in a group: nothing better is open yet.
+
+### 🔧 Warrior Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear, with Battle Shout in the group.
+- Protection is now Protection 34 / Arms 16: Deflection and Defiance come earlier, Shield Slam moves to 49, and the Arms points buy Tactical Mastery, Charge and Deep Wounds. About 2.5% faster.
+- Arms and Fury keep their orders; the search found nothing better.
+
+### 🔧 Priest Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear, with Divine Spirit on the healers.
+- Discipline takes Improved Renew at 24-26 and Penance at 34 (was 30): about 3% more healing. It stays the stronger Priest healer.
+- Shadow and Holy keep their orders; the search found nothing better.
+- Every note reminds you to keep Fortitude up, and Divine Spirit from 30.
+
+### 🔧 Shaman Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear, with your own totems in the group.
+- Enhancement takes Flurry at 26-29 and Improved Stormstrike at 30 and 32, then the Elemental shock talents: about 4% more damage. Its notes now say Rockbiter Weapon (Windfury Weapon only wins in the 30s with a slow two-hander), with Windfury Totem from 32 and Strength of Earth Totem.
+- Restoration takes Totemic Focus at 23-26 and Mana Tide Totem at 27: about 2% more healing. The tank build now ends at 30 (Shaman tanks are rare past 30): its note says to switch to a damage or healing build after that.
+- Elemental keeps its order; the search found nothing better.
+
+### 🔧 Druid Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear, with your own buffs in the group.
+- Restoration takes Genesis at 34-38 and Swiftmend at 40 (was 52): about 1% more healing per run.
+- Bear takes Thick Hide at 24-26 and its Restoration talents before Balance: 0.2-0.5% faster.
+- Cat and Balance keep their orders; the search found nothing better.
+- The notes add Mark of the Wild on yourself, Tiger's Fury before each Cat pull from 24, and Thorns on the Bear.
+
+### 🔧 Paladin Dungeon Builds (WoW Forever)
+- Dungeon builds re-searched in quest-reward gear and checked in dungeon gear, with your own blessing in the group.
+- Protection takes Retribution talents after 30 (Vindication, Improved Judgement, Swift Judgement, Reckoning) in place of the Holy ones: about 3% more pulls per hour, up to 6% near 60.
+- Retribution and Holy keep their orders; the search found nothing better.
+- Protection takes Holy Shield at 30, and Toughness and Improved Righteous Fury earlier: 0.4-0.7% faster. Its note says to cast Consecration about every other cooldown (often rank 1 from 38), and to use Devotion Aura at 40-52.
+- The notes say which blessing to keep on yourself: Might for Retribution, Wisdom for Holy, and Wisdom then Kings from the late 30s for Protection.
+
 ## 🚀 v1.3.5
 
 ### 🔧 Shaman Builds (WoW Forever)
