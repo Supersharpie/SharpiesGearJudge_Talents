@@ -1,5 +1,24 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.7
+
+### 🔧 Solo Leveling Builds Re-checked (WoW Forever)
+- Solo builds for the melee classes were searched again now that the models count expertise, then all nine classes once more on the updated leveling gear (latest Forever item changes), and checked in quest-reward and dungeon gear.
+- Warrior: Fury with a two-hander now mixes Fury and Arms and skips Bloodthirst (about 0.8% faster). Arms and Protection got slightly faster orders (up to 0.5%).
+- Paladin: Protection, and the Protection half of Retribution to Protection, take Benediction at 41-45 and more Toughness (about 1% and 0.3% faster). Retribution takes Sanctified Judgement at 17-19, and Retribution and Holy got slightly faster orders (up to 0.3%).
+- Rogue: Assassination, Combat with daggers and Combat with swords got slightly faster orders (up to 0.4%).
+- Hunter: all three shooting builds and Survival melee got slightly faster orders (about 0.2%).
+- Druid Feral and Shaman Enhancement got slightly faster orders (0.1% or less).
+- Mage Frost and Fire, Druid Balance, Priest Discipline, Shaman Elemental, Warlock Affliction (Drain Life) and Destruction, and Rogue Assassination with swords got slightly faster orders (0.1% or less).
+
+### 🌐 Talent Names (Korean, Latin American Spanish)
+- Korean: Starfire, Moonfire, Improved Starfire and Improved Moonfire now use the game's own names (별빛섬광, 달빛섬광).
+- Latin American Spanish: Nature's Splendor is written the same way in every note.
+
+### 🔧 Paladin PvP Leveling Builds (WoW Forever)
+- PvP leveling builds are now judged by your total leveling time: questing alone plus the time random world fights cost you (deaths, fight time, eating back up), with fight rates from real Forever PvP realms.
+- Retribution now takes almost the solo talents, about 10% faster. Holy quests like Retribution and fights with Holy Shock, about 12% faster. Protection keeps the solo tank talents to 40, then Retribution damage, about 7% faster.
+
 ## 🚀 v1.3.6
 
 ### 🔧 Dungeon Tank Builds (WoW Forever)
