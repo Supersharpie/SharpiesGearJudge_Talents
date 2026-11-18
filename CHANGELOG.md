@@ -1,5 +1,14 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.3.8
+
+### 🔧 Dungeon Builds Re-checked (WoW Forever)
+- All 35 dungeon, tank and healer builds were searched again on the updated leveling gear (latest Forever item changes), in quest-reward gear and checked in dungeon gear.
+- Druid Restoration takes Swiftmend at 29 (was 40) and Genesis at 33-37, then Moonglow and Nature's Splendor before Improved Regrowth: about 0.4% more healing.
+- Shaman Restoration takes Totemic Focus at 18-23, Mana Tide Totem at 25 and Healing Way at 30, with Thundering Strikes moved to 40-44: up to 0.6% more healing.
+- Hunter Survival shooting and Warlock Affliction got slightly faster orders from the late 40s (under 0.1%).
+- The other builds keep their orders.
+
 ## 🚀 v1.3.7
 
 ### 🔧 Solo Leveling Builds Re-checked (WoW Forever)
