@@ -1,5 +1,21 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.0
+
+### ✨ Learn Next (WoW Forever)
+- New Learn Next button in the build panel beside the talent window: it picks your build's next talents in order, one for each unspent point. They are only staged: click Apply Changes in the talent window to keep them, or Undo. It works in the game's window and in DaylightUI's, and is off in combat or on a spec that isn't active.
+
+### 🐛 Fixes
+- Paladin PvP leveling builds showed a duel score of about 130 by level (it should be about 1-2, like the other classes). They now show their real duel score.
+
+### 🔧 Warrior PvP Leveling Builds (WoW Forever)
+- Warrior PvP leveling builds are now judged by your total leveling time, as Paladin's are: questing alone plus the time random world fights cost you (deaths, fight time, eating back up).
+- Arms, Fury and Protection now take nearly their solo talents, with the PvP ones late. Arms is about 7% faster, Fury and Protection about 3%. Protection wins a few fewer world fights (Improved Shield Bash and Iron Will are gone) but levels faster.
+
+### 🔧 Priest PvP Leveling Builds (WoW Forever)
+- Priest PvP leveling builds are judged the same way: questing alone plus the time random world fights cost you. World fights now count Contingency Plan.
+- Shadow now takes the solo Shadow talents, and Discipline and Holy nearly theirs. Shadow is about 13% faster, Discipline about 12% and Holy about 9%. Holy wins a few fewer world fights but levels faster.
+
 ## 🚀 v1.3.8
 
 ### 🔧 Dungeon Builds Re-checked (WoW Forever)

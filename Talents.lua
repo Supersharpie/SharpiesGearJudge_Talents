@@ -413,6 +413,60 @@ function T.ActiveView(b, tree)
     return b, true
 end
 
+-- Learn Next (2026-11-18): stage the build's next points, as many as there are unspent points,
+-- in the build's order, with the same call the game's talent window uses on a click
+-- (C_Traits.PurchaseRank, as DaylightUI's Book/Spend.lua does). Nothing is applied here: the
+-- window shows them staged and the player clicks Apply Changes (or Undo). The game checks every
+-- rank (tier gates, prerequisites, cost); the first refusal stops the run.
+-- Returns staged, why: staged = ranks staged; why = a reason key when nothing could be.
+local function LiveRanks(configID, node)
+    local ok, info = pcall(C_Traits.GetNodeInfo, configID, node)
+    if not (ok and type(info) == "table") then return nil end
+    return tonumber(info.ranksPurchased) or tonumber(info.currentRank) or 0, info
+end
+
+function T.LearnPlan(group)   -- group: the spec group shown (the panel passes ViewGroup())
+    group = group or ActiveGroup()
+    if group ~= ActiveGroup() then return nil, "inactive" end
+    if InCombatLockdown and InCombatLockdown() then return nil, "combat" end
+    if not (C_Traits and C_Traits.PurchaseRank and C_Traits.GetNodeInfo) then return nil, "api" end
+    local b = GetActiveBuild(group); if not b then return nil, "nobuild" end
+    local tree = ReadTree(group); if not tree then return nil, "notree" end
+    local view, respecDue = T.ActiveView(b, tree)
+    if respecDue then return nil, "respec" end
+    local configID = GetTraitConfig(group); if not configID then return nil, "api" end
+    local budget = InGroup(group, GetUnspent, nil)
+    local plan, planned, live = {}, {}, {}
+    for _, name in ipairs(view.points) do
+        if #plan >= budget then break end
+        planned[name] = (planned[name] or 0) + 1
+        local t = tree[name]
+        if not (t and t.nodeID) then break end            -- a talent the client doesn't show: stop there
+        if live[name] == nil then live[name] = LiveRanks(configID, t.nodeID) or t.rank or 0 end
+        if live[name] < planned[name] then
+            table.insert(plan, { name = name, nodeID = t.nodeID, rank = planned[name] })
+            live[name] = live[name] + 1
+        end
+    end
+    if #plan == 0 then return plan, (budget <= 0) and "nopoints" or "complete" end
+    return plan, nil, configID
+end
+
+function T.LearnNext(group)
+    local plan, why, configID = T.LearnPlan(group)
+    if not plan or #plan == 0 then return 0, why end
+    local staged = 0
+    for _, p in ipairs(plan) do
+        local ok, res = pcall(C_Traits.PurchaseRank, configID, p.nodeID)
+        if not (ok and res) then why = "refused"; plan.stoppedAt = p; break end
+        staged = staged + 1
+    end
+    MarkTreeDirty()
+    local book = DaylightBook()
+    if book and book.Talents and type(book.Talents.Soon) == "function" then pcall(book.Talents.Soon) end
+    return staged, why, plan
+end
+
 
 -- The build whose opening the current talents follow furthest (for a first suggestion).
 function T.SuggestBuild(tree)
@@ -655,6 +709,34 @@ local function CreatePanel()
     -- Opening the picker starts on the active build's stage (pickStage nil).
     change:SetScript("OnClick", function() panel.picking = not panel.picking; panel.pickStage = nil; RefreshPanel() end)
     panel.change = change
+
+    -- Learn Next (2026-11-18): stages the build's next points; the player applies them in the talent window.
+    local learn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    learn:SetSize(130, 22)
+    learn:SetPoint("BOTTOMRIGHT", -8, 8)
+    learn:SetText(L["Learn Next"])
+    learn:SetScript("OnClick", function()
+        local n, why, plan = T.LearnNext(T.ViewGroup())
+        if n > 0 then
+            Print(string.format(n == 1 and L["|cff00ff001 talent point staged.|r Click Apply Changes in the talent window to keep it, or Undo."]
+                or L["|cff00ff00%d talent points staged.|r Click Apply Changes in the talent window to keep them, or Undo."], n))
+        end
+        if why == "refused" and plan and plan.stoppedAt then
+            Print(string.format(L["The game would not take %s yet, so Learn Next stopped there."], TalentLabel(plan.stoppedAt, nil)))
+        elseif n == 0 and why == "combat" then Print(L["Talents can't be changed in combat."])
+        elseif n == 0 and why == "inactive" then Print(L["Switch to this spec to learn its talents."])
+        elseif n == 0 and why == "nopoints" then Print(L["No unspent points"])
+        end
+        T.QueueRefresh()
+    end)
+    learn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_TOP")
+        GameTooltip:SetText(L["Learn Next"])
+        GameTooltip:AddLine(L["Picks the build's next talents in order, one for each unspent point. Nothing is kept until you click Apply Changes in the talent window; Undo takes them back."], 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    learn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    panel.learn = learn
 end
 
 local function AnchorPanel()
@@ -683,6 +765,7 @@ local function ViewGroup()
     end
     return ActiveGroup()
 end
+T.ViewGroup = ViewGroup
 
 local function RefreshPanelIn()
     if not panel then return end
@@ -691,6 +774,7 @@ local function RefreshPanelIn()
     end
     local b = GetActiveBuild()
     local tree = ReadTree()
+    if panel.learn then panel.learn:Hide() end
 
     if panel.picking then
         panel.buildName:SetText(L["Choose a build:"])
@@ -723,6 +807,14 @@ local function RefreshPanelIn()
     local view, respecDue = T.ActiveView(b, tree)
     panel.buildName:SetText("|cffffd100" .. L[view.name] .. "|r")
     local st = T.Evaluate(view, tree)
+    if panel.learn then
+        -- Learn Next: the points it would stage (the plan checks the same rules as a click: active spec, combat)
+        local plan = (not respecDue and not st.complete and st.unspent > 0) and T.LearnPlan(CtxGroup()) or nil
+        local n = plan and #plan or 0
+        panel.learn:SetText(n > 0 and string.format(L["Learn Next (%d)"], n) or L["Learn Next"])
+        panel.learn:SetEnabled(n > 0)
+        panel.learn:Show()
+    end
     local lines = {}
     if respecDue then
         table.insert(lines, string.format(L["|cff00ff00Time to respec:|r reset your talents at a trainer, then follow |cffffd100%s|r."], L[b.respec.name]))
@@ -821,6 +913,7 @@ local function QueueRefresh()
         RefreshTalentWindow()
     end
 end
+T.QueueRefresh = QueueRefresh
 
 -- The talent window reloaded its tree: re-read our copy too.
 local function OnTreeLoaded()
@@ -1917,7 +2010,8 @@ for _, e in ipairs({ "TRAIT_CONFIG_UPDATED", "PLAYER_TALENT_UPDATE", "CHARACTER_
 end
 -- A talent picked in the window but not yet applied: refresh the glow and panel only.
 -- (RegisterEvent errors on an event the client lacks, hence the pcall.)
-local STAGED_EVENTS = { TRAIT_NODE_CHANGED = true, TRAIT_TREE_CURRENCY_INFO_UPDATED = true }
+local STAGED_EVENTS = { TRAIT_NODE_CHANGED = true, TRAIT_TREE_CURRENCY_INFO_UPDATED = true,
+    PLAYER_REGEN_DISABLED = true, PLAYER_REGEN_ENABLED = true }   -- combat: Learn Next turns off and back on
 for e in pairs(STAGED_EVENTS) do pcall(ev.RegisterEvent, ev, e) end
 
 local function IsAddOnLoadedSafe(name)

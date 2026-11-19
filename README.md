@@ -18,13 +18,13 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 
 | Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
 |---|---|---|---|---|
-| Warrior | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Warrior | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Hunter | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Paladin | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.4.5) | ⏸️ Waiting |
 | Mage | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 
@@ -35,6 +35,7 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 - **Next-talent reminders.** Every level-up names the next talent to take, in chat and on screen.
 - **Talent window highlight.** The next talent glows gold in the talent window. Every talent your build still puts points into shows a number on its icon: the step of its next point in the build (1 is your first point, 51 your last). Hover a numbered talent to see every step the build puts into it, with the level of each. A panel beside the window shows your progress, the next five talents with the level each is planned for, and any points spent outside the build.
 - **Panel beside the talent window.** Shows your build's progress and next talents. **Change Build** opens the same tabs and build list as the Builds page: Solo, Dungeon and PvP tags, how much slower each build levels, and your active build marked.
+- **Learn Next.** A button in the panel picks your build's next talents in order, one for each unspent point. They are only staged: click **Apply Changes** in the talent window to keep them, or **Undo**.
 - **DaylightUI.** The highlight and panel also work in DaylightUI's own talent window.
 - **Talent Builds page.** A page in the Gear Judge window with three columns:
   - **Your class's builds:** pick **Max Level** (raid builds), **Leveling**, **Farming** or **PvP** at the top, and every build for it is listed, grouped under **Tank**, **Healer** and **DPS**. Tags under each name show **Solo**, **Dungeon** or **PvP**, **Fastest** for your class's fastest solo build, **Experimental** for builds that come only from our model, and how much slower the other solo builds level, plus each leveling build's number from our model at your level: kills per hour solo, DPS in dungeons, healing need covered for healers, pulls per hour for tanks, and a duel score for PvP. Your current build is marked **Active**.
