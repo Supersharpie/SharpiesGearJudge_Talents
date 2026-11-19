@@ -26,7 +26,7 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 | Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.5.0) | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
 
@@ -83,7 +83,7 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 | Priest | Shadow, Discipline, Holy |
 | Warlock | Affliction, Demonology, Destruction |
 | Shaman | Enhancement, Elemental, Restoration |
-| Druid | Feral (Bear Form), Balance, Restoration |
+| Druid | Feral (Cat Form), Balance, Restoration |
 
 ### Max Level and Farming
 

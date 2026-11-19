@@ -1,5 +1,14 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.1
+
+### 🐛 Fixes
+- Priest Shadow and Discipline build notes showed Dark Inspiration in English on non-English clients. They now use the talent name in your language.
+
+### 🔧 Druid PvP Leveling Builds (WoW Forever)
+- Druid PvP leveling builds are judged by your total leveling time, as the Paladin, Warrior and Priest ones are: questing alone plus the time random world fights cost you.
+- Feral now fights in Cat Form from 20 (it wins more world fights than Bear Form) and takes the solo Feral talents: about 10% faster. Balance takes the solo Balance talents (about 4% faster) and Restoration nearly its solo talents (about 9% faster). Balance and Restoration win a few fewer world fights but level faster.
+
 ## 🚀 v1.4.0
 
 ### ✨ Learn Next (WoW Forever)
