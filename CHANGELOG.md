@@ -1,5 +1,19 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.2
+
+### 🔧 Mage PvP Leveling Builds (WoW Forever)
+- Mage PvP leveling builds are judged by your total leveling time, as the Paladin, Warrior, Priest and Druid ones are: questing plus the time random world fights cost you.
+- Frost, Arcane and Fire quest single target (one or two mobs at a time) and take nearly their solo talents: 5-8% faster. They win fewer world fights (Fire the most) but level faster.
+- New: Frost: AoE PvP Leveling and Arcane: AoE PvP Leveling, for players who pull packs. They take the solo AoE talents; Frost AoE is the fastest Mage PvP build by far.
+
+### 🔧 Arcane: AoE Leveling (WoW Forever)
+- New talent order, about 6% faster: Arcane Resilience and Improved Channeling early, Frost from 29 with Permafrost before Improved Blizzard. It is now about 35% slower than Frost: AoE Leveling (was 44%).
+
+### 🔧 Warlock PvP Leveling Builds (WoW Forever)
+- Warlock PvP leveling builds are judged by your total leveling time, questing plus the time random world fights cost you, with the Succubus out.
+- Affliction and Demonology now take their solo talents, and Destruction gets a new order: 8-12% faster. They win a few fewer world fights (Destruction the most) but level faster.
+
 ## 🚀 v1.4.1
 
 ### 🐛 Fixes

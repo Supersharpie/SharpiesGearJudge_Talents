@@ -22,8 +22,8 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 | Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Hunter | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Paladin | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.4.5) | ⏸️ Waiting |
-| Mage | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Mage | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
+| Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
 | Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
 | Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.5.0) | ⏸️ Waiting |
@@ -79,7 +79,7 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 | Paladin | Retribution, Holy, Protection |
 | Rogue | Assassination, Combat, Subtlety (all with swords) |
 | Hunter | Beast Mastery, Marksmanship, Survival (all shooting) |
-| Mage | Arcane, Fire, Frost |
+| Mage | Arcane, Fire, Frost, *Frost: AoE*, *Arcane: AoE* |
 | Priest | Shadow, Discipline, Holy |
 | Warlock | Affliction, Demonology, Destruction |
 | Shaman | Enhancement, Elemental, Restoration |
