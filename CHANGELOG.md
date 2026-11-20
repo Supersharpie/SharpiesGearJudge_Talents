@@ -1,5 +1,12 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.3
+
+### 🔧 Dungeon Healer Builds (WoW Forever)
+- All five dungeon healer builds were searched again on a healer model checked against dungeon logs: real overheal for each spell, Oath of Light, Water Shield, Riptide, Bloom, Swiftmend, Prayer of Mending, how often healers get hit, and the tank damage spikes a fast heal can save.
+- Restoration Shaman about 4.5% faster (no Elemental damage points; Ancestral Healing and Totemic Focus), Holy Priest 4% (Inspiration, Prayer of Mending), Restoration Druid 1.5% (Wild Growth at 60; take it from 40 if your group takes a lot of party damage), Holy Paladin 1.4% (Spiritual Focus with Concentration Aura, Divine Intellect 5/5), Discipline 0.9%.
+- Damage talents now only fill points a healer can't spend on anything better.
+
 ## 🚀 v1.4.2
 
 ### 🔧 Mage PvP Leveling Builds (WoW Forever)
