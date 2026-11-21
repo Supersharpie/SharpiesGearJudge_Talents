@@ -73,7 +73,8 @@ end
 
 -- The pre-fix key (first name only), so an existing build choice carries over once.
 local function LegacyCharKey()
-    return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
+    local MSC = _G.MSC
+    return (UnitName("player") or "?") .. "-" .. (MSC and MSC.GetRealm and MSC.GetRealm() or GetRealmName() or "?")
 end
 
 local function PlayerClass()

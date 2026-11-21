@@ -1,5 +1,17 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.4
+
+### 🔧 Dungeon Tank Builds (WoW Forever)
+- All four dungeon tank builds were searched again on the tank model checked against dungeon logs. Each is faster in quest gear and in dungeon gear.
+- Protection Paladin about 0.7% faster: Divine Intellect early, more Toughness and Benediction, Holy Shield still at 30. Its note now says Blessing of Wisdom and Retribution Aura nearly all the way.
+- Protection Warrior 0.15%: Last Stand at 20, Shield Slam at 45, Impale instead of Cruelty.
+- Bear 0.05%: all Feral past Restoration, with Lacerate at 32 and Rend and Tear instead of Balance.
+- Shaman tank 0.1%: Ancestral Knowledge first; the build still ends at 30.
+
+### 🐛 Fixes
+- WoW Forever: your build choice no longer looks reset on logins where the game gives no realm name (needs Gear Judge 3.7.0).
+
 ## 🚀 v1.4.3
 
 ### 🔧 Dungeon Healer Builds (WoW Forever)
