@@ -1,5 +1,27 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.5
+
+### 🔧 Retribution Dungeon Build (WoW Forever)
+- Searched again on a dungeon model checked against 20 logged Ret Paladins: always a two-hander, mana over a run of pulls, Seal of Command at 7 procs a minute. About 1.9% faster in quest and in dungeon gear.
+- The note now says Blessing of Wisdom (Might before 14), Consecration on most packs and only now and then on bosses, and which points only open the next row.
+
+### 🔧 Dungeon DPS Builds (WoW Forever)
+- Six dungeon builds were searched again on dungeon models checked against logs (Rain of Fire and Hellfire on packs, Shadow Word: Pain on every pack mob, Hurricane share, Enhancement mana). Each is faster in quest gear and in dungeon gear.
+- Affliction about 4% faster: Affliction 33 / Demonology 18 with Wrack at 40 (was Affliction / Destruction).
+- Shadow Priest about 2-3%: Shadowform at 40, then Discipline for mana.
+- Balance 1.5-3.5%: Insect Swarm at 25 and Vengeance before Eclipse.
+- Demonology 0.5%: Improved Corruption 3 instead of Grim Reach. Enhancement 0.5%: Tidal Focus and Mindfulness for mana. Destruction 0.3%.
+- The notes say when to use Rain of Fire and Hellfire on packs.
+- Hunter (ranged) dungeon builds were searched again after fixing the Hunter dungeon model from 40 logged Hunters: Multi-Shot hits about 2.6 mobs a pack (it counted 1.2), Explosive Trap 2.6, and Volley stops Auto Shot while you channel it. Beast Mastery about 2.5-3.3% faster, Survival 2-2.6% (now with Clever Traps, Resourcefulness and Lone Wolf at 44), Marksmanship 0.9% (Lone Wolf at 40).
+- The Hunter notes say when to use Multi-Shot, Explosive Trap and Volley, and for Lone Wolf builds to dismiss the pet for trash and call it back for bosses.
+- Cat dungeon build searched again after fixing the Cat dungeon model from logged Feral Druids: Rip and Rake no longer tick after a trash mob dies (logged trash Rips got about half their ticks). About 0.5% faster: Predatory Discipline at 31, Genesis at 55-59 instead of Natural Reaction and Reflection.
+- The Cat note says to Rip bosses and finish trash with Ferocious Bite from 32.
+
+### 🐛 Fixed
+- A leveling build's page and Gear Judge's profile name show the build's own name for its leveling weights (a Marksmanship build said "Beast Mastery: Solo Leveling").
+- "Panel beside the talent window" no longer unticks itself. The panel's X now hides it until you open the talent window again; untick the box to turn it off.
+
 ## 🚀 v1.4.4
 
 ### 🔧 Dungeon Tank Builds (WoW Forever)

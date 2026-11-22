@@ -504,7 +504,8 @@ local function ApplyGearLink()
     MSC.GetTalentBuildRoleForGroup = function(group)
         local lev, endg, pvp = BuildRole(group)
         if not (lev or endg) then return nil end
-        return { leveling = lev, endgame = endg, pvp = pvp or nil }
+        local b = GetActiveBuild(group)
+        return { leveling = lev, endgame = endg, pvp = pvp or nil, name = b and BuildName(b) or nil }
     end
     local ag = ActiveGroup()
     local b = GetActiveBuild(ag)
@@ -512,7 +513,7 @@ local function ApplyGearLink()
         local tree = b.respec and ReadTree(ag)
         local view = tree and T.ActiveView(b, tree) or b
         -- PvP builds also turn on the PvP weight model (at every level).
-        MSC.SetTalentBuildRole(view.leveling, view.endgame, IsPvPBuild(b))
+        MSC.SetTalentBuildRole(view.leveling, view.endgame, IsPvPBuild(b), BuildName(b))
     else
         MSC.SetTalentBuildRole(nil, nil)
     end
@@ -690,7 +691,13 @@ local function CreatePanel()
 
     local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 0, 0)
-    close:SetScript("OnClick", function() db.showPanel = false; panel:Hide() end)
+    -- The X hides the panel until the talent window opens again (a standalone panel: until /sgjt); only the
+    -- "Panel beside the talent window" box turns it off for good (1.4.5: the X also cleared that setting, and
+    -- something pressed it during loading screens, so the box kept unticking itself)
+    close:SetScript("OnClick", function()
+        if panel.standalone then panel.standalone = false else panel.dismissed = true end
+        panel:Hide()
+    end)
 
     panel.buildName = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     panel.buildName:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
@@ -874,7 +881,8 @@ local function RefreshTalentWindow()
     if dayPage and not panel then CreatePanel(); panel:Hide() end
 
     if panel then
-        if shown and db.showPanel then
+        if not shown then panel.dismissed = nil end  -- closed with its X: back the next time the window opens
+        if shown and db.showPanel and not panel.dismissed then
             AnchorPanel()
             RefreshPanel()
             panel:Show()
@@ -1423,7 +1431,7 @@ local function UpdatePageIn()
         if fastest then table.insert(info, string.format(L["About %d%% slower to level than %s, the fastest solo build, in our model."], b.slower, BuildName(fastest))) end
     end
     table.insert(info, " ")
-    table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
+    table.insert(info, string.format(L["|cffffd100Gear Judge weights:|r %s while leveling, %s at 60."], b.stage == "leveling" and BuildName(b) or ProfileLabel(b.leveling), ProfileLabel(b.endgame)))
     if IsPvPBuild(b) then table.insert(info, L["PvP weights at every level: Stamina, armor and burst count for more, and hit stops at the player-vs-player caps."]) end
     if b.respec then
         table.insert(info, string.format(L["|cffffd100Respec at %d:|r %s (weights: %s, then %s at 60)."],
