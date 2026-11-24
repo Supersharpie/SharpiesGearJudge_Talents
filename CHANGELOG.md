@@ -1,5 +1,15 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.6
+
+### 🔧 Solo Leveling Builds (WoW Forever)
+- 22 solo builds searched again after model fixes (Mage AoE pulls with Blink and a check on how likely a pull kills you, Frostbite left out, Nightfall, Insect Swarm, Heart of the Wild) and a search that keeps more tree splits. Each is faster in quest and in best gear.
+- Fury two-hander about 4% faster: deep Fury first, Death Wish at 30 and Bloodthirst at 40. Arcane AoE 3.5-4%, Protection Warrior and Demonology about 2%, Beast Mastery shooting about 2% (it now stops at Spirit Bond and takes Marksmanship points), Fury dual-wield and Demonology Drain 1.3-1.5%, Frost AoE 0.5-2%, the others 0.1-1%.
+- Notes rewritten for the new orders, with each note's "% slower than the fastest" updated: the Mage single-target builds are further behind Frost AoE, and Retribution is now the fastest Paladin solo build in quest gear.
+
+### 🐛 Fixed
+- Korean and Traditional Chinese: Gear Judge's Spell Impact shows its own word for DPS (the Talents role filter's "DPS" replaced it). The role label is now translated in every language.
+
 ## 🚀 v1.4.5
 
 ### 🔧 Retribution Dungeon Build (WoW Forever)

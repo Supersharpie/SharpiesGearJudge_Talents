@@ -18,15 +18,15 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 
 | Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
 |---|---|---|---|---|
-| Warrior | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
+| Warrior | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Hunter | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Paladin | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.4.5) | ⏸️ Waiting |
-| Mage | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
-| Warlock | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
-| Priest | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
+| Hunter | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
+| Paladin | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.5) | ⏸️ Waiting |
+| Mage | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
+| Warlock | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
+| Priest | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
 | Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Druid | ✅ Done (3.4.2) | ✅ Done (3.4.4) | ✅ Done (3.5.0) | ⏸️ Waiting |
+| Druid | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.5.0) | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
 

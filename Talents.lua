@@ -8,6 +8,8 @@
 local addonName, T = ...
 _G.SGJ_Talents = T
 local L = (_G.MSC and _G.MSC.L) or setmetatable({}, { __index = function(t, k) return k end })
+-- The role label has its own key: the core translates "DPS" as the stat (damage per second), not the role (2026-11-22).
+if rawget(L, "DPS role") == nil then L["DPS role"] = "DPS" end
 
 local PREFIX = "|cffa335ee[SGJ Talents]|r "
 -- A build's display name; class-specific wording first (see MSC.ClassL in the core).
@@ -167,7 +169,7 @@ end
 -- role (a PvP build runs from 10 to 60). w is the stage button's width on the Builds page.
 local STAGES = { { key = "raid", label = "Max Level (Raid)", short = "Max Level", w = 66 }, { key = "leveling", label = "Leveling", w = 56 },
     { key = "farming", label = "Farming", w = 52 }, { key = "pvp", label = "PvP", w = 26 } }
-local ROLES = { { key = "tank", label = "Tank" }, { key = "healer", label = "Healer" }, { key = "dps", label = "DPS" } }
+local ROLES = { { key = "tank", label = "Tank" }, { key = "healer", label = "Healer" }, { key = "dps", label = "DPS role" } }
 local MODES = { { key = "solo", label = "Solo" }, { key = "dungeon", label = "Dungeon" }, { key = "pvp", label = "PvP" } }
 local MODE_ORDER = { solo = 0, dungeon = 1, pvp = 2 }
 local MODE_COLOR = { solo = "|cff7fb2ff", dungeon = "|cffc29bff", pvp = "|cffff7f7f" }
