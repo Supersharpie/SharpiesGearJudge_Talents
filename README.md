@@ -18,17 +18,19 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 
 | Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
 |---|---|---|---|---|
-| Warrior | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
-| Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Hunter | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Paladin | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.5) | ⏸️ Waiting |
-| Mage | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
-| Warlock | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.6.0) | ⏸️ Waiting |
-| Priest | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.4.7) | ⏸️ Waiting |
-| Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ⏳ Planned | ⏸️ Waiting |
-| Druid | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.5.0) | ⏸️ Waiting |
+| Warrior | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Hunter | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Paladin | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Mage | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Warlock | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Priest | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Druid | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
+
+**PvP leveling pass (in progress):** every class's PvP leveling build is being searched again, now judged on the world fights you run into while questing. Druid, Mage, Hunter, Rogue and Warrior are searched; Shaman is finishing, then Priest, Paladin and Warlock. The PvP leveling builds released so far don't use this judging yet, so every class is back to in progress; the current builds stay in use until each class ships.
 
 ## Features
 

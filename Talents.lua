@@ -982,6 +982,9 @@ end
 -- 6. REMINDERS
 -- =========================================================================
 local lastOffKey
+-- 1.4.7: a level-up could print "Next talent" twice a few seconds apart (Forever fires a second event around it);
+-- automatic reminders (level, login, spec) skip a line they already printed in the last 15 s.
+local lastAutoMsg, lastAutoTime = nil, 0
 
 local function Remind(reason)
     if not db.remind then return end
@@ -1001,6 +1004,11 @@ local function Remind(reason)
     if st.complete or st.unspent <= 0 or not st.nextName then return end
     local nextEntry = st.upcoming[1] or { name = st.nextName, rank = st.nextRank }
     local msg = string.format(L["Next talent: |cff00ff00%s|r  (%s)"], TalentLabel(nextEntry, tree), L[view.name])
+    if reason == "level" or reason == "login" or reason == "spec" then
+        local now = GetTime and GetTime() or 0
+        if msg == lastAutoMsg and now - lastAutoTime < 15 then return end
+        lastAutoMsg, lastAutoTime = msg, now
+    end
     if reason == "level" and UIErrorsFrame then
         UIErrorsFrame:AddMessage(string.format(L["SGJ: next talent %s"], TalentLabel(nextEntry, tree)), 0.3, 1, 0.3)
     end

@@ -1,5 +1,10 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.7
+
+### 🐛 Fixed
+- The level-up reminder no longer prints the next talent twice.
+
 ## 🚀 v1.4.6
 
 ### 🔧 Solo Leveling Builds (WoW Forever)
