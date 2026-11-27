@@ -1,5 +1,16 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.9
+
+### 🔧 Druid Builds (WoW Forever, November 25 hotfix)
+- The hotfix reworked Balance: Improved Wrath is now Starlight Wrath (it also speeds up Starfire), Improved Moonfire is now Moon and Stars (Starfire can't be pushed back), Improved Starfire has 2 points and only its stun, and Moonfury is gone (Dreamstate replaces it). Builds with 3 or more points in Improved Starfire had their talents reset.
+- Searched again on the updated Balance model: Balance solo (now about 39% slower than Feral, was 44%), Balance dungeon, Balance PvP, Restoration solo (47%, was 54%) and Restoration PvP. Restoration dungeon only needed the Starlight Wrath rename.
+- Balance: Raid and Balance: Hurricane Farming are hidden until the level-60 and farming passes.
+- Starlight Wrath and Moon and Stars show in English until the game client has translations for them.
+
+### 🔧 Hunter Builds (WoW Forever, November 25 hotfix)
+- The Hawk's +5% crit is in. Every build that uses the Hawk was searched again; two take their points in a better order on both gear sets: Marksmanship: Melee Dungeon (Deadly Aspects before Improved Tracking, Summon Hawk at 41) and Beast Mastery: Dungeon Leveling (a different finish at 54-60). The other Hawk builds keep their order.
+
 ## 🚀 v1.4.8
 
 ### 🔧 PvP Leveling Builds (WoW Forever)
