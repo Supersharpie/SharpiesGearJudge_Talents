@@ -1,5 +1,16 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.8
+
+### 🔧 PvP Leveling Builds (WoW Forever)
+- Every PvP leveling build was searched again, judged on total leveling time: questing plus the world fights you run into, against opponents in the same leveling gear. 24 builds are faster in quest and in best gear: Shaman 16-18%, Hunter 7-10%, Rogue 2-6%, Arcane AoE about 5%, Warlock 0.4-2.4%, the other Mage builds 0.4-2.4%, Warrior 0.2-2%, Druid and Holy Paladin/Priest 0.1-0.3%.
+- Retribution and Protection Paladin, Discipline and Shadow Priest keep their builds (the new orders were only a tie or faster in one gear set).
+- Restoration Shaman PvP Leveling is removed: its search kept landing on an even three-tree split, not a real Restoration build.
+- Notes rewritten for the new orders, and each PvP build's duel score refreshed.
+
+### 🔧 Solo Leveling Builds (WoW Forever)
+- Frost: AoE Leveling note fixed: until 24 you fight one or two mobs at a time (Arcane Missiles at 10-13 and 16-19, Frostbolt at 14-15 and 20-23); Blizzard pulls start at 24 with all 3 points of Improved Blizzard (was 22), with pack sizes and Cone of Cold from 26. The talent order is unchanged.
+
 ## 🚀 v1.4.7
 
 ### 🐛 Fixed

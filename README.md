@@ -18,19 +18,19 @@ We're re-measuring every leveling build and its stat weights on **real leveling 
 
 | Class | Solo leveling | Dungeon leveling | PvP leveling | Raid (60) |
 |---|---|---|---|---|
-| Warrior | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Hunter | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Paladin | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Mage | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Warlock | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Priest | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
-| Druid | ✅ Done (3.8.1) | ✅ Done (3.4.4) | 🔄 In progress | ⏸️ Waiting |
+| Warrior | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Rogue | ✅ Done (3.4.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Hunter | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Paladin | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Mage | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Warlock | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Priest | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Shaman | ✅ Done (3.4.3) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
+| Druid | ✅ Done (3.8.1) | ✅ Done (3.4.4) | ✅ Done (3.9.1) | ⏸️ Waiting |
 
 ✅ done on real leveling gear · 🔄 in progress · ⏳ planned · ⏸️ waiting for level-60 gear and raid data. Builds not done yet still work: they use the earlier gear estimate.
 
-**PvP leveling pass (in progress):** every class's PvP leveling build is being searched again, now judged on the world fights you run into while questing. Druid, Mage, Hunter, Rogue and Warrior are searched; Shaman is finishing, then Priest, Paladin and Warlock. The PvP leveling builds released so far don't use this judging yet, so every class is back to in progress; the current builds stay in use until each class ships.
+**PvP leveling pass (done, 3.9.1):** every class's PvP leveling build was searched again, judged on total leveling time: questing plus the world fights you run into, against opponents in the same leveling gear.
 
 ## Features
 
@@ -84,7 +84,7 @@ For open-world PvP while you level on a PvP realm. A duel simulation fights each
 | Mage | Arcane, Fire, Frost, *Frost: AoE*, *Arcane: AoE* |
 | Priest | Shadow, Discipline, Holy |
 | Warlock | Affliction, Demonology, Destruction |
-| Shaman | Enhancement, Elemental, Restoration |
+| Shaman | Enhancement, Elemental |
 | Druid | Feral (Cat Form), Balance, Restoration |
 
 ### Max Level and Farming
