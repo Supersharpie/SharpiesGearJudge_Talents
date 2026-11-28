@@ -1,5 +1,14 @@
 # Sharpie's Gear Judge [Talents] - Version History
 
+## 🚀 v1.4.10
+
+### 🔧 Mage Builds (WoW Forever)
+- The AoE model is reworked: Permafrost's slow follows its points, Frost Nova and Blink are timed per cooldown (resists included), Ice Barrier counts in full, Cone of Cold is a choice with its mana cost, Ice Block saves 3 in 4 pulls that would kill you, and the model pulls mobs 1-3 levels below you when that levels faster.
+- Frost: AoE Leveling (8-10% faster) and Frost: AoE PvP Leveling (6-8% faster) take their points in a better order: Permafrost before Improved Blizzard at 20-22, Ice Block at 25. The solo AoE build skips Ice Lance.
+- Frost: AoE Leveling's notes now say Arcane Missiles on single mobs at 10-15 and 19, with optional Flamestrike pulls on lower-level mobs at 16-18.
+- Arcane: AoE Leveling and Arcane: AoE PvP Leveling are retired: still about 47% slower than Frost: AoE Leveling.
+- The single-target solo builds now read about 103% (Frost), 113% (Arcane) and 131% (Fire) slower than Frost: AoE Leveling.
+
 ## 🚀 v1.4.9
 
 ### 🔧 Druid Builds (WoW Forever, November 25 hotfix)
